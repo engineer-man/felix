@@ -22,7 +22,9 @@ bot.on('message', message => {
 
     switch (content) {
         case 'felix help':
-            channel.send('test');
+            channel.send(
+                'test'
+            );
             break;
     }
 
