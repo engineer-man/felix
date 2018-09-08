@@ -3,7 +3,7 @@ import os
 import json
 import numpy as np
 
-words = open('./dict.txt').read().split()
+words = open('../dict.txt').read().split()
 hangmanval = {}
 playerdata = {}
 
