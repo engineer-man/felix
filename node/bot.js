@@ -10,7 +10,7 @@ const config = JSON.parse(fs.read_file_sync('../config.json').to_string());
 const bot = new discord.Client();
 
 var state = {
-    hangman_solver: true
+    hangman_solver: false
 };
 
 var dictionary = fs.readFileSync('/usr/share/dict/lwords').toString().split('\n');
@@ -80,8 +80,7 @@ bot.on('message', message => {
         message.reply(mode + ' disabled');
     }
 
-    if (message.channel.name === 'em-hangman' &&
-        state.hangman_solver &&
+    if (state.hangman_solver &&
         message.embeds.length > 0 &&
         ~message.embeds[0].description.indexOf('your word')) {
 
@@ -170,7 +169,7 @@ bot.on('message', message => {
             letter_c = letters[key];
         });
 
-        channel.send('duckie letter ' + letter);
+        channel.send('~ letter ' + letter);
     }
 
     if (content.match(/^felix poll/gi)) {

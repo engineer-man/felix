@@ -121,6 +121,7 @@ def loaddata():
     if not os.path.exists("./hangman/data/"):
         return
     for folders in os.listdir("./hangman/data/"):
+        if folders == '.gitkeep': continue
         with open("./hangman/data/" + folders + "/scores.json", "r") as f:
             playerdata[folders] = json.load(f)
     #print(playerdata)
