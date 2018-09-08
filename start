@@ -4,6 +4,6 @@ cd node
 node bot.js &
 cd ..
 cd python
-python3 bot.py &
+python36 bot.py &
 
 sleep infinity

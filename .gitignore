@@ -1,3 +1,6 @@
 node_modules
 package-lock.json
 config.json
+__pycache__
+python/hangman/data/*
+!python/hangman/data/.gitkeep
