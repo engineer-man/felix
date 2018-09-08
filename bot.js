@@ -16,15 +16,46 @@ var dictionary = fs.readFileSync('/usr/share/dict/lwords').toString().split('\n'
 
 console.log('starting')
 
+bot.on('guildMemberAdd', member => {
+    const channel = member.guild.channels.find(ch => ch.name === 'welcome');
+
+    channel.send(
+        'Welcome to the Engineer Man Community Discord Server, ' + member + '. ' +
+        'I\'m Felix, the server smart assistant. You can learn more about what I can do by saying `felix help`. ' +
+        'You can view the server rules @ <#484103976296644608>. Please be kind and decent to one another. ' +
+        'Glad you\'re here!'
+    );
+});
+
 bot.on('message', message => {
     var content = message.content;
     var channel = message.channel;
 
     switch (content) {
         case 'felix help':
-            channel.send(
-                'test'
-            );
+            if (message.author.bot) break;
+
+            var help =
+                'hi, here is what i can do:\n' +
+                '\n' +
+                'felix gif [gif name here]\n' +
+                'felix google [google search term]';
+
+            if (channel.name === 'staff-room') {
+                help +=
+                    '\n\n' +
+                    'mod only:\n' +
+                    'felix poll [newline then 1. 2. etc]\n' +
+                    'felix purge [number of messaged to delete]'
+            }
+
+            channel.send(help);
+            break;
+        case 'html is a programming language':
+            message.reply('no it\'s not, don\'t be silly');
+            break;
+        case 'you wanna fight, felix?':
+            message.reply('bring it on pal (╯°□°）╯︵ ┻━┻');
             break;
     }
 
@@ -180,11 +211,7 @@ bot.on('message', message => {
     if (content.match(/^felix google/gi)) {
         var text = content.split('google')[1].trim();
 
-        channel.send('here you go! <http://lmgtfy.com/?q=' + text.split(' ').join('+') + '>');
-    }
-
-    if (content.match(/^felix[,\s]+do you want/gi)) {
-        message.reply('you know i do!');
+        channel.send('here you go! <https://www.google.com/search?q=' + text.split(' ').join('+') + '>');
     }
 
     if (content.match(/^felix gif /gi)) {
@@ -243,24 +270,6 @@ bot.on('message', message => {
             .then(messages => {
                 channel.bulkDelete(messages);
             });
-    }
-
-    if (content.match(/(youtube|discord)/gi) &&
-        content.match(/(suggest|you should)/gi)) {
-return null;
-        if (~['483979392708640779', '484093640050868235'].index_of(message.channel.id)) return null;
-
-        var channel;
-
-        if (content.match(/youtube/gi))
-            channel = '483979392708640779';
-        if (content.match(/discord/gi))
-            channel = '484093640050868235';
-
-        if (!channel) return null;
-
-        bot.channels.get(channel)
-            .send('<@' + message.author.id + '> said: ' + content);
     }
 });
 
