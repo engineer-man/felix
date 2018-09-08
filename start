@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+cd node
+node bot.js &
+cd ..
+cd python
+python3 bot.py &
+
+sleep infinity

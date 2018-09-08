@@ -1,6 +1,0 @@
-module.exports = {
-
-    bot_key: '',
-    giphy_key: ''
-
-};

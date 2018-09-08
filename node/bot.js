@@ -1,10 +1,11 @@
 require('nocamel');
 
-const config = require('./config');
 const discord = require('discord.js');
 const fs = require('fs');
 const request = require('request-promise');
 const q = require('q');
+
+const config = JSON.parse(fs.read_file_sync('../config.json').to_string());
 
 const bot = new discord.Client();
 
