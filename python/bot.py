@@ -151,4 +151,5 @@ async def video_check():
 
 hm.loaddata()
 
+bot.loop.create_task(video_check())
 bot.run(config["bot_key"])
