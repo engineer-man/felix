@@ -1,0 +1,11 @@
+{
+    "python":{"apilang":"python3", "reccblock":"py"},
+    "python2":{"apilang":"python2", "reccblock":"py"},
+    "python3":{"apilang":"python3", "reccblock":"py"},
+    "javascript":{"apilang":"javascript", "reccblock":"js"},
+    "js":{"apilang":"js", "reccblock":"js"},
+    "node":{"apilang":"node", "reccblock":"js"},
+    "c":{"apilang":"c", "reccblock":"c"},
+    "cpp":{"apilang":"c++", "reccblock":"cpp"},
+    "c++":{"apilang":"c++", "reccblock":"c++"}
+}

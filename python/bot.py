@@ -14,7 +14,6 @@ server = discord.Server
 
 respond = re.compile("(r+?e+?t+?a+?r+?d+?)|(n+?i+?gg+?e+?r+?)|(f+?a+?g+?)", re.IGNORECASE)
 
-
 config = json.load(open("../config.json", "r"))
 
 respond = re.compile(".*quack.*", re.IGNORECASE)
@@ -115,41 +114,6 @@ async def myscore(ctx):
 		+ "%d!" % (hm.myscore(ctx.message.server.id, ctx.message.author.id)), color=0x161680)
 	await bot.say(embed=embed)
 
-# This is the Background task
-async def video_check():
-    global prev_id
-    await client.wait_until_ready()
-    # gets channel through id
-    channel = client.get_channel('483977658577715222')
-    
-    # opening file to check current video title
-    file = open('prev_id.txt', 'r')
-    prev_id = file.read()
-    file.close()
-    # main loop
-    while not client.is_closed:
-        # check every 10 sec only
-        await asyncio.sleep(10)
-        # get json for latest activity of EM through youtube api
-        act = (requests.get(config["gAPIURL"])).text
-        act_json = json.loads(act)
-        # if the json is not empty
-        if act_json["items"]:
-            # check if latest activity is upload and its title is new
-            if act_json["items"][0]["snippet"]["type"] == "upload" and (not act_json["items"][0]["snippet"]["title"] == prev_id):
-                # for console
-                print("New Video: " + act_json["items"][0]["snippet"]["title"])
-                # send announcement
-                await client.send_message(channel,
-                                          "@everyone A new video has been uploaded! " + "https://www.youtube.com/watch?v=" +
-                                          (act_json["items"][0]["snippet"]["thumbnails"]["high"]["url"].split("/"))[4])
-                                          # set new title as saved title
-                                          prev_id = act_json["items"][0]["snippet"]["title"]
-                                          file = open('prev_id.txt', 'w')
-                                          file.write(prev_id)
-                                          file.close()
 
 hm.loaddata()
-
-bot.loop.create_task(video_check())
 bot.run(config["bot_key"])
