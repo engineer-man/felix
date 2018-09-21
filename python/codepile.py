@@ -1,5 +1,6 @@
 import discord
 import asyncio
+import requests
 import json
 from discord.ext import commands
 from discord.ext.commands import Bot
@@ -13,6 +14,7 @@ config = json.load(open("../config.json", "r"))
 
 @bot.command(pass_context=True)
 async def using(ctx):
+    print(ctx.message.content + "\n\n")
     langdata = ctx.message.content[12:]
     data = getCode(langdata)
     lang = getLang(langdata).rstrip().lstrip()
@@ -28,7 +30,12 @@ async def using(ctx):
                       "been a bit off. "\
                       "type 'codit helpme' if you're looking for assistance.")
         return
-    runCode(lang, data)
+    output = runCode(lang, data)
+    output = (output).split("\n")
+    if (len(output) > 10):
+        await bot.say(("```" + ("\n".join(output[:10])))[:200] + "\n...\n ```")
+    else:
+        await bot.say(("```" + ("\n".join(output)))[:200] + " ```")
 
 
 def getCode(data):
@@ -49,13 +56,13 @@ def getLang(data):
 async def helpme(ctx):
     pstr = "to use the codit feature type\n"\
            "codit using <lang>\n"\
-           "\`\`\`(ignored line)\n"\
+           "\`\`\`\n"\
            "Your code here\n"\
            "\`\`\`\n"\
            "each langs are as follows:\n"\
-           "```<lang>    |  <lang used to run>\n"
+           "```<lang>\n"
     for name in lexicon:
-        pstr = pstr + "%-10s| %s\n" % (name, lexicon[name]["apilang"])
+        pstr = pstr + "%-10s\n" % (name)
     pstr = pstr + "```"
     await bot.say(pstr)
 
@@ -63,7 +70,14 @@ def runCode(codetype, code):
     print(codetype)
     print(code)
     apidata = {"language":codetype, "source":code}
-    ret = requests.post(url=config["apiurl"], params=apidata,\
-                        headers={'Authorization': config["apikey"]})
+    response = requests.post(url=config["apiurl"], data=apidata, headers={'Authorization': config["apikey"]})
+    response = json.loads(response.text)
+    print(response)
+    if response["status"] == "ok":
+        return response["payload"]["output"]
 
+
+#data = {"language":"python3", "source":"print(\"hello\")"}
+#response = requests.post(url=config["apiurl"], data=data, headers={'Authorization': config["apikey"]})
+#print(json.loads(response.text))
 bot.run(config["bot_key"])
