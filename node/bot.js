@@ -15,74 +15,134 @@ var state = {
 
 var dictionary = fs.readFileSync('/usr/share/dict/lwords').toString().split('\n');
 
-console.log('starting')
+var handlers = {
 
-bot.on('guildMemberAdd', member => {
-    const channel = member.guild.channels.find(ch => ch.name === 'welcome');
+    state_change(message) {
+        const content = message.content;
+        const channel = message.channel;
 
-    channel.send(
-        'Welcome to the Engineer Man Community Discord Server, ' + member + '. ' +
-        'I\'m Felix, the server smart assistant. You can learn more about what I can do by saying `felix help`. ' +
-        'You can view the server rules @ <#484103976296644608>. Please be kind and decent to one another. ' +
-        'Glad you\'re here!'
-    );
-});
+        if (content.match(/^felix enable/gi)) {
+            var mode = content.split('enable')[1].trim();
 
-bot.on('message', message => {
-    var content = message.content;
-    var channel = message.channel;
+            state[mode] = true;
 
-    switch (content) {
-        case 'felix help':
-            if (message.author.bot) break;
+            message.reply(mode + ' enabled');
+        }
 
-            var help =
-                'hi, here is what i can do:\n' +
-                '\n' +
-                'felix gif [gif name here]\n' +
-                'felix google [google search term]';
+        if (content.match(/^felix disable/gi)) {
+            var mode = content.split('disable')[1].trim();
 
-            if (channel.name === 'staff-room') {
-                help +=
-                    '\n\n' +
-                    'mod only:\n' +
-                    'felix poll [newline then 1. 2. etc]\n' +
-                    'felix purge [number of messaged to delete]'
+            state[mode] = false;
+
+            message.reply(mode + ' disabled');
+        }
+    },
+
+    async video(message) {
+        const content = message.content;
+        const channel = message.channel;
+
+        var term = content.split('video')[1].trim();
+
+        var video_list = [];
+
+        var page_token = '';
+
+        for (;;) {
+            var url = 'https://www.googleapis.com/youtube/v3/search'+
+                '?key=' + config.yt_key +
+                '&channelId=UCrUL8K81R4VBzm-KOYwrcxQ'+
+                '&part=snippet,id'+
+                '&order=date'+
+                '&maxResults=50';
+
+            if (page_token) {
+                url += '&pageToken=' + page_token;
             }
 
-            channel.send(help);
-            break;
-        case 'html is a programming language':
-            message.reply('no it\'s not, don\'t be silly');
-            break;
-        case 'you wanna fight, felix?':
-            message.reply('bring it on pal (╯°□°）╯︵ ┻━┻');
-            break;
-    }
+            var videos = await request({
+                method: 'get',
+                url: url,
+                json: true,
+                simple: true
+            });
 
-    if (content.match(/^(hi|what's up|yo|hey|hello) felix/gi)) {
-        message.reply('hello!');
-    }
+            page_token = videos.nextPageToken;
 
-    if (content.match(/^felix enable/gi)) {
-        var mode = content.split('enable')[1].trim();
+            videos.items.for_each(video => {
+                video_list.push({
+                    id: video.id.videoId,
+                    title: video.snippet.title
+                });
+            });
 
-        state[mode] = true;
+            if (!page_token) break;
+        }
 
-        message.reply(mode + ' enabled');
-    }
+        video_list = video_list
+            .filter(video => {
+                return !!~video.title.to_lower_case().index_of(term.to_lower_case())
+            });
 
-    if (content.match(/^felix disable/gi)) {
-        var mode = content.split('disable')[1].trim();
+        if (video_list.length === 0) {
+            message.reply('no videos found for: ' + term);
+        } else if (video_list.length === 1) {
+            var video = video_list[0];
+            message.reply('i found a good video: https://www.youtube.com/watch?v=' + video.id);
+        } else {
+            var msg = 'i found several videos:\n';
 
-        state[mode] = false;
+            video_list.slice(0, 5).for_each(video => {
+                msg += 'https://www.youtube.com/watch?v=' + video.id + '\n';
+            });
 
-        message.reply(mode + ' disabled');
-    }
+            message.reply(msg)
+        }
+    },
 
-    if (state.hangman_solver &&
-        message.embeds.length > 0 &&
-        ~message.embeds[0].description.indexOf('your word')) {
+    silence(message) {
+        const content = message.content;
+        const channel = message.channel;
+
+        if (content.match(/^felix silence/gi)) {
+            const member = message.mentions.members.first();
+
+            member.addRole('486621918821351436');
+            member.addRole('484183734686318613');
+            member.addRole('484016038992674827');
+
+            var data = JSON.parse(fs.read_file_sync('../state.json').to_string());
+
+            if (!~data.silenced.index_of(member.id)) {
+                data.silenced.push(member.id);
+                channel.send('won\'t be hearing from <@' + member.id + '> anymore');
+            } else {
+                channel.send('<@' + member.id + '> is already on the naughty boy list');
+            }
+
+            fs.write_file_sync('../state.json', JSON.stringify(data));
+        }
+
+        if (content.match(/^felix unsilence/gi)) {
+            const member = message.mentions.members.first();
+
+            member.removeRole('486621918821351436');
+            member.removeRole('484183734686318613');
+            member.removeRole('484016038992674827');
+
+            var data = JSON.parse(fs.read_file_sync('../state.json').to_string());
+
+            data.silenced = data.silenced.filter(u => u !== member.id)
+
+            channel.send('unsilenced <@' + member.id + '>');
+
+            fs.write_file_sync('../state.json', JSON.stringify(data));
+        }
+    },
+
+    hangman(message) {
+        const content = message.content;
+        const channel = message.channel;
 
         var description = message.embeds[0].description;
         var word_row = ' ' + description
@@ -170,51 +230,12 @@ bot.on('message', message => {
         });
 
         channel.send('~ letter ' + letter);
-    }
+    },
 
-    if (content.match(/^felix poll/gi)) {
-        var questions = content
-            .split('\n')
-            .filter(l => l.match(/^[0-9]+/gi))
-            .length;
+    gif(message) {
+        const content = message.content;
+        const channel = message.channel;
 
-        questions = questions > 9 ? 9 : questions;
-
-        var map = {
-            1: '\u0031\u20E3',
-            2: '\u0032\u20E3',
-            3: '\u0033\u20E3',
-            4: '\u0034\u20E3',
-            5: '\u0035\u20E3',
-            6: '\u0036\u20E3',
-            7: '\u0037\u20E3',
-            8: '\u0038\u20E3',
-            9: '\u0039\u20E3',
-        };
-
-        var reactions = [];
-
-        for (var i = 0; i < questions; ++i) {
-            reactions.push(map[i+1]);
-        }
-
-        var chain = q.fcall(() => {});
-
-        reactions.for_each(r => {
-            chain = chain
-                .then(() => {
-                    return message.react(r);
-                });
-        });
-    }
-
-    if (content.match(/^felix google/gi)) {
-        var text = content.split('google')[1].trim();
-
-        channel.send('here you go! <https://www.google.com/search?q=' + text.split(' ').join('+') + '>');
-    }
-
-    if (content.match(/^felix gif /gi)) {
         message.reply('coming right up boss!');
 
         var text = content.split('gif')[1].trim();
@@ -249,10 +270,209 @@ bot.on('message', message => {
             .catch(err => {
                 channel.send('sorry, you broke me, no gifs right now :(');
             });
-    }
+    },
 
-    if (content.match(/^felix purge [0-9]+/gi)) {
-        var roles = message.member.roles.map(r => r.name);
+    poll(message) {
+        const content = message.content;
+        const channel = message.channel;
+
+        var questions = content
+            .split('\n')
+            .filter(l => l.match(/^[0-9]+/gi))
+            .length;
+
+        questions = questions > 9 ? 9 : questions;
+
+        var map = {
+            1: '\u0031\u20E3',
+            2: '\u0032\u20E3',
+            3: '\u0033\u20E3',
+            4: '\u0034\u20E3',
+            5: '\u0035\u20E3',
+            6: '\u0036\u20E3',
+            7: '\u0037\u20E3',
+            8: '\u0038\u20E3',
+            9: '\u0039\u20E3',
+        };
+
+        var reactions = [];
+
+        for (var i = 0; i < questions; ++i) {
+            reactions.push(map[i+1]);
+        }
+
+        var chain = q.fcall(() => {});
+
+        reactions.for_each(r => {
+            chain = chain
+                .then(() => {
+                    return message.react(r);
+                });
+        });
+    },
+
+    code(message) {
+        const content = message.content;
+        const channel = message.channel;
+
+        var input_language = content.split('```')[0].split(' ')[2];
+        var language = {
+            python: 'python3',
+            python3: 'python3',
+            python2: 'python2',
+            js: 'javascript',
+            javascript: 'javascript',
+            node: 'javascript',
+            go: 'go',
+            ruby: 'ruby',
+            c: 'c',
+            cpp: 'cpp',
+            'c++': 'cpp',
+        }[input_language.trim().to_lower_case()] || null;
+
+        if (!language) {
+            channel.send(input_language + ' is not supported');
+            return;
+        }
+
+        const code_message = content.replace(/```.+\s/gi, '```');
+
+        const matches = /```((.|\n)+)```/gi.exec(code_message);
+
+        if (!matches) {
+            channel.send('no code present')
+            return;
+        }
+
+        const source = matches[1].trim();
+
+        return request
+            ({
+                method: 'post',
+                url: 'https://emkc.org/api/v1/piston/execute',
+                headers: {
+                    Authorization: config.piston_key
+                },
+                body: {
+                    language,
+                    source
+                },
+                json: true
+            })
+            .then(res => {
+                if (!res || res.status !== 'ok' || res.payload.output === undefined) throw null;
+
+                channel.send('```\n' + res.payload.output.split('\n').slice(0, 30).join('\n') + '```');
+            })
+            .catch(err => {
+                channel.send('sorry, execution problem')
+            });
+    }
+};
+
+return bot
+    .on('guildMemberAdd', member => {
+        const channel = member.guild.channels.find(ch => ch.name === 'welcome');
+        const silenced = JSON.parse(fs.read_file_sync('../state.json').to_string()).silenced;
+
+        if (~silenced.index_of(member.id)) {
+            member.addRole('486621918821351436');
+            member.addRole('484183734686318613');
+            member.addRole('484016038992674827');
+            return;
+        }
+
+        channel.send(
+            'Welcome to the Engineer Man Community Discord Server, ' + member + '. ' +
+            'I\'m Felix, the server smart assistant. You can learn more about what I can do by saying `felix help`. ' +
+            'You can view the server rules @ <#484103976296644608>. Please be kind and decent to one another. ' +
+            'Glad you\'re here!'
+        );
+    })
+    .on('message', async message => {
+        var content = message.content;
+        var channel = message.channel;
+
+        if (content.match(/^felix video/gi)) {
+            return handlers.video(message);
+        }
+
+        if (content.match(/^felix (enable|disable)/gi)) {
+            return handlers.state_change(message);
+        }
+
+        if (state.hangman_solver && message.embeds.length > 0 && ~message.embeds[0].description.indexOf('your word')) {
+            return handlers.hangman(message);
+        }
+
+        if (content.match(/^felix poll/gi)) {
+            return handlers.poll(message);
+        }
+
+        if (content.match(/^felix gif /gi)) {
+            return handlers.gif(message);
+        }
+
+        if (content.match(/^felix run (js|python(2|3)?|node|c|c\+\+|cpp|ruby|go)/gi)) {
+            return handlers.code(message);
+        }
+
+        if (content.match(/^felix google/gi)) {
+            var text = content.split('google')[1].trim();
+
+            channel.send('here you go! <https://www.google.com/search?q=' + text.split(' ').join('+') + '>');
+        }
+
+        if (content.match(/^(hi|what's up|yo|hey|hello) felix/gi)) {
+            message.reply('hello!');
+        }
+
+        // easter eggs and various content
+        switch (content) {
+            case 'felix help':
+                if (message.author.bot) break;
+
+                var help =
+                    'hi, here is what i can do:\n' +
+                    '\n' +
+                    '`felix run`'
+                    '`felix gif` gif name here\n' +
+                    '`felix google` google search term';
+
+                if (channel.name === 'staff-room') {
+                    help +=
+                        '\n\n' +
+                        'mod only:\n' +
+                        '`felix poll` newline then 1. 2. etc\n' +
+                        '`felix purge` number of messaged to delete\n' +
+                        '`felix silence` @user\n' +
+                        '`felix unsilence` @user'
+                }
+
+                channel.send(help);
+                break;
+            case 'felix run':
+                channel.send(
+                    'i can run code!\n\n' +
+                    '**here are my supported languages:**\npython2\npython3\njavascript\nruby\ngo\nc\nc++\n\n' +
+                    '**you can run code by telling me things like:**\n' +
+                    'felix run js\n' +
+                    '\\`\\`\\`\nyour code\n\\`\\`\\`'
+                );
+                break;
+            case 'html is a programming language':
+                message.reply('no it\'s not, don\'t be silly');
+                break;
+            case 'you wanna fight, felix?':
+                message.reply('bring it on pal (╯°□°）╯︵ ┻━┻');
+                break;
+            case 'felix stats':
+                console.log(channel.guild.members);
+                break;
+        }
+
+        // mod only stuff here
+        var roles = message.member && message.member.roles.map(r => r.name) || [];
 
         var allowed = false;
 
@@ -262,15 +482,19 @@ bot.on('message', message => {
 
         if (!allowed) return null;
 
-        var limit = +content.split('purge')[1].trim();
+        if (content.match(/^felix purge [0-9]+/gi)) {
+            var limit = +content.split('purge')[1].trim();
 
-        if (limit <= 0 || typeof limit !== 'number') return null;
+            if (limit <= 0 || typeof limit !== 'number') return null;
 
-        channel.fetchMessages({limit: limit + 1})
-            .then(messages => {
-                channel.bulkDelete(messages);
-            });
-    }
-});
+            channel.fetchMessages({limit: limit + 1})
+                .then(messages => {
+                    channel.bulkDelete(messages);
+                });
+        }
 
-bot.login(config.bot_key);
+        if (content.match(/^felix (silence|unsilence)/gi)) {
+            return handlers.silence(message);
+        }
+    })
+    .login(config.bot_key);
