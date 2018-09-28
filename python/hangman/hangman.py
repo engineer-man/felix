@@ -45,6 +45,7 @@ class Hangman():
                 if self.hangmanval[gameid]["active"]:
                     return self.GAMEACTIVE
 
+        rand.seed()
         self.hangmanval[gameid] = {}
         self.hangmanval[gameid]["word"] = rand.choice(self.words).lower()
         self.hangmanval[gameid]["guess"] = (
