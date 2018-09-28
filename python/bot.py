@@ -1,34 +1,34 @@
 import discord
-import re
-import socket
 import json
 import hangman.hangman as hm
 from discord.ext import commands
 from discord.ext.commands import Bot
-import duckresponse.duckresponse as duckie
 
 bot = Bot(command_prefix='~ ', description='None')
-
-# Brtwrst: This line is obsolete?
-respond = re.compile("(r+?e+?t+?a+?r+?d+?)|(n+?i+?gg+?e+?r+?)|(f+?a+?g+?)", re.IGNORECASE)
-
 config = json.load(open("../config.json", "r"))
 
-respond = re.compile(".*quack.*", re.IGNORECASE)
+STARTUP_EXTENSIONS = ['cogs.duckresponse']
+for extension in STARTUP_EXTENSIONS:
+        try:
+            bot.load_extension(f'{extension}')
+        except Exception as e:
+            exc = f'{type(e).__name__}: {e}'
+            print(f'Failed to load extension {extension}\n{exc}')
 
 @bot.event
 async def on_ready():
+	# This is just for debugging
 	app_info = await bot.application_info()
-	await app_info.owner.send('ready')
+	await app_info.owner.send(
+		'Ready\n'
+		+ f'```css\nLoaded extensions:'
+		+ f' {[e for e in bot.extensions]}```')
 	return True
 
 @bot.event
 async def on_message(message):
 	if message.content in '++':
 		await bot.close()
-	if not message.author.bot:
-		if respond.search(message.content):
-			await message.channel.send(duckie.message())
 	await bot.process_commands(message)
 
 # @bot.command(pass_context=True)
