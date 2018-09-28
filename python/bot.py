@@ -9,16 +9,26 @@ import duckresponse.duckresponse as duckie
 
 bot = Bot(command_prefix='~ ', description='None')
 
+# Brtwrst: This line is obsolete?
 respond = re.compile("(r+?e+?t+?a+?r+?d+?)|(n+?i+?gg+?e+?r+?)|(f+?a+?g+?)", re.IGNORECASE)
 
 config = json.load(open("../config.json", "r"))
 
 respond = re.compile(".*quack.*", re.IGNORECASE)
+
+@bot.event
+async def on_ready():
+	app_info = await bot.application_info()
+	await app_info.owner.send('ready')
+	return True
+
 @bot.event
 async def on_message(message):
+	if message.content in '++':
+		await bot.close()
 	if not message.author.bot:
 		if respond.search(message.content):
-			await message.channel.send(message.channel, duckie.message())
+			await message.channel.send(duckie.message())
 	await bot.process_commands(message)
 
 # @bot.command(pass_context=True)
