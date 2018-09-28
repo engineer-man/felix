@@ -16,10 +16,11 @@ import os
 import json
 import numpy as np
 
+
 class Hangman():
     def __init__(self, client):
         self.bot = client
-        with open(__file__.replace('hangman.py','dict.txt')) as f:
+        with open(__file__.replace('hangman.py', 'dict.txt')) as f:
             self.words = f.read().split()
         self.hangmanval = {}
         self.playerdata = {}
@@ -44,15 +45,17 @@ class Hangman():
                 if self.hangmanval[gameid]["active"]:
                     return self.GAMEACTIVE
 
-
         self.hangmanval[gameid] = {}
         self.hangmanval[gameid]["word"] = rand.choice(self.words).lower()
-        self.hangmanval[gameid]["guess"] = ("\_ " * len(self.hangmanval[gameid]["word"])).split(" ")
+        self.hangmanval[gameid]["guess"] = (
+            "\_ " * len(self.hangmanval[gameid]["word"])).split(" ")
         self.hangmanval[gameid]["guessesw"] = ""
         self.hangmanval[gameid]["guessesr"] = ""
-        self.hangmanval[gameid]["letterval"] = 100 / len(self.hangmanval[gameid]["word"])
+        self.hangmanval[gameid]["letterval"] = 100 / \
+            len(self.hangmanval[gameid]["word"])
         self.hangmanval[gameid]["tries"] = 6
-        self.hangmanval[gameid]["potpoints"] = self.hangmanval[gameid]["letterval"] * (len(self.hangmanval[gameid]["word"]) + 5)
+        self.hangmanval[gameid]["potpoints"] = self.hangmanval[gameid]["letterval"] * \
+            (len(self.hangmanval[gameid]["word"]) + 5)
         self.hangmanval[gameid]["active"] = True
         # print(self.hangmanval[gameid]["word"])
 
@@ -103,13 +106,15 @@ class Hangman():
             for i in self.hangmanval[gameid]["word"]:
                 if i == letter:
                     self.hangmanval[gameid]["guess"][index] = i
-                    self.playerdata[sid][uid] = self.playerdata[sid][uid] + self.hangmanval[gameid]["letterval"]
+                    self.playerdata[sid][uid] = self.playerdata[sid][uid] + \
+                        self.hangmanval[gameid]["letterval"]
                     found = 1
                 index = index + 1
             if found == 1:
                 self.hangmanval[gameid]["guessesr"] = self.hangmanval[gameid]["guessesr"] + " " + letter
             if not "\\_" in self.hangmanval[gameid]["guess"]:
-                self.playerdata[sid][uid] = self.playerdata[sid][uid] + self.hangmanval[gameid]["letterval"] * 5
+                self.playerdata[sid][uid] = self.playerdata[sid][uid] + \
+                    self.hangmanval[gameid]["letterval"] * 5
                 self.savedata(self.playerdata, sid)
                 self.hangmanval[gameid]["active"] = False
                 return self.WONGAME
@@ -127,27 +132,27 @@ class Hangman():
         return self.playerdata[sid]
 
     def savedata(self, jsonvar, sid):
-        data_path = __file__.replace('hangman.py','data/')
+        data_path = __file__.replace('hangman.py', 'data/')
         if not os.path.exists(data_path + str(sid)):
             os.makedirs(data_path + str(sid))
         with open(data_path + str(sid) + "/scores.json", "w") as f:
             json.dump(jsonvar[sid], f)
 
     def loaddata(self):
-        data_path = __file__.replace('hangman.py','data/')
+        data_path = __file__.replace('hangman.py', 'data/')
         if not os.path.exists(data_path):
             return
         for folders in os.listdir(data_path):
-            if folders == '.gitkeep': continue
+            if folders == '.gitkeep':
+                continue
             with open(data_path + folders + "/scores.json", "r") as f:
                 self.playerdata[folders] = json.load(f)
-        #print(self.playerdata)
+        # print(self.playerdata)
 
     def topten(self, sid):
         if not sid in self.playerdata:
             self.playerdata[sid] = {}
-        tten = sorted(self.playerdata[sid].items(), key=lambda x:x[1])
-        # size = len(tten)
+        tten = sorted(self.playerdata[sid].items(), key=lambda x: x[1])
         return tten
 
     def myscore(self, sid, uid):
@@ -163,11 +168,13 @@ class Hangman():
             await ctx.send("A game is already active in this chat.")
             return
         embed = Embed(title="Duckie hangman",
-                description="Thank you for playing Duckie hang man, inspired by akaeddy#3508\n"\
-                + "your word is: " + " ".join(hidden) + "\nyou have 6 mess ups\n\npotential"\
-                    + " points for this word: %d" % (self.getPotPoints(ctx.message.guild.id, ctx.message.channel.name)),
-                color=0x801680)
-        await ctx.send('s', embed=embed)
+                      description="Thank you for playing Duckie hang man, " +
+                      "inspired by akaeddy#3508\nyour word is: " +
+                      " ".join(hidden) + "\nyou have 6 mess ups\n\npotential"
+                      + " points for this word: %d" % (self.getPotPoints(
+                          ctx.message.guild.id, ctx.message.channel.name)),
+                      color=0x801680)
+        await ctx.send('.', embed=embed)
 
     @commands.command(name='letter')
     async def _letter(self, ctx):
@@ -178,16 +185,17 @@ class Hangman():
             await ctx.send("quaaaack quack?")
             return
         err = self.play(ctx.message.guild.id, ctx.message.channel.name, letter,
-                      ctx.message.author.id)
+                        ctx.message.author.id)
         if err < 0:
             if err == self.LOSTGAME:
                 await ctx.send("You've lost, the word was " + self.getWord(ctx.message.guild.id,
-                                                                        ctx.message.channel.name))
+                                                                           ctx.message.channel.name))
             if err == self.ERRORNOGAME:
                 await ctx.send("you need to start a game quaaaack.")
             if err == self.ERRORGAMECOMP:
                 reply = "already solved; the word was " + \
-                    self.getWord(ctx.message.guild.id, ctx.message.channel.name)
+                    self.getWord(ctx.message.guild.id,
+                                 ctx.message.channel.name)
                 await ctx.send(reply)
             if err == self.ERRORINVALID:
                 await ctx.send("quaaaack quack? quack")
@@ -196,7 +204,7 @@ class Hangman():
             return
         elif err == self.WONGAME:
             await ctx.send("Nice you won!!! The word was " + self.getWord(ctx.message.guild.id,
-                                                                       ctx.message.channel.name))
+                                                                          ctx.message.channel.name))
             return
 
         guessesr = self.getRightLetters(
@@ -207,20 +215,20 @@ class Hangman():
         guess = self.getGuess(ctx.message.guild.id, ctx.message.channel.name)
 
         embed = Embed(title="Duckie hangman",
-                              description="your word is: " +
-                              " ".join(guess) + "\nyou have "
-                              + "%d" % (tries) + " mess ups\n\n"
-                              + "incorrect: " + guessesw + "\n"
-                              + "correct: " + guessesr,
-                              color=0x801680)
-        await ctx.send('s', embed=embed)
-
+                      description="your word is: " +
+                      " ".join(guess) + "\nyou have "
+                      + "%d" % (tries) + " mess ups\n\n"
+                      + "incorrect: " + guessesw + "\n"
+                      + "correct: " + guessesr,
+                      color=0x801680)
+        await ctx.send('.', embed=embed)
 
     @commands.command(name='highscores', description="")
     async def _highscores(self, ctx):
         names = self.topten(ctx.message.guild.id)
         embed = Embed(title="Duckie hangman",
-                              description="Highscores, top ten values!", color=0x161680)
+                      description="Highscores, top ten values!",
+                      color=0x161680)
 
         if (len(names) == 0):
             await ctx.send("There are no highscores to display")
@@ -243,14 +251,17 @@ class Hangman():
 
         embed.add_field(name="score", value=scoresdata, inline=True)
         embed.add_field(name="users", value=namesdata, inline=True)
-        await ctx.send('s', embed=embed)
-
+        await ctx.send('.', embed=embed)
 
     @commands.command(name='myscore', description="")
     async def _myscore(self, ctx):
-        embed = Embed(title="Duckie hangman", description="your score is... "
-                              + "%d!" % (self.myscore(ctx.message.guild.id, ctx.message.author.id)), color=0x161680)
-        await ctx.send('s', embed=embed)
+        embed = Embed(
+            title="Duckie hangman",
+            description="your score is... " +
+            "%d!" % (self.myscore(ctx.message.guild.id, ctx.message.author.id)),
+            color=0x161680
+        )
+        await ctx.send('.', embed=embed)
 
 
 def setup(client):

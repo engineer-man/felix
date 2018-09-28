@@ -8,7 +8,7 @@ config = json.load(open("../config.json", "r"))
 
 STARTUP_EXTENSIONS = ['cogs.duckresponse.duckresponse',
                       'cogs.inviteblocker',
-                      'cogs.hangman.hangman']
+                      'hangman.hangman']
 for extension in STARTUP_EXTENSIONS:
 	try:
 		bot.load_extension(f'{extension}')
@@ -30,7 +30,7 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    if message.content in '~ quit':
+    if message.content in '+quit':
         await bot.close()
     await bot.process_commands(message)
 
