@@ -6,10 +6,10 @@ Load the cog by calling client.load_extension with the name of this python file
 as an argument (without the file-type extension)
     example:    bot.load_extension('inviteblocker')
 or by calling it with the path and the name of this python file
-    example:    bot.load_extension('my_extensions.inviteblocker')
+    example:    bot.load_extension('cogs.inviteblocker')
 
-Only people belonging to a group that is specified in the .allowed file
-can use the commands.
+Only users belonging to a group that is specified in the inviteblocker.allowed
+file can use the commands.
 """
 
 from discord.ext import commands

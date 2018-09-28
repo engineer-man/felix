@@ -41,7 +41,7 @@ class DuckResponse():
         return ret
 
     async def on_message(self, msg):
-        # Ignore the bot's own messages
+        # Ignore messages sent by bots
         if msg.author.bot:
             return
 

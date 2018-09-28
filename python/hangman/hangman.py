@@ -1,12 +1,27 @@
 """This is a cog for a discord.py bot.
-It will add the hangman game for all users
+It will add the hangman game to a bot
+
+    hangman             start a hangman game
+    letter              guess a letter
+    hichscores          show highscores of current server
+    myscore             show score of player
 
 Load the cog by calling client.load_extension with the name of this python file
 as an argument (without the file-type extension)
-    example:    bot.load_extension('poll')
+    example:    bot.load_extension('hangman')
 or by calling it with the path and the name of this python file
-    example:    bot.load_extension('my_extensions.poll')
+    example:    bot.load_extension('cogs.hangman')
 
+The commands can be used by everyone
+
+This extension requires numpy
+pip install numpy
+
+BUG: When sending an embed with
+            await ctx.send(embed=embed)
+     The bot will crash without any error message.
+     Crash can be avoided by also sending some text with the embed:
+            await ctx.send('.', embed=embed)
 """
 
 from discord.ext import commands

@@ -1,14 +1,28 @@
+"""Python version of Felix
+
+This file only starts the bot and loads all extensions/cogs
+New extensions have to be added to STARTUP_EXTENSIONS to be loaded automatically
+
+An extension can be reloaded without restarting the bot.
+The extension "management" provides the commands to load/unload other extensions
+
+This bot requires discord.py rewrite
+pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py
+"""
+
+
 import discord
 import json
 from discord.ext import commands
 from discord.ext.commands import Bot
 
-bot = Bot(command_prefix=('felix ','+ '), description='None')
+bot = Bot(command_prefix=('felix ','~ '), description='None')
 config = json.load(open("../config.json", "r"))
 
-STARTUP_EXTENSIONS = ['cogs.duckresponse.duckresponse',
+STARTUP_EXTENSIONS = ['hangman.hangman',
+                      'cogs.duckresponse',
                       'cogs.inviteblocker',
-                      'hangman.hangman']
+					  'cogs.management']
 for extension in STARTUP_EXTENSIONS:
 	try:
 		bot.load_extension(f'{extension}')
@@ -19,21 +33,14 @@ for extension in STARTUP_EXTENSIONS:
 
 @bot.event
 async def on_ready():
-    # This is just for debugging
-    app_info = await bot.application_info()
-    await app_info.owner.send(
-        'Ready\n'
-        + f'```css\nLoaded extensions:'
-        + f' {[e for e in bot.extensions]}```')
-    return True
+	print('Felix-Python started successfully')
+	return True
 
 
 @bot.event
 async def on_message(message):
-    if message.content in '+quit':
-        await bot.close()
     await bot.process_commands(message)
 
 
 bot.run(config["bot_key"])
-pass
+print('Felix-Python has exited')

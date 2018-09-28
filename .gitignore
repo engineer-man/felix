@@ -5,3 +5,4 @@ __pycache__
 python/hangman/data/*
 !python/hangman/data/.gitkeep
 .DS_Store
+.vscode
