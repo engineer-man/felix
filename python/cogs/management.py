@@ -77,11 +77,11 @@ class Management():
     @commands.command(name='reload',
                       brief='Reload bot extension',
                       description='Reload bot extension',
+                      hidden=True,
                       )
     async def reload_extension(self, ctx, extension_name: str):
-        if self.client.extensions.get(extension_name) is None:
-            return
-        self.client.unload_extension(extension_name)
+        if extension_name in self.client.extensions:
+            self.client.unload_extension(extension_name)
         try:
             self.client.load_extension(extension_name)
         except (AttributeError, ImportError) as e:

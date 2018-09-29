@@ -40,11 +40,7 @@ class InviteBlocker():
 
         return any(role in self.command_enabled_roles for role in user_roles)
 
-    # ----------------------------------------------
-    # Event listeners
-    # ----------------------------------------------
-    async def on_message(self, msg):
-        # Ignore the bot's own messages
+    async def check_message(self, msg):
         if msg.author.bot:
             return
         if isinstance(msg.channel, TextChannel):  # (don't run in DM Channels)
@@ -58,6 +54,15 @@ class InviteBlocker():
                         'You can ask permission from an admin or moderator!'
                     )
                     await msg.delete()
+
+    # ----------------------------------------------
+    # Event listeners
+    # ----------------------------------------------
+    async def on_message(self, msg):
+        await self.check_message(msg)
+
+    async def on_message_edit(self, before, after):
+        await self.check_message(after)
 
     # ----------------------------------------------
     # Method to allow 1 discord.gg link
