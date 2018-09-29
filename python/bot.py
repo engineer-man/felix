@@ -16,25 +16,29 @@ import json
 from discord.ext import commands
 from discord.ext.commands import Bot
 
-bot = Bot(command_prefix=('felix ','~ '), description='Hi I am Felix!')
+bot = Bot(command_prefix=('felix ', '~ '),
+          description='Hi I am Felix!',
+          help_attrs={'name': 'defaulthelp', 'hidden': True},
+          )
 config = json.load(open("../config.json", "r"))
 
 STARTUP_EXTENSIONS = ['hangman.hangman',
                       'cogs.duckresponse',
                       'cogs.inviteblocker',
-					  'cogs.management']
+                      'cogs.management',
+                      'cogs.helpall']
 for extension in STARTUP_EXTENSIONS:
-	try:
-		bot.load_extension(f'{extension}')
-	except Exception as e:
-		exc = f'{type(e).__name__}: {e}'
-		print(f'Failed to load extension {extension}\n{exc}')
+    try:
+        bot.load_extension(f'{extension}')
+    except Exception as e:
+        exc = f'{type(e).__name__}: {e}'
+        print(f'Failed to load extension {extension}\n{exc}')
 
 
 @bot.event
 async def on_ready():
-	print('Felix-Python started successfully')
-	return True
+    print('Felix-Python started successfully')
+    return True
 
 
 @bot.event

@@ -71,6 +71,7 @@ class InviteBlocker():
         name='allow',
         brief='Allow a single discord.gg link.',
         description='Allow a single discord.gg link.',
+        hidden=True,
     )
     @commands.guild_only()
     async def allow(self, ctx, member: Member):

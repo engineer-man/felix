@@ -46,6 +46,7 @@ class Management():
     @commands.command(name='load',
                       brief='Load bot extension',
                       description='Load bot extension',
+                      hidden=True,
                       )
     async def load_extension(self, ctx, extension_name: str):
         try:
@@ -61,6 +62,7 @@ class Management():
     @commands.command(name='unload',
                       brief='Unload bot extension',
                       description='Unload bot extension',
+                      hidden=True,
                       )
     async def unload_extension(self, ctx, extension_name: str):
         if extension_name.lower() in 'cogs.management':
@@ -78,6 +80,7 @@ class Management():
                       brief='Reload bot extension',
                       description='Reload bot extension',
                       hidden=True,
+                      aliases=['re']
                       )
     async def reload_extension(self, ctx, extension_name: str):
         if extension_name in self.client.extensions:
@@ -96,6 +99,7 @@ class Management():
                       brief='Get loaded cogs',
                       description='Get loaded cogs',
                       aliases=['extensions'],
+                      hidden=True,
                       )
     async def print_cogs(self, ctx):
         extensions = self.client.extensions

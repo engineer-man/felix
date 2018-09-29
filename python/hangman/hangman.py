@@ -177,7 +177,9 @@ class Hangman():
         else:
             return 0
 
-    @commands.command(name='hangman')
+    @commands.command(name='hangman',
+                      brief='Starts a game of hangman',
+                      description='Starts a game of hangman')
     async def _hangman(self, ctx):
         hidden = self.hangman(ctx.message.guild.id, ctx.message.channel.name)
         if hidden == self.GAMEACTIVE:
@@ -192,7 +194,9 @@ class Hangman():
                       color=0x801680)
         await ctx.send('.', embed=embed)
 
-    @commands.command(name='letter')
+    @commands.command(name='letter',
+                      brief='Guess a letter for the running game',
+                      description='Guess a letter for the running game')
     async def _letter(self, ctx):
         letter = ""
         try:
@@ -239,7 +243,9 @@ class Hangman():
                       color=0x801680)
         await ctx.send('.', embed=embed)
 
-    @commands.command(name='highscores', description="")
+    @commands.command(name='highscores',
+                      brief='Show hangman highscores',
+                      description='Show hangman highscores')
     async def _highscores(self, ctx):
         names = self.topten(ctx.message.guild.id)
         embed = Embed(title="Duckie hangman",
@@ -269,7 +275,9 @@ class Hangman():
         embed.add_field(name="users", value=namesdata, inline=True)
         await ctx.send('.', embed=embed)
 
-    @commands.command(name='myscore', description="")
+    @commands.command(name='myscore',
+                      brief='Show your own hangman scores',
+                      description='Show your own hangman scores')
     async def _myscore(self, ctx):
         embed = Embed(
             title="Duckie hangman",
