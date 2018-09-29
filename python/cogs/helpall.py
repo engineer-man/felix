@@ -1,5 +1,11 @@
 """This is a cog for a discord.py bot.
-Run the help command and output normal help-post including all hidden commands
+It adds 2 commands
+
+    help        show all non hidden commands + the commands from node_help.txt
+    helpall     show all commands + the commands from node_help.txt
+
+    The commands will output to the current channel or to a dm channel
+    according to the pm_help kwarg of the bot.
 
 The default help command has to be renamed to 'defaulthelp'
 and should be hidden by constructing the bot with the
@@ -140,14 +146,15 @@ class Help():
     )
     @commands.guild_only()
     async def helpall(self, ctx):
-        was_pm = False
+        # Uncomment to always post to current channel
+        # was_pm = False
         self.client.formatter = myHelpFormatter(True)
-        if self.client.pm_help:
-            self.client.pm_help = False
-            was_pm = True
+        # if self.client.pm_help:
+            # self.client.pm_help = False
+            # was_pm = True
         await self.client.get_command('defaulthelp').invoke(ctx)
         self.client.formatter = HelpFormatter()
-        self.client.pm_help = was_pm
+        # self.client.pm_help = was_pm
 
 
 def setup(client):
