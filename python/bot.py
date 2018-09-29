@@ -16,7 +16,7 @@ import json
 from discord.ext import commands
 from discord.ext.commands import Bot
 
-bot = Bot(command_prefix=('felix ','~ '), description='None')
+bot = Bot(command_prefix=('felix ','~ '), description='Hi I am Felix!')
 config = json.load(open("../config.json", "r"))
 
 STARTUP_EXTENSIONS = ['hangman.hangman',

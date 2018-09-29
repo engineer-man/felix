@@ -48,7 +48,7 @@ class InviteBlocker():
         if msg.author.bot:
             return
         if isinstance(msg.channel, TextChannel):  # (don't run in DM Channels)
-            if len(re.findall(r'(discord\.(gg|io|me)\/\S+)', msg.content)) > 0:
+            if len(re.findall(r'(?i)(discord\.(gg|io|me)\/\S+)', msg.content)):
                 if msg.author.id in self.allowed:
                     self.allowed.remove(msg.author.id)
                 else:
