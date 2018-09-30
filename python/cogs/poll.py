@@ -17,7 +17,7 @@ class Poll():
     def __init__(self, client):
         self.client = client
         self.polls = {}
-        self.e_numbers = [
+        self.number_emoji = [
             "0\u20e3",
             "1\u20e3",
             "2\u20e3",
@@ -29,6 +29,20 @@ class Poll():
             "8\u20e3",
             "9\u20e3",
         ]
+        with open(__file__.replace('.py', '.allowed')) as f:
+            self.command_enabled_roles = [
+                int(id) for id in f.read().strip().split('\n')
+            ]
+
+    async def __local_check(self, ctx):
+        if await ctx.bot.is_owner(ctx.author):
+            return True
+        try:
+            user_roles = [role.id for role in ctx.message.author.roles]
+        except AttributeError:
+            return False
+
+        return any(role in self.command_enabled_roles for role in user_roles)
 
     async def on_reaction_add(self, reaction, user):
         msg = reaction.message
@@ -47,12 +61,10 @@ class Poll():
                             continue
                         await msg.remove_reaction(r, user)
 
-
-
-
     # ----------------------------------------------
     # Function to make a poll
     # ----------------------------------------------
+
     @commands.command(name='poll',
                       brief='Create a Poll',
                       description='Example use:' +
@@ -61,6 +73,7 @@ class Poll():
                       '\n1.Possibility1' +
                       '\n7.Possibility7' +
                       '\n3.Possibility3',
+                      hidden=True,
                       )
     async def make_poll(self, ctx, *poll_tuple: str):
         poll = list(poll_tuple)
@@ -72,8 +85,7 @@ class Poll():
         mymsg = ctx.message
         self.polls[str(mymsg.id)] = len(choices)
         for choice in choices:
-            await mymsg.add_reaction(self.e_numbers[choice])
-
+            await mymsg.add_reaction(self.number_emoji[choice])
 
 
 def setup(client):
