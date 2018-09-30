@@ -121,26 +121,33 @@ class myHelpFormatter(HelpFormatter):
             print('node_help.txt not found', e)
         return self._paginator.pages
 
+def is_staff():
+    """Used as a decorator for bot commands
+    to make sure only staff can see/use it
 
-class Help():
-    def __init__(self, client):
-        self.client = client
-        # Load id's of roles that are allowed to use commands from this cog
+    we don't use __local_checks in this cog because we have 2 different commands
+    that have different role restrictions
+    """
+    async def predicate(ctx):
+        # if await ctx.bot.is_owner(ctx.author):
+        #     return True
         with open(__file__.replace('.py', '.allowed')) as f:
-            self.command_enabled_roles = [
+            command_enabled_roles = [
                 int(id) for id in f.read().strip().split('\n')
             ]
 
-
-    async def __local_check(self, ctx):
-        if await ctx.bot.is_owner(ctx.author):
-            return True
         try:
             user_roles = [role.id for role in ctx.message.author.roles]
         except AttributeError:
             return False
 
-        return any(role in self.command_enabled_roles for role in user_roles)
+        return any(role in command_enabled_roles for role in user_roles)
+    return commands.check(predicate)
+
+
+class Help():
+    def __init__(self, client):
+        self.client = client
 
     # ----------------------------------------------
     # Custom help command
@@ -164,6 +171,7 @@ class Help():
         hidden=True,
     )
     @commands.guild_only()
+    @is_staff()
     async def helpall(self, ctx):
         # Uncomment to always post to current channel
         # was_pm = False

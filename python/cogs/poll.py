@@ -4,6 +4,14 @@ It will add a poll command for everyone to use
 Commands:
     poll            Create a poll
 
+Each user only has 1 vote and the bot will remove previous votes if a user
+votes a second time.
+The bot will also remove any new reactions added to the message.
+
+NOTE that the bot can only check reactions on the last 5000 messages it sees.
+So after 5000 messages the "only 1 vote per user" function breaks.
+It also breaks if the bot-cog is reloaded or the bot is restarted.
+
 Load the cog by calling client.load_extension with the name of this python file
 as an argument (without the file-type extension)
     example:    bot.load_extension('poll')
