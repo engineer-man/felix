@@ -27,7 +27,9 @@ from discord.ext.commands.formatter import *
 
 
 class myHelpFormatter(HelpFormatter):
-    # Special Help Formatter that will include hidden commands
+    # Special Help Formatter that can take a showHidden
+    # Parameter to include include hidden commands
+    # Mostly copied from discord.py/discord/ext/commands/formatter.py
     def __init__(self, showHidden=False):
         super().__init__()
         self.show_hidden = showHidden
@@ -72,7 +74,7 @@ class myHelpFormatter(HelpFormatter):
             cog = tup[1].cog_name
             # we insert the zero width space there to give it approximate
             # last place sorting position.
-            return cog + ':' if cog is not None else '\u200bNo Category:'
+            return cog + ':' if cog is not None else '\u200bDefault:'
 
         filtered = await self.filter_command_list()
         if self.is_bot():
@@ -94,10 +96,27 @@ class myHelpFormatter(HelpFormatter):
         try:
             with open('node_help.txt') as f:
                 node_help = f.read().strip()
-                for line in node_help.split('\n'):
+                node_help = node_help.split('\n')
+                node_help_mod = []
+                # Split node_help into public part and mod only part
+                # the line to split at should begin with ---
+                for i in range(len(node_help)):
+                    if node_help[i].startswith('---'):
+                        node_help_mod = node_help[i+1:]
+                        node_help = node_help[0:i]
+                        break
+                # Print public part
+                for line in node_help:
                     c, d = line.split(':')
                     num_spaces = max_width - len(c) + 1
                     self._paginator.add_line('  ' + c + ' '*num_spaces + d)
+                # if helpall was called - also print the mod only part
+                if self.show_hidden:
+                    self._paginator.add_line('Node (mod only):')
+                    for line in node_help_mod:
+                        c, d = line.split(':')
+                        num_spaces = max_width - len(c) + 1
+                        self._paginator.add_line('  ' + c + ' '*num_spaces + d)
         except FileNotFoundError as e:
             print('node_help.txt not found', e)
         return self._paginator.pages
@@ -137,7 +156,7 @@ class Help():
         self.client.formatter = HelpFormatter()
 
     # ----------------------------------------------
-    # Help command that will also print hidden commands
+    # Helpall command that will also print hidden commands
     # ----------------------------------------------
     @commands.command(
         name='helpall',

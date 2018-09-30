@@ -1,3 +1,7 @@
 run:run code
-gif:search giphy for gif
-google:post google link
+gif:search giphy for a gif
+google:post a google search link
+--- commands below the triple dash line will only show in helpall
+purge:purge a specific number of messages
+silence:silence a @user
+unsilence:unsilence a @user
