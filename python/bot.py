@@ -27,6 +27,7 @@ STARTUP_EXTENSIONS = [
     'cogs.management',
     'cogs.helpall',
     'cogs.poll',
+    'cogs.chatlog'
 ]
 for extension in STARTUP_EXTENSIONS:
     try:
