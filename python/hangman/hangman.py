@@ -14,8 +14,8 @@ or by calling it with the path and the name of this python file
 
 The commands can be used by everyone
 
-This extension requires numpy
-pip install numpy
+This extension requires numpy:
+    pip install numpy
 
 BUG: When sending an embed with
             await ctx.send(embed=embed)

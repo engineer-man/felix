@@ -1,6 +1,9 @@
 """This is a cog for a discord.py bot.
 It will auto delete messages that contain discord invite links
-The allow command will allow the specified user to post 1 link
+
+Commands:
+    allow           Specify a user. User is then allowed to post 1
+                    discord.gg invite link
 
 Load the cog by calling client.load_extension with the name of this python file
 as an argument (without the file-type extension)
@@ -8,8 +11,8 @@ as an argument (without the file-type extension)
 or by calling it with the path and the name of this python file
     example:    bot.load_extension('cogs.inviteblocker')
 
-Only users belonging to a group that is specified in the inviteblocker.allowed
-file can use the commands.
+Only users belonging to a role that is specified in the corresponding
+.allowed file can use the commands.
 """
 
 from discord.ext import commands

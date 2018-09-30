@@ -1,6 +1,7 @@
 """This is a cog for a discord.py bot.
 It will add some management commands to a bot.
 
+Commands:
     load            load an extension / cog
     unload          unload an extension / cog
     reload          reload an extension / cog
@@ -12,8 +13,8 @@ as an argument (without the file-type extension)
 or by calling it with the path and the name of this python file
     example:    bot.load_extension('cogs.management')
 
-Only users belonging to a group that is specified in the management.allowed
-file can use the commands.
+Only users belonging to a role that is specified in the corresponding
+.allowed file can use the commands.
 """
 from discord.ext import commands
 

@@ -1,6 +1,9 @@
 """This is a cog for a discord.py bot.
 It will add duckies responses to a bot
 
+Commands:
+    N/A
+
 Load the cog by calling client.load_extension with the name of this python file
 as an argument (without the file-type extension)
     example:    bot.load_extension('duckresponse')

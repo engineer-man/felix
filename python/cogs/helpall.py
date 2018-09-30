@@ -17,8 +17,8 @@ as an argument (without .py)
 or by calling it with the path and the name of this python file
     example:    bot.load_extension('my_extensions.filename')
 
-Only people belonging to a group that is specified in the .allowed file
-can use the commands.
+Only users belonging to a role that is specified in the corresponding
+.allowed file can use the commands.
 """
 
 from discord.ext import commands

@@ -1,12 +1,17 @@
 """This is a cog for a discord.py bot.
 It will add a poll command for everyone to use
 
+Commands:
+    poll            Create a poll
+
 Load the cog by calling client.load_extension with the name of this python file
 as an argument (without the file-type extension)
     example:    bot.load_extension('poll')
 or by calling it with the path and the name of this python file
     example:    bot.load_extension('my_extensions.poll')
 
+Only users belonging to a role that is specified in the corresponding
+.allowed file can use the commands.
 """
 
 from discord.ext import commands
