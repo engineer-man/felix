@@ -13,7 +13,7 @@ var state = {
     hangman_solver: false
 };
 
-var dictionary = fs.readFileSync('/usr/share/dict/lwords').toString().split('\n');
+//var dictionary = fs.readFileSync('/usr/share/dict/lwords').toString().split('\n');
 
 var handlers = {
 
