@@ -6,3 +6,4 @@ python/hangman/data/*
 !python/hangman/data/.gitkeep
 .DS_Store
 .vscode
+state.json

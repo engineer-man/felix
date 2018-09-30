@@ -272,45 +272,6 @@ var handlers = {
             });
     },
 
-    poll(message) {
-        const content = message.content;
-        const channel = message.channel;
-
-        var questions = content
-            .split('\n')
-            .filter(l => l.match(/^[0-9]+/gi))
-            .length;
-
-        questions = questions > 9 ? 9 : questions;
-
-        var map = {
-            1: '\u0031\u20E3',
-            2: '\u0032\u20E3',
-            3: '\u0033\u20E3',
-            4: '\u0034\u20E3',
-            5: '\u0035\u20E3',
-            6: '\u0036\u20E3',
-            7: '\u0037\u20E3',
-            8: '\u0038\u20E3',
-            9: '\u0039\u20E3',
-        };
-
-        var reactions = [];
-
-        for (var i = 0; i < questions; ++i) {
-            reactions.push(map[i+1]);
-        }
-
-        var chain = q.fcall(() => {});
-
-        reactions.for_each(r => {
-            chain = chain
-                .then(() => {
-                    return message.react(r);
-                });
-        });
-    },
-
     code(message) {
         const content = message.content;
         const channel = message.channel;
@@ -328,6 +289,13 @@ var handlers = {
             c: 'c',
             cpp: 'cpp',
             'c++': 'cpp',
+            cs: 'csharp',
+            csharp: 'csharp',
+            'c#': 'csharp',
+            php: 'php',
+            r: 'r',
+            nasm: 'nasm',
+            asm: 'nasm',
         }[input_language.trim().to_lower_case()] || null;
 
         if (!language) {
@@ -405,15 +373,11 @@ return bot
             return handlers.hangman(message);
         }
 
-        // if (content.match(/^felix poll/gi)) {
-        //     return handlers.poll(message);
-        // }
-
         if (content.match(/^felix gif /gi)) {
             return handlers.gif(message);
         }
 
-        if (content.match(/^felix run (js|python(2|3)?|node|c|c\+\+|cpp|ruby|go)/gi)) {
+        if (content.match(/^felix run (js|javascript|python(2|3)?|node|c|c\+\+|cpp|ruby|go|r|cs|csharp|php|c#|nasm|asm)/gi)) {
             return handlers.code(message);
         }
 
@@ -429,32 +393,10 @@ return bot
 
         // easter eggs and various content
         switch (content) {
-            // case 'felix help':
-            //     if (message.author.bot) break;
-
-            //     var help =
-            //         'hi, here is what i can do:\n' +
-            //         '\n' +
-            //         '`felix run`'
-            //         '`felix gif` gif name here\n' +
-            //         '`felix google` google search term';
-
-            //     if (channel.name === 'staff-room') {
-            //         help +=
-            //             '\n\n' +
-            //             'mod only:\n' +
-            //             '`felix poll` newline then 1. 2. etc\n' +
-            //             '`felix purge` number of messaged to delete\n' +
-            //             '`felix silence` @user\n' +
-            //             '`felix unsilence` @user'
-            //     }
-
-            //     channel.send(help);
-            //     break;
             case 'felix run':
                 channel.send(
                     'i can run code!\n\n' +
-                    '**here are my supported languages:**\npython2\npython3\njavascript\nruby\ngo\nc\nc++\n\n' +
+                    '**here are my supported languages:**\npython2\npython3\njavascript\nruby\ngo\nc\nc++/cpp\ncs/csharp/c#\nr\nasm/nasm\nphp\n\n' +
                     '**you can run code by telling me things like:**\n' +
                     'felix run js\n' +
                     '\\`\\`\\`\nyour code\n\\`\\`\\`'
