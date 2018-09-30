@@ -44,19 +44,26 @@ class InviteBlocker():
         return any(role in self.command_enabled_roles for role in user_roles)
 
     async def check_message(self, msg):
+        author_roles = [role.id for role in msg.author.roles]
         if msg.author.bot:
+            # Dont check messages of bots
             return
-        if isinstance(msg.channel, TextChannel):  # (don't run in DM Channels)
-            if len(re.findall(r'(?i)(discord\.(gg|io|me)\/\S+)', msg.content)):
-                if msg.author.id in self.allowed:
-                    self.allowed.remove(msg.author.id)
-                else:
-                    await msg.channel.send(
-                        f'Sorry {msg.author.mention}. ' +
-                        'Posting Links to other servers is not allowed.\n'+
-                        'You can ask permission from an admin or moderator!'
-                    )
-                    await msg.delete()
+        if not isinstance(msg.channel, TextChannel):
+            # Dont check Direct Messages
+            return False
+        if any(role in self.command_enabled_roles for role in author_roles):
+            # Don't check messages by users with allowed roles
+            return False
+        if len(re.findall(r'(?i)(discord\.(gg|io|me)\/\S+)', msg.content)):
+            if msg.author.id in self.allowed:
+                self.allowed.remove(msg.author.id)
+            else:
+                await msg.channel.send(
+                    f'Sorry {msg.author.mention}. ' +
+                    'Posting Links to other servers is not allowed.\n'+
+                    'You can ask permission from an admin or moderator!'
+                )
+                await msg.delete()
 
     # ----------------------------------------------
     # Event listeners
