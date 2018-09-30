@@ -93,7 +93,6 @@ class myHelpFormatter(HelpFormatter):
                 self._paginator.add_line('Commands:')
                 self._add_subcommands_to_page(max_width, filtered)
 
-        self._paginator.add_line('Node:')
         try:
             with open('node_help.txt') as f:
                 node_help = f.read().strip()
@@ -108,16 +107,22 @@ class myHelpFormatter(HelpFormatter):
                         break
                 # Print public part
                 for line in node_help:
-                    c, d = line.split(':')
-                    num_spaces = max_width - len(c) + 1
-                    self._paginator.add_line('  ' + c + ' '*num_spaces + d)
-                # if helpall was called - also print the mod only part
-                if self.show_hidden:
-                    self._paginator.add_line('Node (mod only):')
-                    for line in node_help_mod:
+                    if ':' in line:
                         c, d = line.split(':')
                         num_spaces = max_width - len(c) + 1
                         self._paginator.add_line('  ' + c + ' '*num_spaces + d)
+                    else:
+                        self._paginator.add_line(line + ':')
+                # if helpall was called - also print the mod only part
+                if self.show_hidden:
+                    for line in node_help_mod:
+                        if ':' in line:
+                            c, d = line.split(':')
+                            num_spaces = max_width - len(c) + 1
+                            self._paginator.add_line('  ' + c + ' '*num_spaces + d)
+                        else:
+                            self._paginator.add_line(line + ':')
+
         except FileNotFoundError as e:
             print('node_help.txt not found', e)
         return self._paginator.pages
