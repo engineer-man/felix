@@ -405,9 +405,9 @@ return bot
             return handlers.hangman(message);
         }
 
-        if (content.match(/^felix poll/gi)) {
-            return handlers.poll(message);
-        }
+        // if (content.match(/^felix poll/gi)) {
+        //     return handlers.poll(message);
+        // }
 
         if (content.match(/^felix gif /gi)) {
             return handlers.gif(message);

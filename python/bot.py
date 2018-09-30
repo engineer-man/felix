@@ -22,11 +22,14 @@ bot = Bot(command_prefix=('felix ', '~ '),
           )
 config = json.load(open("../config.json", "r"))
 
-STARTUP_EXTENSIONS = ['hangman.hangman',
-                      'cogs.duckresponse',
-                      'cogs.inviteblocker',
-                      'cogs.management',
-                      'cogs.helpall']
+STARTUP_EXTENSIONS = [
+    'hangman.hangman',
+    'cogs.duckresponse',
+    'cogs.inviteblocker',
+    'cogs.management',
+    'cogs.helpall',
+    'cogs.poll',
+]
 for extension in STARTUP_EXTENSIONS:
     try:
         bot.load_extension(f'{extension}')
