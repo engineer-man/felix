@@ -52,7 +52,7 @@ class Management():
     async def load_extension(self, ctx, extension_name: str):
         try:
             self.client.load_extension(extension_name)
-        except (AttributeError, ImportError) as e:
+        except Exception as e:
             await ctx.send(f'```py\n{type(e).__name__}: {str(e)}\n```')
             return
         await ctx.send(f'```css\nExtension [{extension_name}] loaded.```')
@@ -88,7 +88,7 @@ class Management():
             self.client.unload_extension(extension_name)
         try:
             self.client.load_extension(extension_name)
-        except (AttributeError, ImportError) as e:
+        except Exception as e:
             await ctx.send(f'```py\n{type(e).__name__}: {str(e)}\n```')
             return
         await ctx.send(f'```css\nExtension [{extension_name}] reloaded.```')

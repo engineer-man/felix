@@ -44,13 +44,13 @@ class InviteBlocker():
         return any(role in self.command_enabled_roles for role in user_roles)
 
     async def check_message(self, msg):
-        author_roles = [role.id for role in msg.author.roles]
         if msg.author.bot:
             # Dont check messages of bots
             return
         if not isinstance(msg.channel, TextChannel):
             # Dont check Direct Messages
             return False
+        author_roles = [role.id for role in msg.author.roles]
         if any(role in self.command_enabled_roles for role in author_roles):
             # Don't check messages by users with allowed roles
             return False
