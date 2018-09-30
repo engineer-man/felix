@@ -11,9 +11,7 @@ pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py
 """
 
 
-import discord
 import json
-from discord.ext import commands
 from discord.ext.commands import Bot
 
 bot = Bot(command_prefix=('felix ', '~ '),

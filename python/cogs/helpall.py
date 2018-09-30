@@ -48,7 +48,8 @@ class myHelpFormatter(HelpFormatter):
 
         # we need a padding of ~80 or so
 
-        description = self.command.description if not self.is_cog() else inspect.getdoc(self.command)
+        description = self.command.description if not self.is_cog(
+        ) else inspect.getdoc(self.command)
 
         if description:
             # <description> portion
@@ -121,6 +122,7 @@ class myHelpFormatter(HelpFormatter):
             print('node_help.txt not found', e)
         return self._paginator.pages
 
+
 def is_staff():
     """Used as a decorator for bot commands
     to make sure only staff can see/use it
@@ -177,8 +179,8 @@ class Help():
         # was_pm = False
         self.client.formatter = myHelpFormatter(True)
         # if self.client.pm_help:
-            # self.client.pm_help = False
-            # was_pm = True
+        # self.client.pm_help = False
+        # was_pm = True
         await self.client.get_command('defaulthelp').invoke(ctx)
         self.client.formatter = HelpFormatter()
         # self.client.pm_help = was_pm

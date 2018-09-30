@@ -60,7 +60,7 @@ class InviteBlocker():
             else:
                 await msg.channel.send(
                     f'Sorry {msg.author.mention}. ' +
-                    'Posting Links to other servers is not allowed.\n'+
+                    'Posting Links to other servers is not allowed.\n' +
                     'You can ask permission from an admin or moderator!'
                 )
                 await msg.delete()
