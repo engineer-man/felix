@@ -14,9 +14,6 @@ or by calling it with the path and the name of this python file
 
 The commands can be used by everyone
 
-This extension requires numpy:
-    pip install numpy
-
 BUG: When sending an embed with
             await ctx.send(embed=embed)
      The bot will crash without any error message.
@@ -29,7 +26,6 @@ from discord import Embed
 import random as rand
 import os
 import json
-import numpy as np
 
 
 class Hangman():
