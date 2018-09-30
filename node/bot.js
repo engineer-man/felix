@@ -405,9 +405,9 @@ return bot
             return handlers.hangman(message);
         }
 
-        if (content.match(/^felix poll/gi)) {
-            return handlers.poll(message);
-        }
+        // if (content.match(/^felix poll/gi)) {
+        //     return handlers.poll(message);
+        // }
 
         if (content.match(/^felix gif /gi)) {
             return handlers.gif(message);
@@ -429,28 +429,28 @@ return bot
 
         // easter eggs and various content
         switch (content) {
-            case 'felix help':
-                if (message.author.bot) break;
+            // case 'felix help':
+            //     if (message.author.bot) break;
 
-                var help =
-                    'hi, here is what i can do:\n' +
-                    '\n' +
-                    '`felix run`'
-                    '`felix gif` gif name here\n' +
-                    '`felix google` google search term';
+            //     var help =
+            //         'hi, here is what i can do:\n' +
+            //         '\n' +
+            //         '`felix run`'
+            //         '`felix gif` gif name here\n' +
+            //         '`felix google` google search term';
 
-                if (channel.name === 'staff-room') {
-                    help +=
-                        '\n\n' +
-                        'mod only:\n' +
-                        '`felix poll` newline then 1. 2. etc\n' +
-                        '`felix purge` number of messaged to delete\n' +
-                        '`felix silence` @user\n' +
-                        '`felix unsilence` @user'
-                }
+            //     if (channel.name === 'staff-room') {
+            //         help +=
+            //             '\n\n' +
+            //             'mod only:\n' +
+            //             '`felix poll` newline then 1. 2. etc\n' +
+            //             '`felix purge` number of messaged to delete\n' +
+            //             '`felix silence` @user\n' +
+            //             '`felix unsilence` @user'
+            //     }
 
-                channel.send(help);
-                break;
+            //     channel.send(help);
+            //     break;
             case 'felix run':
                 channel.send(
                     'i can run code!\n\n' +
