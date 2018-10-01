@@ -43,9 +43,13 @@ class Poll():
             "9\u20e3",
         ]
         with open(__file__.replace('.py', '.allowed')) as f:
-            self.command_enabled_roles = [
-                int(id) for id in f.read().strip().split('\n')
-            ]
+            # read .allowed file into list
+            allow = f.read().strip().split('\n')
+            # remove comments from allow list
+            allow = [
+                l.split('#')[0].strip() for l in allow if not l.startswith('#')
+                ]
+            self.command_enabled_roles = [int(id) for id in allow]
 
     async def __local_check(self, ctx):
         if await ctx.bot.is_owner(ctx.author):

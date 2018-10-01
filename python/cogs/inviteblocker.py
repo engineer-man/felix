@@ -26,9 +26,13 @@ class InviteBlocker():
         self.allowed = []
         # Load id's of roles that are allowed to use commands from this cog
         with open(__file__.replace('.py', '.allowed')) as f:
-            self.command_enabled_roles = [
-                int(id) for id in f.read().strip().split('\n')
-            ]
+            # read .allowed file into list
+            allow = f.read().strip().split('\n')
+            # remove comments from allow list
+            allow = [
+                l.split('#')[0].strip() for l in allow if not l.startswith('#')
+                ]
+            self.command_enabled_roles = [int(id) for id in allow]
 
     # __local_command() is run on every command
     # Checks if a user is allowed to call the command

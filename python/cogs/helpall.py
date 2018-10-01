@@ -119,7 +119,8 @@ class myHelpFormatter(HelpFormatter):
                         if ':' in line:
                             c, d = line.split(':')
                             num_spaces = max_width - len(c) + 1
-                            self._paginator.add_line('  ' + c + ' '*num_spaces + d)
+                            self._paginator.add_line(
+                                '  ' + c + ' '*num_spaces + d)
                         else:
                             self._paginator.add_line(line + ':')
 
@@ -139,9 +140,13 @@ def is_staff():
         # if await ctx.bot.is_owner(ctx.author):
         #     return True
         with open(__file__.replace('.py', '.allowed')) as f:
-            command_enabled_roles = [
-                int(id) for id in f.read().strip().split('\n')
-            ]
+            # read .allowed file into list
+            allow = f.read().strip().split('\n')
+            # remove comments from allow list
+            allow = [
+                l.split('#')[0].strip() for l in allow if not l.startswith('#')
+                ]
+            command_enabled_roles = [int(id) for id in allow]
 
         try:
             user_roles = [role.id for role in ctx.message.author.roles]

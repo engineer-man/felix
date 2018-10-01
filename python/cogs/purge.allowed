@@ -1,7 +1,14 @@
+# All role id's specified in this file have access
+# to the commands from the corresponding cog but
+# ONLY on their respective server.
+# Engineer Man / @Moderators / @Admins / @engineer man / @staff
 475750306173681675
 473167481624854541
 473268630738567171
 484099362843262987
+# private pizza party / @admin
 482475047538393098
-484417507369680896
+# bot arena / @Admin
 449675183108653056
+# brtwrst's test server / @Admin
+484417507369680896
