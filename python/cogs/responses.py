@@ -32,7 +32,7 @@ class Responses():
         ret = [random.choice(intro)]
         for _ in range(random.randint(1, 5)):
             ret.append(random.choice(body))
-        ret.append(random.choice(ending))
+        ret.append(random.choice(3 * ending[:-1] + ending[-1:]))
         return ' '.join(ret)
 
     def get_year_string(self):
