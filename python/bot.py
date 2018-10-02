@@ -22,12 +22,12 @@ config = json.load(open("../config.json", "r"))
 
 STARTUP_EXTENSIONS = [
     'hangman.hangman',
-    'cogs.duckresponse',
     'cogs.inviteblocker',
     'cogs.management',
     'cogs.helpall',
     'cogs.poll',
-    'cogs.chatlog'
+    'cogs.chatlog',
+    'cogs.responses',
 ]
 for extension in STARTUP_EXTENSIONS:
     try:
