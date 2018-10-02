@@ -17,13 +17,14 @@ from datetime import datetime
 
 # set up log paths
 LOG_DIR = path.join(path.dirname(__file__), '../../logs/')
-LOG_FILENAME = f'discord_{datetime.now().strftime("%Y-%m-%dT%H%M%S")}.log'
+LOG_FILENAME = 'discord_chat.log'
+# LOG_FILENAME = f'discord_{datetime.now().strftime("%Y-%m-%dT%H%M%S")}.log'
 
 
 class ChatLog():
     def __init__(self, client):
         self.client = client
-        self.logfile = open(LOG_DIR + LOG_FILENAME, 'w')
+        self.logfile = open(LOG_DIR + LOG_FILENAME, 'a')
 
     async def on_message(self, msg):
         # Ignore messages by bots
