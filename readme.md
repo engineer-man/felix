@@ -1,4 +1,4 @@
-# felix
+# Felix
 Felix Discord Bot
 
 ## Getting started
@@ -10,6 +10,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 ```
+git clone https://github.com/engineer-man/felix.git
+cd felix
 cd node
 npm install
 cd ..
@@ -21,3 +23,13 @@ Duplicate `config.json.sample` and rename it `config.json` and update it with yo
 ```
 ./start
 ```
+
+### Creating your own bot extension
+This bot uses the `discord.py rewrite API` (https://discordpy.readthedocs.io/en/rewrite/api.html)
+
+You can create new bot commands or tasks by creating your own extension/cog.
+
+A `sample_cog.py` is included inside the `python/extension` folder.
+
+If you have questions visit us on our discord: https://engineerman.org/discord
+To ask questions and see felix in action.

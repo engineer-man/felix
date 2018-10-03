@@ -9,3 +9,5 @@ python/hangman/data/*
 state.json
 logs/*
 !logs/.gitkeep
+python/cogs/*.settings
+python/cogs/*.history

@@ -11,12 +11,13 @@ or by calling it with the path and the name of this python file
 
 from discord.ext import commands
 from discord import Member
+import asyncio
 
 
 class COG_CLASS_NAME():
     def __init__(self, client):
         self.client = client
-
+        self.my_task = self.client.loop.create_task(self.TASK())
 
     async def __local_check(self, ctx):
         """This check will automatically be applied to each command contained
@@ -45,7 +46,7 @@ class COG_CLASS_NAME():
 
     # Some useful events are
     # on_connect()
-    # on_ready()
+    # on_ready() # Careful - this will not fire if cog is (re)loaded at run time
     # on_typing(channel, user, when)
     # on_message(message)
     # on_message_delete(message)
@@ -59,11 +60,11 @@ class COG_CLASS_NAME():
     # Cog Commands
     # ----------------------------------------------
     @commands.command(
-        name='example', # if this is omitted the function name will be used
-        brief='brief description', # shown when users execute "help"
-        description='description', # shown when users execute "help example"
-        aliases=['name2', 'name3'], # alternative ways to execute the command
-        hidden=False, # Hide the command in the bot help
+        name='example',  # if this is omitted the function name will be used
+        brief='brief description',  # shown when users execute "help"
+        description='description',  # shown when users execute "help example"
+        aliases=['name2', 'name3'],  # alternative ways to execute the command
+        hidden=False,  # Hide the command in the bot help
     )
     # More checks possible here - examples:
     # @commands.guild_only() Command cannot be used in private messages.
@@ -72,6 +73,37 @@ class COG_CLASS_NAME():
     async def COMMAND_NAME(self, ctx, member: Member):
         await ctx.send(f'Hey {member.mention}, how are you?')
 
+    # ----------------------------------------------
+    # Cog Tasks
+    # ----------------------------------------------
+
+    async def TASK(self):
+        """Coroutine that can be registered as a task by calling
+        self.client.loop.create_task(self.TASK())
+        Important:  Do not register the task inside the on_ready() event.
+                    If you reload this cog or don't load it in on startup the
+                    on_ready() event will not fire.
+        """
+        await self.client.wait_until_ready()
+        await asyncio.sleep(5)
+        try:
+            while not self.client.is_closed():
+                print('Running Task')
+                await asyncio.sleep(120)
+        except asyncio.CancelledError:
+            pass
+
+    def __unload(self):
+        """This Method is called when a cog is unloaded via unload_extension
+        This is useful to cancel tasks that were created inside the cog"""
+        self.my_task.cancel()
+
 
 def setup(client):
+    """This is called then the cog is loaded via load_extension"""
     client.add_cog(COG_CLASS_NAME(client))
+
+
+def teardown(client):
+    """This is called then the cog is unloaded via unload_extension"""
+    pass
