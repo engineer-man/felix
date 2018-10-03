@@ -14,7 +14,7 @@ pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py
 import json
 from discord.ext.commands import Bot
 
-bot = Bot(command_prefix=('felix ', '~ ', 'felixtest '),
+bot = Bot(command_prefix=('felix ', '~ '),
           description='Hi I am Felix!',
           help_attrs={'name': 'defaulthelp', 'hidden': True},
           )

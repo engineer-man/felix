@@ -18,12 +18,14 @@ as an argument (without the file-type extension)
 or by calling it with the path and the name of this python file
     example:    bot.load_extension('my_extensions.poll')
 
-Only users belonging to a role that is specified in the corresponding
-.allowed file can use the commands.
+Only users belonging to a role that is specified under the module's name
+in the permissions.json file can use the commands.
 """
 
 from discord.ext import commands
+from os import path
 import re
+import json
 
 
 class Poll():
@@ -42,24 +44,17 @@ class Poll():
             "8\u20e3",
             "9\u20e3",
         ]
-        with open(__file__.replace('.py', '.allowed')) as f:
-            # read .allowed file into list
-            allow = f.read().strip().split('\n')
-            # remove comments from allow list
-            allow = [
-                l.split('#')[0].strip() for l in allow if not l.startswith('#')
-                ]
-            self.command_enabled_roles = [int(id) for id in allow]
+        with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
+            self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
 
     async def __local_check(self, ctx):
-        if await ctx.bot.is_owner(ctx.author):
-            return True
+        # if await ctx.bot.is_owner(ctx.author):
+        #     return True
         try:
             user_roles = [role.id for role in ctx.message.author.roles]
         except AttributeError:
             return False
-
-        return any(role in self.command_enabled_roles for role in user_roles)
+        return any(role in self.permitted_roles for role in user_roles)
 
     async def on_reaction_add(self, reaction, user):
         msg = reaction.message

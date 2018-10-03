@@ -11,12 +11,14 @@ as an argument (without the file-type extension)
 or by calling it with the path and the name of this python file
     example:    bot.load_extension('cogs.inviteblocker')
 
-Only users belonging to a role that is specified in the corresponding
-.allowed file can use the commands.
+Only users belonging to a role that is specified under the module's name
+in the permissions.json file can use the commands.
 """
 
 from discord.ext import commands
 from discord import TextChannel, Member
+from os import path
+import json
 import re
 
 
@@ -24,28 +26,18 @@ class InviteBlocker():
     def __init__(self, client):
         self.client = client
         self.allowed = []
-        # Load id's of roles that are allowed to use commands from this cog
-        with open(__file__.replace('.py', '.allowed')) as f:
-            # read .allowed file into list
-            allow = f.read().strip().split('\n')
-            # remove comments from allow list
-            allow = [
-                l.split('#')[0].strip() for l in allow if not l.startswith('#')
-                ]
-            self.command_enabled_roles = [int(id) for id in allow]
+        with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
+            self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
 
-    # __local_command() is run on every command
-    # Checks if a user is allowed to call the command
+
     async def __local_check(self, ctx):
-        # Always allow bot owner
-        if await ctx.bot.is_owner(ctx.author):
-            return True
+        # if await ctx.bot.is_owner(ctx.author):
+        #     return True
         try:
             user_roles = [role.id for role in ctx.message.author.roles]
         except AttributeError:
             return False
-
-        return any(role in self.command_enabled_roles for role in user_roles)
+        return any(role in self.permitted_roles for role in user_roles)
 
     async def check_message(self, msg):
         if msg.author.bot:
@@ -55,7 +47,7 @@ class InviteBlocker():
             # Dont check Direct Messages
             return False
         author_roles = [role.id for role in msg.author.roles]
-        if any(role in self.command_enabled_roles for role in author_roles):
+        if any(role in self.permitted_roles for role in author_roles):
             # Don't check messages by users with allowed roles
             return False
         if len(re.findall(r'(?i)(discord\.(gg|io|me)\/\S+)', msg.content)):

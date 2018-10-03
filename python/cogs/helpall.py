@@ -17,14 +17,17 @@ as an argument (without .py)
 or by calling it with the path and the name of this python file
     example:    bot.load_extension('my_extensions.filename')
 
-Only users belonging to a role that is specified in the corresponding
-.allowed file can use the commands.
+Only users belonging to a role that is specified under the module's name
+in the permissions.json file can use the commands.
 """
 
 from discord.ext import commands
 from discord.ext.commands.bot import _default_help_command
-from discord.ext.commands.formatter import *
-
+from discord.ext.commands.formatter import  HelpFormatter, Paginator, Command
+from os import path
+import json
+import itertools
+import inspect
 
 class myHelpFormatter(HelpFormatter):
     # Special Help Formatter that can take a showHidden
@@ -137,23 +140,13 @@ def is_staff():
     that have different role restrictions
     """
     async def predicate(ctx):
-        # if await ctx.bot.is_owner(ctx.author):
-        #     return True
-        with open(__file__.replace('.py', '.allowed')) as f:
-            # read .allowed file into list
-            allow = f.read().strip().split('\n')
-            # remove comments from allow list
-            allow = [
-                l.split('#')[0].strip() for l in allow if not l.startswith('#')
-                ]
-            command_enabled_roles = [int(id) for id in allow]
-
+        with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
+            permitted_roles = json.load(f)[__name__.split('.')[-1]]
         try:
             user_roles = [role.id for role in ctx.message.author.roles]
         except AttributeError:
             return False
-
-        return any(role in command_enabled_roles for role in user_roles)
+        return any(role in permitted_roles for role in user_roles)
     return commands.check(predicate)
 
 
