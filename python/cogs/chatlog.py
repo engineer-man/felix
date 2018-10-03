@@ -24,7 +24,7 @@ LOG_FILENAME = 'discord_chat.log'
 class ChatLog():
     def __init__(self, client):
         self.client = client
-        self.logfile = open(LOG_DIR + LOG_FILENAME, 'a')
+        self.logfile = open(LOG_DIR + LOG_FILENAME, 'a', encoding='utf-8')
 
     async def on_message(self, msg):
         # Ignore messages by bots
@@ -39,7 +39,7 @@ class ChatLog():
                 datetime.now().isoformat(),
                 msg.content.replace('\n', '\\n'),
             ]
-            self.logfile.write(':'.join(paginator)+'\n')
+            self.logfile.write(':'.join(paginator) + '\n')
             self.logfile.flush()
 
 
