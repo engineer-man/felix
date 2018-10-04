@@ -27,16 +27,13 @@ class ChatLog():
 
     async def on_message(self, msg):
         if msg.author.bot:
-            # Dont check messages of bots
+            # Dont log messages of bots
             return
-        if msg.channel.guild is None:
-            # Dont check Direct Messages
-            return False
-
+        ch_str = str(msg.channel)
         paginator = [
-            msg.channel.name,
-            f'{msg.author.name}#{msg.author.discriminator}',
             datetime.now().isoformat(),
+            'DM' if ch_str.startswith('Direct Message') else ch_str,
+            f'{msg.author.name}#{msg.author.discriminator}',
             msg.content.replace('\n', '\\n'),
         ]
         self.logfile.write(':'.join(paginator) + '\n')
