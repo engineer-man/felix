@@ -32,18 +32,44 @@ class Poll():
     def __init__(self, client):
         self.client = client
         self.polls = {}
-        self.number_emoji = [
-            "0\u20e3",
-            "1\u20e3",
-            "2\u20e3",
-            "3\u20e3",
-            "4\u20e3",
-            "5\u20e3",
-            "6\u20e3",
-            "7\u20e3",
-            "8\u20e3",
-            "9\u20e3",
-        ]
+        self.emoji = {
+            "0": "0\u20e3",
+            "1": "1\u20e3",
+            "2": "2\u20e3",
+            "3": "3\u20e3",
+            "4": "4\u20e3",
+            "5": "5\u20e3",
+            "6": "6\u20e3",
+            "7": "7\u20e3",
+            "8": "8\u20e3",
+            "9": "9\u20e3",
+            "a": "🇦",
+            "b": "🇧",
+            "c": "🇨",
+            "d": "🇩",
+            "e": "🇪",
+            "f": "🇫",
+            "g": "🇬",
+            "h": "🇭",
+            "i": "🇮",
+            "j": "🇯",
+            "k": "🇰",
+            "l": "🇱",
+            "m": "🇲",
+            "n": "🇳",
+            "o": "🇴",
+            "p": "🇵",
+            "q": "🇶",
+            "r": "🇷",
+            "s": "🇸",
+            "t": "🇹",
+            "u": "🇺",
+            "v": "🇻",
+            "w": "🇼",
+            "x": "🇽",
+            "y": "🇾",
+            "z": "🇿"
+        }
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
             self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
 
@@ -92,12 +118,11 @@ class Poll():
         if not poll:
             return
         choices_str = ''.join(poll)
-        choices = [int(r) for r in re.findall(r'([0-9])\.', choices_str)]
-
+        choices = [r for r in re.findall(r'([0-9a-zA-Z])\.', choices_str)]
         mymsg = ctx.message
         self.polls[str(mymsg.id)] = len(choices)
         for choice in choices:
-            await mymsg.add_reaction(self.number_emoji[choice])
+            await mymsg.add_reaction(self.emoji[choice.lower()])
 
 
 def setup(client):
