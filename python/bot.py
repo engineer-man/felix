@@ -23,11 +23,10 @@ bot = Bot(command_prefix=('felix ', '~ '),
 
 STARTUP_EXTENSIONS=['hangman.hangman']
 
-COG_DIR = 'cogs'
-for file in os.listdir(f'{COG_DIR}/'):
+for file in os.listdir(os.path.join(os.path.dirname(__file__), 'cogs/')):
     filename, ext = os.path.splitext(file)
     if '.py' in ext:
-        STARTUP_EXTENSIONS.append(f'{COG_DIR}.{filename}')
+        STARTUP_EXTENSIONS.append(f'cogs.{filename}')
 
 for extension in STARTUP_EXTENSIONS:
     try:
