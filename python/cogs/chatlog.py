@@ -36,7 +36,7 @@ class ChatLog():
             f'{msg.author.name}#{msg.author.discriminator}',
             msg.content.replace('\n', '\\n'),
         ]
-        self.logfile.write(':'.join(paginator) + '\n')
+        self.logfile.write('|'.join(paginator) + '\n')
         self.logfile.flush()
 
 
