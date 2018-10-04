@@ -8,8 +8,8 @@ Each user only has 1 vote and the bot will remove previous votes if a user
 votes a second time.
 The bot will also remove any new reactions added to the message.
 
-NOTE that the bot can only check reactions on the last 5000 messages it sees.
-So after 5000 messages the "only 1 vote per user" function breaks.
+NOTE that the bot can only check reactions on the last 5000 messages it saw.
+So after 5000 messages (by default) the poll monitoring breaks.
 It also breaks if the bot-cog is reloaded or the bot is restarted.
 
 Load the cog by calling client.load_extension with the name of this python file
@@ -88,7 +88,7 @@ class Poll():
         if user.bot:
             return
         if message_id in self.polls:
-            if len(msg.reactions) > self.polls[message_id]:
+            if reaction.emoji not in self.polls[message_id]:
                 await msg.remove_reaction(reaction, user)
             else:
                 for r in msg.reactions:
@@ -109,8 +109,8 @@ class Poll():
                       '\n!poll Question' +
                       '\n0.Possibility0' +
                       '\n1.Possibility1' +
-                      '\n7.Possibility7' +
-                      '\n3.Possibility3',
+                      '\na.Possibility7' +
+                      '\nb.Possibility3',
                       hidden=True,
                       )
     async def make_poll(self, ctx, *poll_tuple: str):
@@ -119,10 +119,12 @@ class Poll():
             return
         choices_str = ''.join(poll)
         choices = [r for r in re.findall(r'([0-9a-zA-Z])\.', choices_str)]
-        mymsg = ctx.message
-        self.polls[str(mymsg.id)] = len(choices)
+        poll_msg = ctx.message
+        poll_id = str(poll_msg.id)
         for choice in choices:
-            await mymsg.add_reaction(self.emoji[choice.lower()])
+            react_emoji = self.emoji[choice.lower()]
+            self.polls[poll_id] = self.polls.get(poll_id, []) + [react_emoji]
+            await poll_msg.add_reaction(react_emoji)
 
 
 def setup(client):
