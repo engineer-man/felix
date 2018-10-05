@@ -247,7 +247,7 @@ var handlers = {
                     'https://api.giphy.com/v1/gifs/search' +
                     '?api_key=' + config.giphy_key +
                     '&q=' + text.split(' ').join('+') +
-                    '&limit=1' +
+                    '&limit=20' +
                     '&offset=0' +
                     '&rating=R' +
                     '&lang=en',
@@ -263,7 +263,7 @@ var handlers = {
                     return null;
                 }
 
-                var gif = data[0].images.original.url;
+                var gif = data[Math.floor(Math.random() * data.length)].images.original.url;
 
                 channel.send(gif);
             })
@@ -439,4 +439,5 @@ return bot
             return handlers.silence(message);
         }
     })
+    .on('error', console.log)
     .login(config.bot_key);
