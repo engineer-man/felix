@@ -16,7 +16,7 @@ in the permissions.json file can use the commands.
 """
 
 from discord.ext import commands
-from discord import Member
+from discord import Member, DMChannel
 from os import path
 import json
 import re
@@ -43,7 +43,7 @@ class InviteBlocker():
         if msg.author.bot:
             # Dont check messages of bots
             return
-        if msg.channel.guild is None:
+        if isinstance(msg.channel, DMChannel):
             # Dont check Direct Messages
             return False
         author_roles = [role.id for role in msg.author.roles]
