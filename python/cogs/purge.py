@@ -9,8 +9,8 @@ Commands:
                     - If you specify a list of users all messages of these
                       users within the last 1000 messages will be deleted
                     - If you specify both, all messages of the specified users
-                      that are withing the last x messages will be deleted.
-    purge all       The last 1000 messages in the channel will be deleted.
+                      that are within the last x messages will be deleted.
+    purge all       All messages in the channel will be deleted.
                     (might take a long time)
 
 
@@ -29,6 +29,7 @@ from discord import Member
 from os import path
 import json
 import typing
+import asyncio
 
 
 class Purge():
@@ -54,7 +55,14 @@ class Purge():
         invoke_without_command=True,
         name='purge',
         brief='Clear messages from current channel',
-        description='Clear messages from current channel',
+        description='Clear messages from current channel'
+        + '\nExamples:'
+        + '\n*  purge 10'
+        + '\n*  purge @user'
+        + '\n*  purge 10 @user'
+        + '\n*  purge @user 10'
+        + '\n*  purge @user1 @user2'
+        + '\n*  purge all',
         hidden=True,
     )
     @commands.guild_only()
@@ -81,12 +89,33 @@ class Purge():
         return True
 
     @purge.command(name='all',
-                   brief='Clear 1000 messages in current channel',
-                   description='Clear 1000 messages in current channel')
+                   brief='Clear all messages in current channel',
+                   description='Clear all messages in current channel\n' +
+                   'A security question will be asked before proceeding')
     @commands.guild_only()
     async def purge_all(self, ctx):
         channel = ctx.message.channel
-        await channel.purge(limit=1000, check=None, before=None)
+        caller = ctx.message.author
+
+        def check(m):
+            return m.author.id == caller.id and m.channel.id == channel.id
+
+        confirmation_q = await channel.send(
+            f'Please confirm purging of all messages. (enter the channel name)'
+        )
+        try:
+            confirmation_a = await self.client.wait_for('message',
+                                                        check=check,
+                                                        timeout=30)
+        except asyncio.TimeoutError:
+            await channel.send(f'TIMEOUT - waited more than 30 sec')
+            return
+        if confirmation_a.content == channel.name:
+            await channel.purge(limit=100000, check=None, before=None)
+        else:
+            await ctx.message.delete()
+            await confirmation_q.delete()
+            await confirmation_a.delete()
         return True
 
 

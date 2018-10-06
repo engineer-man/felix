@@ -425,16 +425,16 @@ return bot
 
         if (!allowed) return null;
 
-        if (content.match(/^felix purge [0-9]+/gi)) {
-            var limit = +content.split('purge')[1].trim();
+        // if (content.match(/^felix purge [0-9]+/gi)) {
+        //     var limit = +content.split('purge')[1].trim();
 
-            if (limit <= 0 || typeof limit !== 'number') return null;
+        //     if (limit <= 0 || typeof limit !== 'number') return null;
 
-            channel.fetchMessages({limit: limit + 1})
-                .then(messages => {
-                    channel.bulkDelete(messages);
-                });
-        }
+        //     channel.fetchMessages({limit: limit + 1})
+        //         .then(messages => {
+        //             channel.bulkDelete(messages);
+        //         });
+        // }
 
         if (content.match(/^felix (silence|unsilence)/gi)) {
             return handlers.silence(message);
