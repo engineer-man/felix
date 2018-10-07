@@ -1,5 +1,6 @@
 """This is a cog for a discord.py bot.
-It will auto delete messages that contain discord invite links
+It will auto delete messages that contain discord invite links.
+Offenders will be informed a maximum of 1 time every 10 minutes.
 
 Commands:
     allow           Specify a user. User is then allowed to post 1
@@ -20,12 +21,15 @@ from discord import Member, DMChannel
 from os import path
 import json
 import re
+import time
 
 
 class InviteBlocker():
     def __init__(self, client):
         self.client = client
         self.allowed = []
+        self.naughty_list = {}
+        self.naughty_list_time = 600
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
             self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
 
@@ -54,12 +58,19 @@ class InviteBlocker():
             elif msg.author.id in self.allowed:
                 self.allowed.remove(msg.author.id)
             else:
+                await msg.delete()
+                if str(msg.author.id) in self.naughty_list:
+                    last_time = self.naughty_list[str(msg.author.id)]
+                    if time.time() - last_time > self.naughty_list_time:
+                        self.naughty_list.pop(str(msg.author.id))
+                    else:
+                        return
                 await msg.channel.send(
                     f'Sorry {msg.author.mention}. ' +
                     'Posting Links to other servers is not allowed.\n' +
-                    'You can ask permission from an admin or moderator!'
+                    'You can ask permission from an engineer-man team member!'
                 )
-                await msg.delete()
+                self.naughty_list[str(msg.author.id)] = time.time()
 
     # ----------------------------------------------
     # Event listeners
