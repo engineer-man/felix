@@ -40,18 +40,18 @@ class InviteBlocker():
         return any(role in self.permitted_roles for role in user_roles)
 
     async def check_message(self, msg):
-        if msg.author.bot:
-            # Dont check messages of bots
-            return
         if isinstance(msg.channel, DMChannel):
             # Dont check Direct Messages
             return False
         author_roles = [role.id for role in msg.author.roles]
-        if any(role in self.permitted_roles for role in author_roles):
-            # Don't check messages by users with allowed roles
-            return False
+        if not self.client.user == msg.author:
+            if any(role in self.permitted_roles for role in author_roles):
+                # Don't check messages by users with allowed roles
+                return False
         if len(re.findall(r'(?i)(discord\.(gg|io|me)\/\S+)', msg.content)):
-            if msg.author.id in self.allowed:
+            if self.client.user == msg.author:
+                await msg.delete()
+            elif msg.author.id in self.allowed:
                 self.allowed.remove(msg.author.id)
             else:
                 await msg.channel.send(
