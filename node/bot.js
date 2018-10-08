@@ -419,7 +419,7 @@ return bot
 
         var allowed = false;
 
-        ['engineer man', 'admins', 'moderators'].for_each(r => {
+        ['engineer man', 'fellows', 'staff'].for_each(r => {
             if (~roles.index_of(r)) allowed = true;
         });
 
