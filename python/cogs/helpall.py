@@ -23,19 +23,21 @@ in the permissions.json file can use the commands.
 
 from discord.ext import commands
 from discord.ext.commands.bot import _default_help_command
-from discord.ext.commands.formatter import  HelpFormatter, Paginator, Command
+from discord.ext.commands.formatter import HelpFormatter, Paginator, Command
 from os import path
 import json
 import itertools
 import inspect
 
+
 class myHelpFormatter(HelpFormatter):
     # Special Help Formatter that can take a showHidden
     # Parameter to include include hidden commands
     # Mostly copied from discord.py/discord/ext/commands/formatter.py
-    def __init__(self, showHidden=False):
+    def __init__(self, showHidden=False, is_sub=False):
         super().__init__()
         self.show_hidden = showHidden
+        self.is_sub = is_sub
 
     async def format(self):
         """Handles the actual behaviour involved with formatting.
@@ -95,6 +97,10 @@ class myHelpFormatter(HelpFormatter):
             if filtered:
                 self._paginator.add_line('Commands:')
                 self._add_subcommands_to_page(max_width, filtered)
+
+        # Don't print node commands if help is called with a subcommand
+        if self.is_sub:
+            return self._paginator.pages
 
         try:
             with open('node_help.txt') as f:
@@ -163,7 +169,8 @@ class Help():
     )
     @commands.guild_only()
     async def newhelp(self, ctx):
-        self.client.formatter = myHelpFormatter(False)
+        is_sub = ctx.message.content not in 'felix help '
+        self.client.formatter = myHelpFormatter(False, is_sub)
         await self.client.get_command('defaulthelp').invoke(ctx)
         self.client.formatter = HelpFormatter()
 
@@ -178,15 +185,10 @@ class Help():
     @commands.guild_only()
     @is_staff()
     async def helpall(self, ctx):
-        # Uncomment to always post to current channel
-        # was_pm = False
-        self.client.formatter = myHelpFormatter(True)
-        # if self.client.pm_help:
-        # self.client.pm_help = False
-        # was_pm = True
+        is_sub = ctx.message.content not in 'felix helpall '
+        self.client.formatter = myHelpFormatter(False, is_sub)
         await self.client.get_command('defaulthelp').invoke(ctx)
         self.client.formatter = HelpFormatter()
-        # self.client.pm_help = was_pm
 
 
 def setup(client):

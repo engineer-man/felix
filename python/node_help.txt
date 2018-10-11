@@ -1,10 +1,9 @@
 Coding
 run:run code
-NetAPIs
+Fetch stuff
 gif:search giphy for a gif
 google:post a google search link
---- commands below the triple dash line will only show in helpall
-Tools
-purge:purge a specific number of messages
+--- commands and categories below the triple dash line will only show in helpall
+Admin-Tools
 silence:silence a @user
 unsilence:unsilence a @user

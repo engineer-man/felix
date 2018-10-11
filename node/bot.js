@@ -419,22 +419,22 @@ return bot
 
         var allowed = false;
 
-        ['engineer man', 'admins', 'moderators'].for_each(r => {
+        ['engineer man', 'fellows', 'staff'].for_each(r => {
             if (~roles.index_of(r)) allowed = true;
         });
 
         if (!allowed) return null;
 
-        if (content.match(/^felix purge [0-9]+/gi)) {
-            var limit = +content.split('purge')[1].trim();
+        // if (content.match(/^felix purge [0-9]+/gi)) {
+        //     var limit = +content.split('purge')[1].trim();
 
-            if (limit <= 0 || typeof limit !== 'number') return null;
+        //     if (limit <= 0 || typeof limit !== 'number') return null;
 
-            channel.fetchMessages({limit: limit + 1})
-                .then(messages => {
-                    channel.bulkDelete(messages);
-                });
-        }
+        //     channel.fetchMessages({limit: limit + 1})
+        //         .then(messages => {
+        //             channel.bulkDelete(messages);
+        //         });
+        // }
 
         if (content.match(/^felix (silence|unsilence)/gi)) {
             return handlers.silence(message);
