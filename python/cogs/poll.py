@@ -106,20 +106,19 @@ class Poll():
     @commands.command(name='poll',
                       brief='Create a Poll',
                       description='Example use:' +
-                      '\n!poll Question' +
-                      '\n0.Possibility0' +
-                      '\n1.Possibility1' +
-                      '\na.Possibility7' +
-                      '\nb.Possibility3',
+                      '\npoll\nQuestion' +
+                      '\n0. Possibility0' +
+                      '\n1: Possibility1' +
+                      '\na. Possibility2' +
+                      '\nb) Possibility3',
                       hidden=True,
                       )
-    async def make_poll(self, ctx, *poll_tuple: str):
-        poll = list(poll_tuple)
-        if not poll:
+    async def make_poll(self, ctx):
+        poll = ctx.message.content
+        if poll in 'felix poll ':
             return
-        choices_str = ' '.join(poll)
-        regex = re.findall(r'(?:\s|^)([0-9a-zA-Z])(?:\.|\:|\))', choices_str)
-        choices = [r for r in regex]
+        re_find = re.findall(r'^([0-9a-zA-Z])(?:\.|\:|\))\s', poll, flags=re.M)
+        choices = [r for r in re_find]
         poll_msg = ctx.message
         poll_id = str(poll_msg.id)
         for choice in choices:
