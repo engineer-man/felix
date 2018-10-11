@@ -117,8 +117,9 @@ class Poll():
         poll = list(poll_tuple)
         if not poll:
             return
-        choices_str = ''.join(poll)
-        choices = [r for r in re.findall(r'([0-9a-zA-Z])\.', choices_str)]
+        choices_str = ' '.join(poll)
+        regex = re.findall(r'(?:\s|^)([0-9a-zA-Z])(?:\.|\:|\))', choices_str)
+        choices = [r for r in regex]
         poll_msg = ctx.message
         poll_id = str(poll_msg.id)
         for choice in choices:
