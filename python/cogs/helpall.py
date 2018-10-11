@@ -186,7 +186,7 @@ class Help():
     @is_staff()
     async def helpall(self, ctx):
         is_sub = ctx.message.content not in 'felix helpall '
-        self.client.formatter = myHelpFormatter(False, is_sub)
+        self.client.formatter = myHelpFormatter(True, is_sub)
         await self.client.get_command('defaulthelp').invoke(ctx)
         self.client.formatter = HelpFormatter()
 
