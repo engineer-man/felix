@@ -29,6 +29,9 @@ class ChatLog():
         if msg.author.bot:
             # Dont log messages of bots
             return
+        if not msg.channel.guild.id == 473161189120147456:
+            # Don't log messages on servers other than "EngineerMan"
+            return
         ch_str = str(msg.channel)
         paginator = [
             datetime.now().isoformat(),
