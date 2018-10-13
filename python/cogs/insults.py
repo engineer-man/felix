@@ -1,25 +1,39 @@
 import discord
 from discord.ext import commands
 import random
+from os import path
+import json
 
 questions = open('questions.txt').read().splitlines()
 
-class insults:
-	def __init__(self, bot):
-		self.bot = bot
+def is_cc_channel():
+    """Used as a decorator for bot commands
+    to make sure only staff can see/use it
+    """
+    async def predicate(ctx):
+        return ctx.channel.id == 485581363383107604
+    return commands.check(predicate)
 
-	@commands.command()
-	async def insult(self, ctx):
-		if 498576446147788824 not in [y.id for y in ctx.message.author.roles]:
-			await ctx.send("We are sorry but you can't use that command")
-		else:
-			if (ctx.message.channel.id != 483979023144189966):
-				await ctx.send("You can't use that here.\nsilly duck")
-			else:
-				global question
-				question = random.choice(questions)
-				print(question)
-				await ctx.send(question)
+class insults:
+    def __init__(self, bot):
+        self.bot = bot
+        with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
+            self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
+
+
+    async def __local_check(self, ctx):
+        # if await ctx.bot.is_owner(ctx.author):
+        #     return True
+        try:
+            user_roles = [role.id for role in ctx.message.author.roles]
+        except AttributeError:
+            return False
+        return any(role in self.permitted_roles for role in user_roles)
+
+    @commands.command()
+    @is_cc_channel()
+    async def insult(self, ctx):
+        await ctx.send(random.choice(questions))
 
 def setup(bot):
-	bot.add_cog(insults(bot))
+    bot.add_cog(insults(bot))
