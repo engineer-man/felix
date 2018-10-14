@@ -11,7 +11,7 @@ def is_cc_channel():
     only useable in the em/command center channel
     """
     async def predicate(ctx):
-        return ctx.channel.id == 485581363383107604
+        return ctx.channel.id == 483979023144189966
     return commands.check(predicate)
 
 class Insults:
