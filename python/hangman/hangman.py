@@ -158,8 +158,10 @@ class Hangman():
             if folders == '.gitkeep':
                 continue
             with open(data_path + folders + "/scores.json", "r") as f:
-                self.playerdata[folders] = json.load(f)
-        # print(self.playerdata)
+                temp = {}
+                for k,v in json.load(f).items():
+                    temp[int(k)] = v
+                self.playerdata[int(folders)] = temp
 
     def topten(self, sid):
         if not sid in self.playerdata:
