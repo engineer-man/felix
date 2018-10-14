@@ -11,3 +11,4 @@ logs/*
 !logs/.gitkeep
 python/cogs/*.settings
 python/cogs/*.history
+python/questions.txt
