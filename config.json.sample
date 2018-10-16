@@ -1,7 +1,6 @@
 {
-
     "bot_key": "",
     "giphy_key": "",
-    "apikey": "",
-    "apiurl": ""
+    "yt_key": "",
+    "piston_key": ""
 }

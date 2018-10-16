@@ -16,6 +16,7 @@ cd node
 npm install
 cd ..
 pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py
+pip install requests
 ```
 Duplicate `config.json.sample` and rename it `config.json` and update it with your own discord bot token.
 

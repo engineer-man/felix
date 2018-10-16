@@ -14,7 +14,8 @@ from discord.ext.commands import Bot
 import json
 import os
 
-config = json.load(open("../config.json", "r"))
+with open("../config.json", "r") as conffile:
+    config = json.load(conffile)
 
 bot = Bot(command_prefix=('felix ', '~ '),
           description='Hi I am Felix!',
