@@ -436,9 +436,9 @@ return bot
         //         });
         // }
 
-        if (content.match(/^felix (silence|unsilence)/gi)) {
-            return handlers.silence(message);
-        }
+        // if (content.match(/^felix (silence|unsilence)/gi)) {
+        //     return handlers.silence(message);
+        // }
     })
     .on('error', console.log)
     .login(config.bot_key);
