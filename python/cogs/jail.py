@@ -141,8 +141,7 @@ class Jail():
                     # If he is already on the naughty list
                     await self.send_to_jail(member,
                                             reason='Excessive messaging')
-                    await msg.channel.send(
-                        "<@&503277143724261378> Aaaand it's gone")
+                    await msg.channel.send("Aaaand it's gone")
                 else:
                     # Warn the user and add him to the naughty list
                     # If he is not on the naughty list yet
