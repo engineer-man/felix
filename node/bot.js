@@ -100,45 +100,45 @@ var handlers = {
         }
     },
 
-    silence(message) {
-        const content = message.content;
-        const channel = message.channel;
+    // silence(message) {
+    //     const content = message.content;
+    //     const channel = message.channel;
 
-        if (content.match(/^felix silence/gi)) {
-            const member = message.mentions.members.first();
+    //     if (content.match(/^felix silence/gi)) {
+    //         const member = message.mentions.members.first();
 
-            member.addRole('486621918821351436');
-            member.addRole('484183734686318613');
-            member.addRole('484016038992674827');
+    //         member.addRole('486621918821351436');
+    //         member.addRole('484183734686318613');
+    //         member.addRole('484016038992674827');
 
-            var data = JSON.parse(fs.read_file_sync('../state.json').to_string());
+    //         var data = JSON.parse(fs.read_file_sync('../state.json').to_string());
 
-            if (!~data.silenced.index_of(member.id)) {
-                data.silenced.push(member.id);
-                channel.send('won\'t be hearing from <@' + member.id + '> anymore');
-            } else {
-                channel.send('<@' + member.id + '> is already on the naughty boy list');
-            }
+    //         if (!~data.silenced.index_of(member.id)) {
+    //             data.silenced.push(member.id);
+    //             channel.send('won\'t be hearing from <@' + member.id + '> anymore');
+    //         } else {
+    //             channel.send('<@' + member.id + '> is already on the naughty boy list');
+    //         }
 
-            fs.write_file_sync('../state.json', JSON.stringify(data));
-        }
+    //         fs.write_file_sync('../state.json', JSON.stringify(data));
+    //     }
 
-        if (content.match(/^felix unsilence/gi)) {
-            const member = message.mentions.members.first();
+    //     if (content.match(/^felix unsilence/gi)) {
+    //         const member = message.mentions.members.first();
 
-            member.removeRole('486621918821351436');
-            member.removeRole('484183734686318613');
-            member.removeRole('484016038992674827');
+    //         member.removeRole('486621918821351436');
+    //         member.removeRole('484183734686318613');
+    //         member.removeRole('484016038992674827');
 
-            var data = JSON.parse(fs.read_file_sync('../state.json').to_string());
+    //         var data = JSON.parse(fs.read_file_sync('../state.json').to_string());
 
-            data.silenced = data.silenced.filter(u => u !== member.id)
+    //         data.silenced = data.silenced.filter(u => u !== member.id)
 
-            channel.send('unsilenced <@' + member.id + '>');
+    //         channel.send('unsilenced <@' + member.id + '>');
 
-            fs.write_file_sync('../state.json', JSON.stringify(data));
-        }
-    },
+    //         fs.write_file_sync('../state.json', JSON.stringify(data));
+    //     }
+    // },
 
     hangman(message) {
         const content = message.content;
@@ -342,14 +342,14 @@ var handlers = {
 return bot
     .on('guildMemberAdd', member => {
         const channel = member.guild.channels.find(ch => ch.name === 'welcome');
-        const silenced = JSON.parse(fs.read_file_sync('../state.json').to_string()).silenced;
+        // const silenced = JSON.parse(fs.read_file_sync('../state.json').to_string()).silenced;
 
-        if (~silenced.index_of(member.id)) {
-            member.addRole('486621918821351436');
-            member.addRole('484183734686318613');
-            member.addRole('484016038992674827');
-            return;
-        }
+        // if (~silenced.index_of(member.id)) {
+        //     member.addRole('486621918821351436');
+        //     member.addRole('484183734686318613');
+        //     member.addRole('484016038992674827');
+        //     return;
+        // }
 
         channel.send(
             'Welcome to the Engineer Man Community Discord Server, ' + member + '. ' +

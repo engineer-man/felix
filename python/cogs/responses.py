@@ -50,6 +50,9 @@ class Responses():
         if re.search(r'(?i).*quack.*', msg.content):
             await msg.channel.send(self.get_quack_string())
 
+        if re.search(r'(?i).*what a twist.*', msg.content):
+            await msg.channel.send('` - directed by M. Night Shyamalan.`')
+
         if re.search(
             r'(?i)(the|this) (current )?year is ' +
             r'((almost|basically) )?(over|done|finished)',
