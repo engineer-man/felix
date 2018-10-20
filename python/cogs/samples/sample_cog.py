@@ -100,10 +100,10 @@ class COG_CLASS_NAME():
 
 
 def setup(client):
-    """This is called then the cog is loaded via load_extension"""
+    """This is called when the cog is loaded via load_extension"""
     client.add_cog(COG_CLASS_NAME(client))
 
 
 def teardown(client):
-    """This is called then the cog is unloaded via unload_extension"""
+    """This is called when the cog is unloaded via unload_extension"""
     pass
