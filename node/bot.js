@@ -100,46 +100,6 @@ var handlers = {
         }
     },
 
-    // silence(message) {
-    //     const content = message.content;
-    //     const channel = message.channel;
-
-    //     if (content.match(/^felix silence/gi)) {
-    //         const member = message.mentions.members.first();
-
-    //         member.addRole('486621918821351436');
-    //         member.addRole('484183734686318613');
-    //         member.addRole('484016038992674827');
-
-    //         var data = JSON.parse(fs.read_file_sync('../state.json').to_string());
-
-    //         if (!~data.silenced.index_of(member.id)) {
-    //             data.silenced.push(member.id);
-    //             channel.send('won\'t be hearing from <@' + member.id + '> anymore');
-    //         } else {
-    //             channel.send('<@' + member.id + '> is already on the naughty boy list');
-    //         }
-
-    //         fs.write_file_sync('../state.json', JSON.stringify(data));
-    //     }
-
-    //     if (content.match(/^felix unsilence/gi)) {
-    //         const member = message.mentions.members.first();
-
-    //         member.removeRole('486621918821351436');
-    //         member.removeRole('484183734686318613');
-    //         member.removeRole('484016038992674827');
-
-    //         var data = JSON.parse(fs.read_file_sync('../state.json').to_string());
-
-    //         data.silenced = data.silenced.filter(u => u !== member.id)
-
-    //         channel.send('unsilenced <@' + member.id + '>');
-
-    //         fs.write_file_sync('../state.json', JSON.stringify(data));
-    //     }
-    // },
-
     hangman(message) {
         const content = message.content;
         const channel = message.channel;
@@ -342,14 +302,6 @@ var handlers = {
 return bot
     .on('guildMemberAdd', member => {
         const channel = member.guild.channels.find(ch => ch.name === 'welcome');
-        // const silenced = JSON.parse(fs.read_file_sync('../state.json').to_string()).silenced;
-
-        // if (~silenced.index_of(member.id)) {
-        //     member.addRole('486621918821351436');
-        //     member.addRole('484183734686318613');
-        //     member.addRole('484016038992674827');
-        //     return;
-        // }
 
         channel.send(
             'Welcome to the Engineer Man Community Discord Server, ' + member + '. ' +
@@ -390,6 +342,7 @@ return bot
 
         if (content.match(/^(hi|what's up|yo|hey|hello) felix/gi)) {
             message.reply('hello!');
+            return;
         }
 
         // easter eggs and various content
@@ -397,7 +350,8 @@ return bot
             case 'felix run':
                 channel.send(
                     'i can run code!\n\n' +
-                    '**here are my supported languages:**\npython2\npython3\njavascript\nruby\ngo\nc\nc++/cpp\ncs/csharp/c#\nr\nasm/nasm\nphp\njava\n\n' +
+                    '**here are my supported languages:**'+
+                    '\npython2\npython3\njavascript\nruby\ngo\nc\nc++/cpp\ncs/csharp/c#\nr\nasm/nasm\nphp\njava\n\n' +
                     '**you can run code by telling me things like:**\n' +
                     'felix run js\n' +
                     '\\`\\`\\`\nyour code\n\\`\\`\\`'
@@ -408,9 +362,6 @@ return bot
                 break;
             case 'you wanna fight, felix?':
                 message.reply('bring it on pal (╯°□°）╯︵ ┻━┻');
-                break;
-            case 'felix stats':
-                console.log(channel.guild.members);
                 break;
         }
 
@@ -424,21 +375,6 @@ return bot
         });
 
         if (!allowed) return null;
-
-        // if (content.match(/^felix purge [0-9]+/gi)) {
-        //     var limit = +content.split('purge')[1].trim();
-
-        //     if (limit <= 0 || typeof limit !== 'number') return null;
-
-        //     channel.fetchMessages({limit: limit + 1})
-        //         .then(messages => {
-        //             channel.bulkDelete(messages);
-        //         });
-        // }
-
-        // if (content.match(/^felix (silence|unsilence)/gi)) {
-        //     return handlers.silence(message);
-        // }
     })
     .on('error', console.log)
     .login(config.bot_key);
