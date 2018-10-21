@@ -15,13 +15,16 @@ from discord.ext import commands
 from discord import Embed, Color
 import json
 import requests
+import time
 
 with open("../config.json", "r") as conffile:
     config = json.load(conffile)
 
+
 class Stats():
     def __init__(self, client):
         self.client = client
+        self.last_time = []
 
     @commands.command(
         name='stats',
@@ -37,33 +40,40 @@ class Stats():
                f'&key={config["yt_key"]}')
         r = requests.get(url)
         statistics = r.json()['items'][0]['statistics']
-        subs = statistics['subscriberCount']
-        vids = statistics['videoCount']
-        views = statistics['viewCount']
-        disc_members = str(ctx.channel.guild.member_count)
+        subs = int(statistics['subscriberCount'])
+        vids = int(statistics['videoCount'])
+        views = int(statistics['viewCount'])
+        disc_members = ctx.channel.guild.member_count
 
+        time_diff, disc_diff, subs_diff, vids_diff, views_diff = -1, 0, 0, 0, 0
+        if self.last_time:
+            time_diff = int((time.time() - self.last_time[0]) // 60)
+            disc_diff = disc_members - self.last_time[1]
+            subs_diff = subs - self.last_time[2]
+            vids_diff = vids - self.last_time[3]
+            views_diff = views - self.last_time[4]
+
+        self.last_time = [time.time(), disc_members, subs, vids, views]
+
+        # What an abomination
         response = [
             '```css',
-            f'\nDiscord members: [{disc_members}]',
-            f'\nYouTube subs:    [{subs}]',
-            f'\nYouTube videos:  [{vids}]',
-            f'\nYouTube views:   [{views}]```'
+            f'\nDiscord members: [{disc_members}] ',
+            f'{"+ " if disc_diff > 0 else ""}',
+            f'{str(disc_diff).replace("-", "- ") * bool(disc_diff)}',
+            f'\nYouTube subs:    [{subs}] ',
+            f'{"+ " if subs_diff > 0 else ""}',
+            f'{str(subs_diff).replace("-", "- ") * bool(subs_diff)}',
+            f'\nYouTube videos:  [{vids}] ',
+            f'{"+ " if vids_diff > 0 else ""}',
+            f'{str(vids_diff).replace("-", "- ") * bool(vids_diff)}',
+            f'\nYouTube views:   [{views}] '
+            f'{"+ " if views_diff > 0 else ""}',
+            f'{str(views_diff).replace("-", "- ") * bool(views_diff)}',
+            f'````last run: ',
+            f'{(str(time_diff) + " minutes ago") if time_diff >= 0 else "N/A"}`'
         ]
         await ctx.send(''.join(response))
-
-        # The following sends the information as an embed
-        # description = (
-        #     f'The Discord server has {disc_members} members'
-        #     '\n\nThe Youtube channel has:'
-        #     f'\n    {subs} Subscribers'
-        #     f'\n    {vids} Videos'
-        #     f'\n    {views} Total Video Views'
-        #     )
-        # embed = Embed(
-        #     title='Stats',
-        #     description=description,
-        #     color=Color.dark_gold())
-        # await ctx.send(embed=embed)
 
 
 def setup(client):
