@@ -20,6 +20,7 @@ with open("../config.json", "r") as conffile:
 bot = Bot(command_prefix=('felix ', '~ '),
           description='Hi I am Felix!',
           help_attrs={'name': 'defaulthelp', 'hidden': True},
+          max_messages=15000
           )
 
 STARTUP_EXTENSIONS=['hangman.hangman']
