@@ -11,19 +11,11 @@ This bot requires discord.py rewrite
 pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py
 """
 from discord.ext.commands import Bot
-from discord import Activity
-import subprocess
 import json
 import os
 
 with open("../config.json", "r") as conffile:
     config = json.load(conffile)
-
-try:
-    git_log = subprocess.check_output(['git', 'log', '-n' ,'1']).decode()
-    felix_version = git_log.split('\n')[0].split(' ')[1][:8]
-except:
-    felix_version = 'unknown'
 
 bot = Bot(command_prefix=('felix ', '~ '),
           description='Hi I am Felix!',
@@ -31,7 +23,7 @@ bot = Bot(command_prefix=('felix ', '~ '),
           max_messages=15000
           )
 
-STARTUP_EXTENSIONS=['hangman.hangman']
+STARTUP_EXTENSIONS = ['hangman.hangman']
 
 for file in os.listdir(os.path.join(os.path.dirname(__file__), 'cogs/')):
     filename, ext = os.path.splitext(file)
@@ -48,7 +40,6 @@ for extension in STARTUP_EXTENSIONS:
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=Activity(name=f'on {felix_version}', type=0))
     print('Felix-Python started successfully')
     return True
 

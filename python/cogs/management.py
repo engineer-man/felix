@@ -20,7 +20,10 @@ in the permissions.json file can use the commands.
 from discord.ext import commands
 from discord import Activity
 from os import path
+from discord import Activity
+import subprocess
 import json
+
 
 class Management():
     def __init__(self, client):
@@ -29,17 +32,45 @@ class Management():
             self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
 
     async def __local_check(self, ctx):
-        # if await ctx.bot.is_owner(ctx.author):
-        #     return True
         try:
             user_roles = [role.id for role in ctx.message.author.roles]
         except AttributeError:
             return False
         return any(role in self.permitted_roles for role in user_roles)
 
+    async def on_ready(self):
+        felix_version = self.get_version(short=True)
+        await self.client.change_presence(
+            activity=Activity(name=f'on {felix_version}', type=0)
+        )
+
+    def get_version(self, short=False):
+        try:
+            gitlog = subprocess.check_output(
+                ['git', 'log', '-n', '1']).decode()
+            version = gitlog.split('\n')[0].split(' ')[1]
+            if short:
+                version = version[:8]
+            return version
+        except:
+            return 'unknown'
+
+    # ----------------------------------------------
+    # Function to disply the version
+    # ----------------------------------------------
+    @commands.command(name='version',
+                      brief='Show latest commit hash',
+                      description='Show latest commit hash',
+                      hidden=True,
+                      )
+    async def version(self, ctx):
+        version = self.get_version()
+        await ctx.send(f'```css\nCurrent Version: [{version}]```')
+
     # ----------------------------------------------
     # Function to load extensions
     # ----------------------------------------------
+
     @commands.command(name='load',
                       brief='Load bot extension',
                       description='Load bot extension',
@@ -120,7 +151,7 @@ class Management():
                       + '    streaming [linkToStream] [game],\n'
                       + '    listening [music],\n'
                       + '    watching [movie]',
-                      hidden = True,
+                      hidden=True,
                       )
     async def change_activity(self, ctx, *activity: str):
         if not activity:
@@ -141,6 +172,7 @@ class Management():
             activity=Activity(name=_name, url=_url, type=_type)
         )
         return True
+
 
 def setup(client):
     client.add_cog(Management(client))
