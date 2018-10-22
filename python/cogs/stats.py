@@ -13,6 +13,7 @@ or by calling it with the path and the name of this python file
 
 from discord.ext import commands
 from discord import Embed, Color
+from os import path
 import json
 import requests
 import time
@@ -25,6 +26,15 @@ class Stats():
     def __init__(self, client):
         self.client = client
         self.last_time = []
+        with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
+            self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
+
+    async def __local_check(self, ctx):
+        try:
+            user_roles = [role.id for role in ctx.message.author.roles]
+        except AttributeError:
+            return False
+        return any(role in self.permitted_roles for role in user_roles)
 
     @commands.command(
         name='stats',
