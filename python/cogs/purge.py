@@ -78,11 +78,12 @@ class Purge():
             if n2:
                 n = n2
 
+            userids = [user.id for user in users]
             def check(m):
-                userids = [user.id for user in users]
                 return any(m.author.id == userid for userid in userids)
 
-            msg_limit = n+1 if n else 100
+            msg_limit = n if n else 100
+            await ctx.message.delete()
             await channel.purge(limit=msg_limit, check=check, before=None)
         return True
 
