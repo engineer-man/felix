@@ -25,7 +25,7 @@ with open("../config.json", "r") as conffile:
 class Stats():
     def __init__(self, client):
         self.client = client
-        self.last_time = []
+        self.last_time = self.load_stats()
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
             self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
 
@@ -35,6 +35,20 @@ class Stats():
         except AttributeError:
             return False
         return any(role in self.permitted_roles for role in user_roles)
+
+    def load_state(self):
+        with open("../state.json", "r") as statefile:
+            return json.load(statefile)
+
+    def load_stats(self):
+        state = self.load_state()
+        return state.get('stats', [])
+
+    def save_stats(self, stats):
+        state = self.load_state()
+        state['stats'] = stats
+        with open("../state.json", "w") as statefile:
+            return json.dump(state, statefile, indent=1)
 
     @commands.command(
         name='stats',
@@ -64,6 +78,7 @@ class Stats():
             views_diff = views - self.last_time[4]
 
         self.last_time = [time.time(), disc_members, subs, vids, views]
+        self.save_stats(self.last_time)
 
         # What an abomination
         response = [
