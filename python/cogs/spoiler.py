@@ -8,7 +8,6 @@ as an argument (without .py)
     example:    bot.load_extension('example')
 or by calling it with the path and the name of this python file
     example:    bot.load_extension('folder.example')
-
 """
 
 from discord.ext import commands
@@ -21,7 +20,7 @@ class Spoiler():
         self.client = client
         self.spoilers = {}
         self.qm = '❓'
-        self.timeout = 30
+        self.timeout = 60
 
     def get_spoiler_embed(self, title, user, text=None):
         description = text or f'React with {self.qm} to reveal the spoiler.'
@@ -65,13 +64,13 @@ class Spoiler():
                 f'Hi {user.name}, please tell me the title of your spoiler.'
             )
             msg_title = await self.client.wait_for('message',
-                                                check=check,
-                                                timeout=self.timeout)
+                                                   check=check,
+                                                   timeout=self.timeout)
             title = msg_title.content
             await user.send('Okay, now tell me the text of your spoiler.')
             msg_text = await self.client.wait_for('message',
-                                                check=check,
-                                                timeout=self.timeout)
+                                                  check=check,
+                                                  timeout=self.timeout)
             text = msg_text.content
         except asyncio.TimeoutError:
             await user.send(f'TIMEOUT - waited more than {self.timeout} sec')

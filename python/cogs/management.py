@@ -7,6 +7,10 @@ Commands:
     reload          reload an extension / cog
     cogs            show currently active extensions / cogs
     activity        set the bot's status message
+    version         show the hash of the latest commit
+
+Events:
+    on_ready        Set the bot's status to show the hash of the latest commit
 
 Load the cog by calling client.load_extension with the name of this python file
 as an argument (without the file-type extension)

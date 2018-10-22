@@ -11,19 +11,16 @@ or by calling it with the path and the name of this python file
     example:    bot.load_extension('my_extensions.chatlog')
 """
 from discord.ext import commands
-from os import path
 from datetime import datetime
 
-# set up log paths
-LOG_DIR = path.join(path.dirname(__file__), '../../logs/')
-LOG_FILENAME = 'discord_chat.log'
-# LOG_FILENAME = f'discord_{datetime.now().strftime("%Y-%m-%dT%H%M%S")}.log'
+# set up log path
+LOG_FILENAME = '../logs/discord_chat.log'
 
 
 class ChatLog():
     def __init__(self, client):
         self.client = client
-        self.logfile = open(LOG_DIR + LOG_FILENAME, 'a', encoding='utf-8')
+        self.logfile = open(LOG_FILENAME, 'a', encoding='utf-8')
 
     async def on_message(self, msg):
         if msg.author.bot:

@@ -8,8 +8,8 @@ Each user only has 1 vote and the bot will remove previous votes if a user
 votes a second time.
 The bot will also remove any new reactions added to the message.
 
-NOTE that the bot can only check reactions on the last 5000 messages it saw.
-So after 5000 messages (by default) the poll monitoring breaks.
+NOTE that the bot can only check reactions on the last 15000 messages it saw.
+So after 15000 messages (by default) the poll monitoring breaks.
 It also breaks if the bot-cog is reloaded or the bot is restarted.
 
 Load the cog by calling client.load_extension with the name of this python file
@@ -74,8 +74,6 @@ class Poll():
             self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
 
     async def __local_check(self, ctx):
-        # if await ctx.bot.is_owner(ctx.author):
-        #     return True
         try:
             user_roles = [role.id for role in ctx.message.author.roles]
         except AttributeError:

@@ -7,7 +7,7 @@ Commands:
                     - If you specify a number the last x messages in the current
                       channel will be deleted
                     - If you specify a list of users all messages of these
-                      users within the last 1000 messages will be deleted
+                      users within the last 100 messages will be deleted
                     - If you specify both, all messages of the specified users
                       that are within the last x messages will be deleted.
     purge all       All messages in the channel will be deleted.
@@ -35,13 +35,10 @@ import asyncio
 class Purge():
     def __init__(self, client):
         self.client = client
-        # Load id's of roles that are allowed to use commands from this cog
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
             self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
 
     async def __local_check(self, ctx):
-        # if await ctx.bot.is_owner(ctx.author):
-        #     return True
         try:
             user_roles = [role.id for role in ctx.message.author.roles]
         except AttributeError:
@@ -75,7 +72,7 @@ class Purge():
             return
         channel = ctx.message.channel
         if not users:
-            msg_limit = n+1 if n else 1000
+            msg_limit = n+1 if n else 100
             await channel.purge(limit=msg_limit, check=None, before=None)
         else:
             if n2:
@@ -84,7 +81,8 @@ class Purge():
             def check(m):
                 userids = [user.id for user in users]
                 return any(m.author.id == userid for userid in userids)
-            msg_limit = n+1 if n else 1000
+
+            msg_limit = n+1 if n else 100
             await channel.purge(limit=msg_limit, check=check, before=None)
         return True
 
@@ -101,7 +99,9 @@ class Purge():
             return m.author.id == caller.id and m.channel.id == channel.id
 
         confirmation_q = await channel.send(
-            f'Please confirm purging of all messages. (enter the channel name)'
+            'Are you sure you want to delete all messages in this channel?' +
+            '\nThis might take a very long time.' +
+            '\nIf you are sure please enter the channel name.'
         )
         try:
             confirmation_a = await self.client.wait_for('message',

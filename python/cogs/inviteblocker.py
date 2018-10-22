@@ -33,10 +33,7 @@ class InviteBlocker():
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
             self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
 
-
     async def __local_check(self, ctx):
-        # if await ctx.bot.is_owner(ctx.author):
-        #     return True
         try:
             user_roles = [role.id for role in ctx.message.author.roles]
         except AttributeError:

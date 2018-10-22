@@ -9,7 +9,6 @@ as an argument (without the file-type extension)
     example:    bot.load_extension('duckresponse')
 or by calling it with the path and the name of this python file
     example:    bot.load_extension('cogs.duckresponse')
-
 """
 
 from discord.ext import commands
