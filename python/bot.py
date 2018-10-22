@@ -19,8 +19,11 @@ import os
 with open("../config.json", "r") as conffile:
     config = json.load(conffile)
 
-git_log = subprocess.check_output(['git', 'log', '-n' ,'1']).decode()
-felix_version = git_log.split('\n')[0].split(' ')[1][:8]
+try:
+    git_log = subprocess.check_output(['git', 'log', '-n' ,'1']).decode()
+    felix_version = git_log.split('\n')[0].split(' ')[1][:8]
+except:
+    felix_version = 'unknown'
 
 bot = Bot(command_prefix=('felix ', '~ '),
           description='Hi I am Felix!',
