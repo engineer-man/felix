@@ -25,6 +25,7 @@ from discord.ext import commands
 from discord import Activity
 from os import path
 from discord import Activity
+import requests
 import subprocess
 import json
 
@@ -59,6 +60,23 @@ class Management():
         except:
             return 'unknown'
 
+    def get_num_remote_commits(self):
+        last_commit = self.get_version()
+        ext = f'?per_page=10&sha=master'
+        repo = 'engineer-man/felix'
+        nxt = f'https://api.github.com/repos/{repo}/commits{ext}'
+        repo_data = []
+        repo_shas = []
+        while last_commit not in repo_shas:
+            r = requests.get(nxt)
+            repo_data += r.json()
+            repo_shas = [x['sha'] for x in repo_data]
+            try:
+                nxt = r.links['next']['url']
+            except:
+                nxt = ''
+        return repo_shas.index(last_commit)
+
     # ----------------------------------------------
     # Function to disply the version
     # ----------------------------------------------
@@ -69,7 +87,12 @@ class Management():
                       )
     async def version(self, ctx):
         version = self.get_version()
-        await ctx.send(f'```css\nCurrent Version: [{version}]```')
+        remote_commits = self.get_num_remote_commits()
+        uptodate = "I am up to date with 'origin/master'"
+        if remote_commits:
+            uptodate = f"I am [{remote_commits}] commits behind 'origin/master'"
+        await ctx.send(f'```css\nCurrent Version: [{version}]\n{uptodate}```')
+
 
     # ----------------------------------------------
     # Function to load extensions
