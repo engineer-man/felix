@@ -44,24 +44,26 @@ class Management():
         return any(role in self.permitted_roles for role in user_roles)
 
     async def on_ready(self):
-        felix_version = self.get_version(short=True)
+        felix_version = self.get_version_info()[0][:7]
         await self.client.change_presence(
             activity=Activity(name=f'on {felix_version}', type=0)
         )
 
-    def get_version(self, short=False):
+    def get_version_info(self):
+        version = 'unknown'
+        date = 'unknown'
         try:
             gitlog = subprocess.check_output(
-                ['git', 'log', '-n', '1']).decode()
+                ['git', 'log', '-n', '1', '--date=iso']).decode()
             version = gitlog.split('\n')[0].split(' ')[1]
-            if short:
-                version = version[:8]
-            return version
+            date = gitlog.split('\n')[2][5:].strip()
+            date = date.replace(' +', 'Z+').replace(' ', 'T')
         except:
-            return 'unknown'
+            pass
+        return (version, date)
 
     def get_num_remote_commits(self):
-        last_commit = self.get_version()
+        last_commit = self.get_version_info()[0]
         ext = f'?per_page=10&sha=master'
         repo = 'engineer-man/felix'
         nxt = f'https://api.github.com/repos/{repo}/commits{ext}'
@@ -75,7 +77,8 @@ class Management():
                 nxt = r.links['next']['url']
             except:
                 nxt = ''
-        return repo_shas.index(last_commit)
+        return (repo_shas.index(last_commit),
+                repo_data[0]['commit']['author']['date'])
 
     # ----------------------------------------------
     # Function to disply the version
@@ -86,13 +89,16 @@ class Management():
                       hidden=True,
                       )
     async def version(self, ctx):
-        version = self.get_version()
-        remote_commits = self.get_num_remote_commits()
-        uptodate = "I am up to date with 'origin/master'"
+        version, date = self.get_version_info()
+        remote_commits, remote_date = self.get_num_remote_commits()
+        status = "I am up to date with 'origin/master'"
         if remote_commits:
-            uptodate = f"I am [{remote_commits}] commits behind 'origin/master'"
-        await ctx.send(f'```css\nCurrent Version: [{version}]\n{uptodate}```')
-
+            status = f"I am [{remote_commits}] commits behind 'origin/master'"\
+                f" [{remote_date}]"
+        await ctx.send(
+            f'```css\nCurrent Version: [{version[:7]}].from [{date}]' +
+            f'\n{status}```'
+        )
 
     # ----------------------------------------------
     # Function to load extensions
