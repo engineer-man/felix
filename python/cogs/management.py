@@ -146,14 +146,23 @@ class Management():
                       aliases=['re']
                       )
     async def reload_extension(self, ctx, extension_name: str):
-        if extension_name in self.client.extensions:
-            self.client.unload_extension(extension_name)
-        try:
-            self.client.load_extension(extension_name)
-        except Exception as e:
-            await ctx.send(f'```py\n{type(e).__name__}: {str(e)}\n```')
+        target_extensions = [extension_name]
+        if extension_name in 'all':
+            target_extensions = list(self.client.extensions.keys())
+        elif extension_name not in self.client.extensions:
             return
-        await ctx.send(f'```css\nExtension [{extension_name}] reloaded.```')
+        result = []
+        for ext in target_extensions:
+            self.client.unload_extension(ext)
+            try:
+                self.client.load_extension(ext)
+                result.append(f'Extension [{ext}] reloaded.')
+            except Exception as e:
+                await ctx.send(f'```py\n{ext}:{type(e).__name__}:{str(e)}\n```')
+                result.append(f'#ERROR loading [{ext}]')
+                continue
+        result = '\n'.join(result)
+        await ctx.send(f'```css\n{result}```')
 
     # ----------------------------------------------
     # Function to get bot extensions
