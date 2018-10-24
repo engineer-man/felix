@@ -247,7 +247,8 @@ class Management():
             if not name == display_name:
                 aka[name] = aka.get(name, []) + [display_name]
         page = []
-        for key, value in sorted(name_count.items(), key=lambda x: x[1]):
+        for key, value in sorted(name_count.items(),
+                                 key=lambda x: x[1], reverse=True):
             if value == 1:
                 break
             if len('\n'.join(page)) > 1900:
