@@ -8,6 +8,8 @@ Commands:
     cogs            show currently active extensions / cogs
     activity        set the bot's status message
     version         show the hash of the latest commit
+    list            make felix compute a list
+        duplicates      find duplicate usernames
 
 Events:
     on_ready        Set the bot's status to show the hash of the latest commit
@@ -205,6 +207,54 @@ class Management():
             activity=Activity(name=_name, url=_url, type=_type)
         )
         return True
+
+    # ----------------------------------------------
+    # Function Group to clear channel of messages
+    # ----------------------------------------------
+    @commands.group(
+        invoke_without_command=True,
+        name='list',
+        brief='List stuff',
+        description='Make Felix compute a list',
+        hidden=True
+    )
+    @commands.guild_only()
+    async def _list(self, ctx):
+        await ctx.send('I can list stuff. Type felix help list to see what.')
+        return True
+
+    @_list.command(name='duplicates',
+                   brief='List duplicate usernames',
+                   description='List duplicate usernames')
+    @commands.guild_only()
+    async def duplicates(self, ctx):
+        name_count = {}
+        aka = {}
+        pages = []
+        usernames = [(x.name, x.display_name) for x in ctx.guild.members]
+        l_max = max([len(x[0]) for x in usernames]) + 1
+        for name, display_name in usernames:
+            name_count[name] = name_count.get(name, 0) + 1
+            if not name == display_name:
+                aka[name] = aka.get(name, []) + [display_name]
+        page = []
+        for key, value in sorted(name_count.items(), key=lambda x: x[1]):
+            if value == 1:
+                break
+            if len('\n'.join(page)) > 1900:
+                pages.append(page)
+                page = []
+            a = ', '.join(aka.get(key, []))
+            page.append(f'{value}x {key.ljust(l_max)}' + f'aka: {a}' * bool(a))
+
+        if page:
+            pages.append(page)
+
+        if not pages:
+            await ctx.send('No duplicate usernames found')
+
+        for n, page in enumerate(pages):
+            await ctx.send(f'{n+1}/{len(pages)}\n```' + '\n'.join(page) + '```')
 
 
 def setup(client):
