@@ -14,6 +14,7 @@ or by calling it with the path and the name of this python file
 from discord.ext import commands
 from discord import Embed, Color
 from os import path
+from datetime import datetime, timedelta
 import json
 import requests
 import time
@@ -102,16 +103,31 @@ class Stats():
         await ctx.send(''.join(response))
 
     @stats.command(name='users_30d',
-                   brief='Brief Description',
-                   description='Longer description')
+                   brief='30 day user stats',
+                   description='Show a break down of top users by messages for past 30 days')
     @commands.guild_only()
     async def users_30d(self, ctx):
-        print('test Users30d')
-        # users_30d subcommand code here here
+        params = {
+            'start': (datetime.now() - timedelta(days=30)).isoformat(),
+            'limit': 25,
+        }
+        res = requests.get('https://emkc.org/api/v1/stats/discord/messages', params=params).json()
+
+        # get max name len
+        padding = 0
+        for i in res:
+            if len(i['user']) > padding:
+                padding = len(i['user'])
+
+        formatted = [
+            i['user'].ljust(padding + 2) + str(i['messages']) for i in res
+        ]
+
+        await ctx.send('```css\n' + '\n'.join(formatted) + '```')
 
     @stats.command(name='channels_30d',
-                   brief='Brief Description',
-                   description='Longer description')
+                   brief='30 day channel stats',
+                   description='Show a break down of top channels by messages for past 30 days')
     @commands.guild_only()
     async def channels_30d(self, ctx):
         print('test Channels30d')
