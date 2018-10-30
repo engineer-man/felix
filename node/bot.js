@@ -278,7 +278,7 @@ var handlers = {
         return request
             ({
                 method: 'post',
-                url: 'https://emkc.org/api/v1/piston/execute',
+                url: 'https://emkc.org/api/internal/piston/execute',
                 headers: {
                     Authorization: config.piston_key
                 },
