@@ -280,7 +280,7 @@ var handlers = {
                 method: 'post',
                 url: 'https://emkc.org/api/internal/piston/execute',
                 headers: {
-                    Authorization: config.piston_key
+                    Authorization: config.emkc_key
                 },
                 body: {
                     language,

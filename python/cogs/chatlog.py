@@ -12,6 +12,11 @@ or by calling it with the path and the name of this python file
 """
 from discord.ext import commands
 from datetime import datetime
+import requests
+import json
+
+with open('../config.json', 'r') as conffile:
+    config = json.load(conffile)
 
 # set up log path
 LOG_FILENAME = '../logs/discord_chat.log'
@@ -38,6 +43,17 @@ class ChatLog():
         ]
         self.logfile.write('|'.join(paginator) + '\n')
         self.logfile.flush()
+        # send chat message to emkc
+        requests.post('https://emkc.org/api/internal/chats',
+            headers={
+                'authorization': config['emkc_key']
+            },
+            data={
+                'channel': paginator[1],
+                'user': paginator[2],
+                'message': paginator[3],
+                'timestamp': paginator[0]
+            })
 
 
 def setup(client):
