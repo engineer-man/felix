@@ -50,7 +50,8 @@ class Stats():
         with open("../state.json", "w") as statefile:
             return json.dump(state, statefile, indent=1)
 
-    @commands.command(
+    @commands.group(
+        invoke_without_command=True,
         name='stats',
         brief='Print member numbers',
         description='Print the number of YouTube subs and Discord members',
@@ -99,6 +100,22 @@ class Stats():
             f'{(str(time_diff) + " minutes ago") if time_diff >= 0 else "N/A"}`'
         ]
         await ctx.send(''.join(response))
+
+    @stats.command(name='users_30d',
+                   brief='Brief Description',
+                   description='Longer description')
+    @commands.guild_only()
+    async def users_30d(self, ctx):
+        print('test Users30d')
+        # users_30d subcommand code here here
+
+    @stats.command(name='channels_30d',
+                   brief='Brief Description',
+                   description='Longer description')
+    @commands.guild_only()
+    async def channels_30d(self, ctx):
+        print('test Channels30d')
+        # channels_30d subcommand code here here
 
 
 def setup(client):
