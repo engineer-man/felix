@@ -18,6 +18,7 @@ from datetime import datetime, timedelta
 import json
 import requests
 import time
+import typing
 
 with open("../config.json", "r") as conffile:
     config = json.load(conffile)
@@ -102,22 +103,26 @@ class Stats():
         ]
         await ctx.send(''.join(response))
 
-    @stats.command(name='users_30d',
-                   brief='30 day user stats',
-                   description='Show a break down of top users by messages for past 30 days')
+    @stats.command(
+        name='users',
+        brief='User message stats',
+        description='Show top users by messages for past n days',
+        aliases=['users_30d'])
     @commands.guild_only()
-    async def users_30d(self, ctx):
+    async def users(self, ctx, n: typing.Optional[int] = 30):
         params = {
-            'start': (datetime.now() - timedelta(days=30)).isoformat(),
+            'start': (datetime.now() - timedelta(days=n)).isoformat(),
             'limit': 25,
         }
-        res = requests.get('https://emkc.org/api/v1/stats/discord/messages', params=params).json()
+        res = requests.get(
+            'https://emkc.org/api/v1/stats/discord/messages', params=params
+        ).json()
 
-        # get max name len
+        # get max name len (ternary expression is about 50% faster here)
         padding = 0
         for i in res:
-            if len(i['user']) > padding:
-                padding = len(i['user'])
+            l = len(i['user'])
+            padding = l if l > padding else padding
 
         formatted = [
             i['user'].ljust(padding + 2) + str(i['messages']) for i in res
@@ -125,15 +130,17 @@ class Stats():
 
         await ctx.send('```css\n' + '\n'.join(formatted) + '```')
 
-    @stats.command(name='channels_30d',
-                   brief='30 day channel stats',
-                   description='Show a break down of top channels by messages for past 30 days')
+    @stats.command(
+        name='channels',
+        brief='Channel message stats',
+        description='Show top channels by messages for past n days',
+        aliases=['channels_30d'])
     @commands.guild_only()
-    async def channels_30d(self, ctx):
+    async def channels(self, ctx, n: typing.Optional[int] = 30):
         print('test Channels30d')
         # channels_30d subcommand code here here
 
 
 def setup(client):
-    """This is called then the cog is loaded via load_extension"""
+    """This is called when the cog is loaded via load_extension"""
     client.add_cog(Stats(client))

@@ -84,5 +84,5 @@ class Spoiler():
 
 
 def setup(client):
-    """This is called then the cog is loaded via load_extension"""
+    """This is called when the cog is loaded via load_extension"""
     client.add_cog(Spoiler(client))
