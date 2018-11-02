@@ -36,7 +36,7 @@ class ChatLog():
             return
         ch_str = str(msg.channel)
         paginator = [
-            datetime.now().isoformat(),
+            msg.created_at.isoformat(),
             'DM' if ch_str.startswith('Direct Message') else ch_str,
             f'{msg.author.name}#{msg.author.discriminator}',
             msg.content.replace('\n', '\\n'),
