@@ -11,6 +11,7 @@ or by calling it with the path and the name of this python file
     example:    bot.load_extension('my_extensions.chatlog')
 """
 from discord.ext import commands
+from discord import TextChannel
 from datetime import datetime
 import requests
 import json
@@ -31,13 +32,15 @@ class ChatLog():
         if msg.author.bot:
             # Dont log messages of bots
             return
+        if not isinstance(msg.channel, TextChannel):
+            # Don't log DMs
+            return
         if not msg.channel.guild.id == 473161189120147456:
             # Don't log messages on servers other than "EngineerMan"
             return
-        ch_str = str(msg.channel)
         paginator = [
             msg.created_at.isoformat(),
-            'DM' if ch_str.startswith('Direct Message') else ch_str,
+            str(msg.channel),
             f'{msg.author.name}#{msg.author.discriminator}',
             msg.content.replace('\n', '\\n'),
         ]
