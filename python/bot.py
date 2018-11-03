@@ -11,9 +11,11 @@ This bot requires discord.py rewrite
 pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py
 pip install requests
 """
-from discord.ext.commands import Bot
+from discord.ext.commands import Bot, CommandOnCooldown
 import json
 import os
+import sys
+import traceback
 
 with open("../config.json", "r") as conffile:
     config = json.load(conffile)
@@ -49,6 +51,28 @@ async def on_ready():
 async def on_message(message):
     await bot.process_commands(message)
 
+
+@bot.event
+async def on_command_error(ctx, exception):
+    if hasattr(ctx.command, 'on_error'):
+        return
+
+    cog = ctx.cog
+    if cog:
+        attr = f'_{cog.__class__.__name__}__error'
+        if hasattr(cog, attr):
+            return
+
+    if type(exception) == CommandOnCooldown:
+        await ctx.author.send(exception)
+        await ctx.message.delete()
+        print(f'{ctx.command} on cooldown for {ctx.author}', file=sys.stderr)
+        return
+
+    print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
+    traceback.print_exception(
+        type(exception), exception, exception.__traceback__, file=sys.stderr
+    )
 
 bot.run(config["bot_key"])
 print('Felix-Python has exited')

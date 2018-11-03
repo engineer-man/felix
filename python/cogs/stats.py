@@ -60,6 +60,7 @@ class Stats():
         hidden=False,
     )
     @commands.guild_only()
+    @commands.cooldown(1, 3600, commands.BucketType.user)
     async def stats(self, ctx):
         url = ('https://www.googleapis.com/youtube/v3/channels'
                '?part=statistics'
