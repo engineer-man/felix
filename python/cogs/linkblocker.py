@@ -1,6 +1,7 @@
 """This is a cog for a discord.py bot.
-It will auto delete messages that contain discord invite links.
-Offenders will be informed a maximum of 1 time every 10 minutes.
+It will auto delete messages that contain certain links.
+Discord invite link offenders will be informed 1 time every 10 minutes.
+patreon and gofundme links are silently deleted
 
 Commands:
     allow           Specify a user. User is then allowed to post 1
@@ -8,9 +9,9 @@ Commands:
 
 Load the cog by calling client.load_extension with the name of this python file
 as an argument (without the file-type extension)
-    example:    bot.load_extension('inviteblocker')
+    example:    bot.load_extension('linkblocker')
 or by calling it with the path and the name of this python file
-    example:    bot.load_extension('cogs.inviteblocker')
+    example:    bot.load_extension('cogs.linkblocker')
 
 Only users belonging to a role that is specified under the module's name
 in the permissions.json file can use the commands.
@@ -23,8 +24,13 @@ import json
 import re
 import time
 
+FORBIDDEN = [
+    'patreon.com',
+    'gofundme.com'
+]
 
-class InviteBlocker():
+
+class LinkBlocker():
     def __init__(self, client):
         self.client = client
         self.allowed = []
@@ -40,7 +46,27 @@ class InviteBlocker():
             return False
         return any(role in self.permitted_roles for role in user_roles)
 
-    async def check_message(self, msg):
+    # ----------------------------------------------
+    # Message checks
+    # ----------------------------------------------
+    def check_dm(self, msg):
+        """return True if message is a DM"""
+        if isinstance(msg.channel, DMChannel):
+            # Dont check Direct Messages
+            return True
+        return False
+
+    def check_permissions(self, msg):
+        """return True if user is permitted to post links"""
+        author_roles = [role.id for role in msg.author.roles]
+        if not self.client.user == msg.author:
+            if any(role in self.permitted_roles for role in author_roles):
+                # Don't check messages by users with allowed roles
+                return True
+        return False
+
+    async def check_discord(self, msg):
+        """Do stuff and return True if discord link was detected"""
         if isinstance(msg.channel, DMChannel):
             # Dont check Direct Messages
             return False
@@ -68,10 +94,35 @@ class InviteBlocker():
                     'You can ask permission from an engineer-man team member!'
                 )
                 self.naughty_list[str(msg.author.id)] = time.time()
+            return True
+        return False
+
+    async def check_forbidden(self, msg):
+        """Delete message and return True if forbidden link was detected"""
+        if len(re.findall(
+            r'(?i)(http(s)?\:\/\/(www\.)?(' +
+            '|'.join([s.replace('.', '\\.') for s in FORBIDDEN]) +
+            '))',
+            msg.content
+        )):
+            await msg.delete()
+            return True
+        return False
 
     # ----------------------------------------------
     # Event listeners
     # ----------------------------------------------
+    async def check_message(self, msg):
+        """Run all checks on a message"""
+        if self.check_dm(msg):
+            return
+        if self.check_permissions(msg):
+            return
+        if await self.check_discord(msg):
+            return
+        if await self.check_forbidden(msg):
+            return
+
     async def on_message(self, msg):
         await self.check_message(msg)
 
@@ -94,4 +145,4 @@ class InviteBlocker():
 
 
 def setup(client):
-    client.add_cog(InviteBlocker(client))
+    client.add_cog(LinkBlocker(client))
