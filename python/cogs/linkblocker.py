@@ -26,7 +26,8 @@ import time
 
 FORBIDDEN = [
     'patreon.com',
-    'gofundme.com'
+    'gofundme.com',
+    'gofund.me'
 ]
 
 
