@@ -63,11 +63,13 @@ class Purge():
         hidden=True,
     )
     @commands.guild_only()
-    async def purge(self, ctx,
-                    n: typing.Optional[int] = 0,
-                    users: commands.Greedy[Member] = [],
-                    n2: typing.Optional[int] = 0,
-                    ):
+    async def purge(
+        self, ctx,
+        n: typing.Optional[int] = 0,
+        users: commands.Greedy[Member] = [],
+        n2: typing.Optional[int] = 0,
+        # This allows the command to be used with either order of [num] [user]
+    ):
         if not users and not n:
             return
         channel = ctx.message.channel
@@ -79,6 +81,7 @@ class Purge():
                 n = n2
 
             userids = [user.id for user in users]
+
             def check(m):
                 return any(m.author.id == userid for userid in userids)
 
@@ -87,10 +90,11 @@ class Purge():
             await channel.purge(limit=msg_limit, check=check, before=None)
         return True
 
-    @purge.command(name='all',
-                   brief='Clear all messages in current channel',
-                   description='Clear all messages in current channel\n' +
-                   'A security question will be asked before proceeding')
+    @purge.command(
+        name='all',
+        brief='Clear all messages in current channel',
+        description='Clear all messages in current channel\n' +
+        'A security question will be asked before proceeding')
     @commands.guild_only()
     async def purge_all(self, ctx):
         channel = ctx.message.channel

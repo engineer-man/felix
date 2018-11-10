@@ -12,7 +12,7 @@ or by calling it with the path and the name of this python file
 """
 
 from discord.ext import commands
-from discord import Embed, Color, Member
+from discord import Member
 from os import path
 from datetime import datetime, timedelta
 import json
@@ -119,11 +119,7 @@ class Stats():
             'https://emkc.org/api/v1/stats/discord/messages', params=params
         ).json()
 
-        # get max name len (ternary expression is about 50% faster here)
-        padding = 0
-        for i in res:
-            l = len(i['user'])
-            padding = l if l > padding else padding
+        padding = max([len(i['user']) for i in res])
 
         formatted = [
             i['user'].ljust(padding + 2) + str(i['messages']) for i in res
@@ -137,7 +133,11 @@ class Stats():
         description='Show top channels by messages for past n days',
         aliases=['channels_30d'])
     @commands.guild_only()
-    async def channels(self, ctx, n: typing.Optional[int] = 30, user: Member = None):
+    async def channels(
+        self, ctx,
+        n: typing.Optional[int] = 30,
+        user: Member = None
+    ):
         params = {
             'start': (datetime.now() - timedelta(days=n)).isoformat(),
             'limit': 25,
@@ -150,11 +150,7 @@ class Stats():
             'https://emkc.org/api/v1/stats/discord/channels', params=params
         ).json()
 
-        # get max name len (ternary expression is about 50% faster here)
-        padding = 0
-        for i in res:
-            l = len(i['channel'])
-            padding = l if l > padding else padding
+        padding = max([len(i['channel']) for i in res])
 
         formatted = [
             i['channel'].ljust(padding + 2) + str(i['messages']) for i in res

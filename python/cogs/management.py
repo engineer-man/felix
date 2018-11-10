@@ -85,11 +85,12 @@ class Management():
     # ----------------------------------------------
     # Function to disply the version
     # ----------------------------------------------
-    @commands.command(name='version',
-                      brief='Show latest commit hash',
-                      description='Show latest commit hash',
-                      hidden=True,
-                      )
+    @commands.command(
+        name='version',
+        brief='Show latest commit hash',
+        description='Show latest commit hash',
+        hidden=True,
+    )
     async def version(self, ctx):
         version, date = self.get_version_info()
         remote_commits, remote_date = self.get_num_remote_commits()
@@ -105,12 +106,12 @@ class Management():
     # ----------------------------------------------
     # Function to load extensions
     # ----------------------------------------------
-
-    @commands.command(name='load',
-                      brief='Load bot extension',
-                      description='Load bot extension',
-                      hidden=True,
-                      )
+    @commands.command(
+        name='load',
+        brief='Load bot extension',
+        description='Load bot extension',
+        hidden=True,
+    )
     async def load_extension(self, ctx, extension_name: str):
         try:
             self.client.load_extension(extension_name)
@@ -122,11 +123,12 @@ class Management():
     # ----------------------------------------------
     # Function to unload extensions
     # ----------------------------------------------
-    @commands.command(name='unload',
-                      brief='Unload bot extension',
-                      description='Unload bot extension',
-                      hidden=True,
-                      )
+    @commands.command(
+        name='unload',
+        brief='Unload bot extension',
+        description='Unload bot extension',
+        hidden=True,
+    )
     async def unload_extension(self, ctx, extension_name: str):
         if extension_name.lower() in 'cogs.management':
             await ctx.send(f'```diff\n- Cannot unload {extension_name}```')
@@ -139,12 +141,13 @@ class Management():
     # ----------------------------------------------
     # Function to reload extensions
     # ----------------------------------------------
-    @commands.command(name='reload',
-                      brief='Reload bot extension',
-                      description='Reload bot extension',
-                      hidden=True,
-                      aliases=['re']
-                      )
+    @commands.command(
+        name='reload',
+        brief='Reload bot extension',
+        description='Reload bot extension',
+        hidden=True,
+        aliases=['re']
+    )
     async def reload_extension(self, ctx, extension_name: str):
         target_extensions = [extension_name]
         if extension_name in 'all':
@@ -167,12 +170,13 @@ class Management():
     # ----------------------------------------------
     # Function to get bot extensions
     # ----------------------------------------------
-    @commands.command(name='cogs',
-                      brief='Get loaded cogs',
-                      description='Get loaded cogs',
-                      aliases=['extensions'],
-                      hidden=True,
-                      )
+    @commands.command(
+        name='cogs',
+        brief='Get loaded cogs',
+        description='Get loaded cogs',
+        aliases=['extensions'],
+        hidden=True,
+    )
     async def print_cogs(self, ctx):
         extensions = self.client.extensions
         response = [
@@ -185,18 +189,19 @@ class Management():
     # ----------------------------------------------
     # Function to set the bot's status message
     # ----------------------------------------------
-    @commands.command(name='activity',
-                      brief='Set Bot activity',
-                      description='Set Bot activity.\n\n'
-                      + 'Available activites:\n'
-                      + '  playing, streaming, listening, watching.\n\n'
-                      + 'Example activities:\n'
-                      + '    playing [game],\n'
-                      + '    streaming [linkToStream] [game],\n'
-                      + '    listening [music],\n'
-                      + '    watching [movie]',
-                      hidden=True,
-                      )
+    @commands.command(
+        name='activity',
+        brief='Set Bot activity',
+        description='Set Bot activity.\n\n'
+        + 'Available activites:\n'
+        + '  playing, streaming, listening, watching.\n\n'
+        + 'Example activities:\n'
+        + '    playing [game],\n'
+        + '    streaming [linkToStream] [game],\n'
+        + '    listening [music],\n'
+        + '    watching [movie]',
+        hidden=True,
+    )
     async def change_activity(self, ctx, *activity: str):
         if not activity:
             await self.client.change_presence(activity=None)
@@ -232,9 +237,10 @@ class Management():
         await ctx.send('I can list stuff. Type felix help list to see what.')
         return True
 
-    @_list.command(name='duplicates',
-                   brief='List duplicate usernames',
-                   description='List duplicate usernames')
+    @_list.command(
+        name='duplicates',
+        brief='List duplicate usernames',
+        description='List duplicate usernames')
     @commands.guild_only()
     async def duplicates(self, ctx):
         name_count = {}

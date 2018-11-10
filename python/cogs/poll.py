@@ -101,16 +101,17 @@ class Poll():
     # Function to make a poll
     # ----------------------------------------------
 
-    @commands.command(name='poll',
-                      brief='Create a Poll',
-                      description='Example use:' +
-                      '\npoll\nQuestion' +
-                      '\n0. Possibility0' +
-                      '\n1: Possibility1' +
-                      '\na. Possibility2' +
-                      '\nb) Possibility3',
-                      hidden=True,
-                      )
+    @commands.command(
+        name='poll',
+        brief='Create a Poll',
+        description='Example use:' +
+        '\npoll\nQuestion' +
+        '\n0. Possibility0' +
+        '\n1: Possibility1' +
+        '\na. Possibility2' +
+        '\nb) Possibility3',
+        hidden=True,
+    )
     async def make_poll(self, ctx):
         poll = ctx.message.content
         if poll in 'felix poll ':

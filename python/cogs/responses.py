@@ -59,6 +59,11 @@ class Responses():
         ):
             await msg.channel.send(self.get_year_string())
 
+        if re.search(
+            r'(?i)send bobs and vagene',
+            msg.content
+        ):
+            await msg.channel.send('😏 *sensible chuckle*')
 
 def setup(client):
     client.add_cog(Responses(client))
