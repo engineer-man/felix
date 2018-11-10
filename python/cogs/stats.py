@@ -12,7 +12,7 @@ or by calling it with the path and the name of this python file
 """
 
 from discord.ext import commands
-from discord import Embed, Color
+from discord import Embed, Color, Member
 from os import path
 from datetime import datetime, timedelta
 import json
@@ -137,9 +137,30 @@ class Stats():
         description='Show top channels by messages for past n days',
         aliases=['channels_30d'])
     @commands.guild_only()
-    async def channels(self, ctx, n: typing.Optional[int] = 30):
-        print('test Channels30d')
-        # channels_30d subcommand code here here
+    async def channels(self, ctx, n: typing.Optional[int] = 30, user: Member = None):
+        params = {
+            'start': (datetime.now() - timedelta(days=n)).isoformat(),
+            'limit': 25,
+        }
+
+        if user:
+            params['user'] = user
+
+        res = requests.get(
+            'https://emkc.org/api/v1/stats/discord/channels', params=params
+        ).json()
+
+        # get max name len (ternary expression is about 50% faster here)
+        padding = 0
+        for i in res:
+            l = len(i['channel'])
+            padding = l if l > padding else padding
+
+        formatted = [
+            i['channel'].ljust(padding + 2) + str(i['messages']) for i in res
+        ]
+
+        await ctx.send('```css\n' + '\n'.join(formatted) + '```')
 
 
 def setup(client):
