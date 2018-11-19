@@ -69,7 +69,6 @@ class LinkBlocker():
                 await msg.delete()
             elif msg.author.id in self.allowed_once:
                 self.allowed_once.remove(msg.author.id)
-                self.naughty_list.pop(str(msg.author.id))
             else:
                 await msg.delete()
                 if str(msg.author.id) in self.naughty_list:
@@ -79,9 +78,9 @@ class LinkBlocker():
                     else:
                         return
                 await msg.channel.send(
-                    f'Sorry {msg.author.mention}. ' +
-                    'Posting Links to other servers is not allowed.\n' +
-                    'You can ask permission from a <@&473167481624854541> !'
+                    f'<@&500710389131247636>\nSorry {msg.author.mention}. ' +
+                    'Posting links to other servers is not allowed.\n' +
+                    'You can ask permission from an engineer-man team member!'
                 )
                 self.naughty_list[str(msg.author.id)] = time.time()
             return True
