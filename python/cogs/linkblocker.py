@@ -34,9 +34,9 @@ FORBIDDEN = [
 class LinkBlocker():
     def __init__(self, client):
         self.client = client
-        self.allowed = []
+        self.allowed_once = []
         self.naughty_list = {}
-        self.naughty_list_time = 600
+        self.NAUGHTY_LIST_TIME = 600
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
             self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
 
@@ -50,56 +50,45 @@ class LinkBlocker():
     # ----------------------------------------------
     # Message checks
     # ----------------------------------------------
-    def check_dm(self, msg):
+    def is_dm(self, msg):
         """return True if message is a DM"""
-        if isinstance(msg.channel, DMChannel):
-            # Dont check Direct Messages
-            return True
-        return False
+        return isinstance(msg.channel, DMChannel)
 
-    def check_permissions(self, msg):
+    def is_allowed(self, msg):
         """return True if user is permitted to post links"""
         author_roles = [role.id for role in msg.author.roles]
         if not self.client.user == msg.author:
             if any(role in self.permitted_roles for role in author_roles):
-                # Don't check messages by users with allowed roles
                 return True
         return False
 
-    async def check_discord(self, msg):
-        """Do stuff and return True if discord link was detected"""
-        if isinstance(msg.channel, DMChannel):
-            # Dont check Direct Messages
-            return False
-        author_roles = [role.id for role in msg.author.roles]
-        if not self.client.user == msg.author:
-            if any(role in self.permitted_roles for role in author_roles):
-                # Don't check messages by users with allowed roles
-                return False
+    async def has_discord_link(self, msg):
+        """Handle message and return True if a discord link was detected"""
         if len(re.findall(r'(?i)(discord\.(gg|io|me)\/\S+)', msg.content)):
             if self.client.user == msg.author:
                 await msg.delete()
-            elif msg.author.id in self.allowed:
-                self.allowed.remove(msg.author.id)
+            elif msg.author.id in self.allowed_once:
+                self.allowed_once.remove(msg.author.id)
+                self.naughty_list.pop(str(msg.author.id))
             else:
                 await msg.delete()
                 if str(msg.author.id) in self.naughty_list:
                     last_time = self.naughty_list[str(msg.author.id)]
-                    if time.time() - last_time > self.naughty_list_time:
+                    if time.time() - last_time > self.NAUGHTY_LIST_TIME:
                         self.naughty_list.pop(str(msg.author.id))
                     else:
                         return
                 await msg.channel.send(
                     f'Sorry {msg.author.mention}. ' +
                     'Posting Links to other servers is not allowed.\n' +
-                    'You can ask permission from an engineer-man team member!'
+                    'You can ask permission from a <@&473167481624854541> !'
                 )
                 self.naughty_list[str(msg.author.id)] = time.time()
             return True
         return False
 
-    async def check_forbidden(self, msg):
-        """Delete message and return True if forbidden link was detected"""
+    async def has_forbidden_text(self, msg):
+        """Delete message and return True if forbidden text was detected"""
         if len(re.findall(
             r'(?i)(http(s)?\:\/\/(www\.)?(' +
             '|'.join([s.replace('.', '\\.') for s in FORBIDDEN]) +
@@ -114,14 +103,14 @@ class LinkBlocker():
     # Event listeners
     # ----------------------------------------------
     async def check_message(self, msg):
-        """Run all checks on a message"""
-        if self.check_dm(msg):
+        """Run checks on a message"""
+        if self.is_dm(msg):
             return
-        if self.check_permissions(msg):
+        if self.is_allowed(msg):
             return
-        if await self.check_discord(msg):
+        if await self.has_discord_link(msg):
             return
-        if await self.check_forbidden(msg):
+        if await self.has_forbidden_text(msg):
             return
 
     async def on_message(self, msg):
@@ -131,7 +120,7 @@ class LinkBlocker():
         await self.check_message(after)
 
     # ----------------------------------------------
-    # Method to allow 1 discord.gg link
+    # Command to allow 1 discord.gg link
     # ----------------------------------------------
     @commands.command(
         name='allow',
@@ -142,7 +131,7 @@ class LinkBlocker():
     @commands.guild_only()
     async def allow(self, ctx, member: Member):
         await ctx.send(f'Hey {member.mention}, you can post 1 discord.gg link!')
-        self.allowed.append(member.id)
+        self.allowed_once.append(member.id)
 
 
 def setup(client):
