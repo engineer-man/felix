@@ -15,7 +15,7 @@ import json
 import time
 
 # SETTINGS:
-# Users will receive a warnign if they send more than
+# Users will receive a warning if they send more than
 SPAM_NUM_MSG = 10  # Messages
 # Within
 SPAM_TIME = 10  # Seconds
