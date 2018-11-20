@@ -24,9 +24,8 @@ Only users belonging to a role that is specified under the module's name
 in the permissions.json file can use the commands.
 """
 from discord.ext import commands
-from discord import Activity
+from discord import Activity, Embed, Role
 from os import path
-from discord import Activity
 import requests
 import subprocess
 import json
@@ -102,6 +101,25 @@ class Management():
             f'```css\nCurrent Version: [{version[:7]}].from [{date}]' +
             f'\n{status}```'
         )
+
+    # ----------------------------------------------
+    # Function to disply an embed
+    # ----------------------------------------------
+    @commands.command(
+        name='embed',
+        brief='Create a text embed',
+        description='Create a text embed | usage: felix embed Title|Text',
+        hidden=True,
+    )
+    async def embed(self, ctx, *embed_str: str):
+        msg = ctx.message
+        title, text = msg.content[12:].split('|')
+        embed = Embed(
+            title=title,
+            description=text
+        )
+        await ctx.send(embed=embed)
+        await msg.delete()
 
     # ----------------------------------------------
     # Function to load extensions
