@@ -20,10 +20,11 @@ with open("../config.json", "r") as conffile:
     config = json.load(conffile)
 
 API_URL = 'https://adventofcode.com/2018/leaderboard/private/view/208847.json'
-AOC_CHANNEL = 514527842399420427
 EM_SERVER = 473161189120147456
+AOC_CHANNEL = 514527842399420427
 INTERVAL = 180
-cookie = {'session':config['aoc_session']}
+cookie = {'session': config['aoc_session']}
+
 
 class AdventOfCode():
     def __init__(self, client):
@@ -46,16 +47,25 @@ class AdventOfCode():
                 r = requests.get(API_URL, cookies=cookie)
                 current_members = r.json()['members']
                 for member, data in current_members.items():
+                    if member not in self.members:
+                        await channel.send(
+                            f"```css\n#{data['name']} " +
+                            "has just joined the leaderboard.\n```"
+                        )
+                        self.members[member] = {
+                            'completion_day_level': {},
+                            'stars': 0
+                        }
                     if data['stars'] == self.members[member]['stars']:
                         continue
                     new_stats = data['completion_day_level']
                     old_stats = self.members[member]['completion_day_level']
                     current_stats = set()
-                    for k,v in new_stats.items():
+                    for k, v in new_stats.items():
                         for s in v.keys():
                             current_stats.add(f'{k}-{s}')
                     previous_stats = set()
-                    for k,v in old_stats.items():
+                    for k, v in old_stats.items():
                         for s in v.keys():
                             previous_stats.add(f'{k}-{s}')
                     for puzzle in sorted(current_stats):
@@ -78,7 +88,6 @@ class AdventOfCode():
                 await asyncio.sleep(INTERVAL)
         except asyncio.CancelledError:
             pass
-
 
     def __unload(self):
         self.task.cancel()
