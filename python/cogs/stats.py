@@ -57,7 +57,7 @@ class Stats():
         name='stats',
         brief='Print member numbers',
         description='Print the number of YouTube subs and Discord members',
-        hidden=False,
+        hidden=True,
     )
     @commands.guild_only()
     @commands.cooldown(1, 3600, commands.BucketType.user)
