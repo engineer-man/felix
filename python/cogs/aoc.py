@@ -48,14 +48,15 @@ class AdventOfCode():
                 current_members = r.json()['members']
                 for member, data in current_members.items():
                     if member not in self.members:
-                        await channel.send(
-                            f"```css\n#{data['name']} " +
-                            "has just joined the leaderboard.\n```"
+                        msg.append(
+                            f"#{data['name'].replace(' ','_')} " +
+                            "has just joined the leaderboard."
                         )
-                        self.members[member] = {
-                            'completion_day_level': {},
-                            'stars': 0
-                        }
+                        continue
+                        # self.members[member] = {
+                        #     'completion_day_level': {},
+                        #     'stars': 0
+                        # }
                     if data['stars'] == self.members[member]['stars']:
                         continue
                     new_stats = data['completion_day_level']
