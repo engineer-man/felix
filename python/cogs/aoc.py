@@ -74,7 +74,7 @@ class AdventOfCode():
                             day, pzl = puzzle.split('-')
                             msg.append(
                                 f"#{data['name'].replace(' ', '_')} " +
-                                f"solved: [Day {day}] - [Puzzle {pzl}]"
+                                f"solved: [{day} - {pzl}]"
                             )
                 if msg:
                     await channel.send(
