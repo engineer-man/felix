@@ -15,6 +15,7 @@ from discord.ext import commands
 import json
 import asyncio
 import requests
+from datetime import datetime, timedelta
 
 with open("../config.json", "r") as conffile:
     config = json.load(conffile)
@@ -89,6 +90,60 @@ class AdventOfCode():
                 await asyncio.sleep(INTERVAL)
         except asyncio.CancelledError:
             pass
+
+    @commands.command(
+        name='aoc',
+        brief='Show Advent of Code stats for a specific day',
+        description='Show Advent of Code stats for a specific day' +
+                    '\n(only works in #advent-of-code)',
+        hidden=False,
+    )
+    @commands.guild_only()
+    async def aoc(self, ctx, day):
+        day = day.replace('day', '')
+        if not day.isdigit():
+            return
+        if int(day) < 1 or int(day) > 24:
+            return
+        if not ctx.channel.id == AOC_CHANNEL:
+            return
+        r = requests.get(API_URL, cookies=cookie)
+        members = r.json()['members']
+        parts = {'1': [], '2': []}
+        for data in members.values():
+            days = data['completion_day_level']
+            if day not in days:
+                continue
+            d = days[day]
+            for k, v in d.items():
+                parts[k].append((v['get_star_ts'], data['name']))
+
+        for p in '12':
+            paginator = []
+            current = parts[p]
+            if not current:
+                continue
+            paginator.append(f'Advent of Code puzzle [{day}]|[{p}]')
+            first_time = 0
+            for rank, entry in enumerate(sorted(current, key=lambda x: x[0])):
+                if not rank:
+                    first_time = int(entry[0])
+                    paginator.append(
+                        f'{rank+1}.{entry[1].replace(" ","_")}'.ljust(25) +
+                        f'[{datetime.fromtimestamp(first_time)}]'
+                    )
+                else:
+                    paginator.append(
+                        f'{rank+1}.{entry[1].replace(" ","_")}'.ljust(25) +
+                        f'[+ {timedelta(seconds=int(entry[0]) - first_time)}]'
+                    )
+
+            if not paginator:
+                return
+            paginator.insert(0, f'```css')
+            paginator.append('```')
+
+            await ctx.send('\n'.join(paginator))
 
     def __unload(self):
         self.task.cancel()
