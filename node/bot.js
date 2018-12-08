@@ -258,6 +258,8 @@ var handlers = {
             asm: 'nasm',
             java: 'java',
             swift: 'swift',
+            brainfuck: 'brainfuck',
+            bf: 'brainfuck',
         }[input_language.trim().to_lower_case()] || null;
 
         if (!language) {
@@ -331,7 +333,7 @@ return bot
             return handlers.gif(message);
         }
 
-        if (content.match(/^felix run (js|javascript|python(2|3)?|node|c|c\+\+|cpp|ruby|go|r|cs|csharp|php|c#|nasm|asm|java|swift)/gi)) {
+        if (content.match(/^felix run (js|javascript|python(2|3)?|node|c|c\+\+|cpp|ruby|go|r|cs|csharp|php|c#|nasm|asm|java|swift|brainfuck|bf)/gi)) {
             return handlers.code(message);
         }
 
@@ -352,7 +354,7 @@ return bot
                 channel.send(
                     'i can run code!\n\n' +
                     '**here are my supported languages:**'+
-                    '\npython2\npython3\njavascript\nruby\ngo\nc\nc++/cpp\ncs/csharp/c#\nr\nasm/nasm\nphp\njava\nswift\n\n' +
+                    '\npython2\npython3\njavascript\nruby\ngo\nc\nc++/cpp\ncs/csharp/c#\nr\nasm/nasm\nphp\njava\nswift\n\nbrainfuck/bf\n\n' +
                     '**you can run code by telling me things like:**\n' +
                     'felix run js\n' +
                     '\\`\\`\\`\nyour code\n\\`\\`\\`'
