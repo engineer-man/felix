@@ -294,7 +294,10 @@ var handlers = {
             .then(res => {
                 if (!res || res.status !== 'ok' || res.payload.output === undefined) throw null;
 
-                channel.send('```\n' + res.payload.output.split('\n').slice(0, 30).join('\n') + '```');
+                channel.send(
+                    'Here is your output <@' + message.author.id + '>\n' +
+                    '```\n' + res.payload.output.split('\n').slice(0, 30).join('\n') + '```'
+                );
             })
             .catch(err => {
                 channel.send('sorry, execution problem')
