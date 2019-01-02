@@ -1,0 +1,49 @@
+{
+    "unix_similar": [
+        "cd",
+        "cp",
+        "cron",
+        "ftp",
+        "grep",
+        "ls",
+        "man",
+        "mkdir",
+        "more",
+        "mv",
+        "netstat",
+        "nslookup",
+        "ping",
+        "ps",
+        "pwd",
+        "rm",
+        "rmdir"
+    ],
+    "dos_similar": [
+        "type, copy",
+        "cd",
+        "copy, xcopy",
+        "schtasks",
+        "ftp",
+        "find",
+        "dir",
+        "help",
+        "mkdir",
+        "more",
+        "rename",
+        "netstat",
+        "nslookup",
+        "ping",
+        "tasklist",
+        "cd",
+        "del",
+        "rmdir"
+    ],
+    
+    "unix_unique": [
+
+    ],
+    "dos_unique": [
+
+    ]
+    
+}

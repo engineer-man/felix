@@ -1,5 +1,5 @@
 """This is a cog for a discord.py bot.
-It adds 3 commands.
+It adds 4 commands.
 
 Commands:
     cmdlist         Displays a list of the top used linux commands and their ms-dos counterparts.
@@ -11,7 +11,7 @@ Commands:
                     - Must provide operating system to search and the command
 
 The purpose of this cog is to show users the different versions of the same command 
-between operating systems.
+between operating systems and the uniqueness that comes with each as well.
 
 Load the cog by calling client.load_extension with the name of this python file
 as an argument (without the file-type extension)
