@@ -1,8 +1,30 @@
 {
-    "unix_similar": [
+    
+    "standard_desc": [
+        "Standard command used to read files sequentially.",
+        "Standard command used to change the current working directory.",
+        "Standard command used for copying files and directories.",
+        "Standard command used to start the user interface to the Internet Standard File Transfer Protocol.",
+        "Standard command used to search a file for a paticularn pattern of characters.",
+        "Standard command used to list computer files and directories.",
+        "Standard command ",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+    ],
+    "unix": {
+
+        "standard": [
+        "cat",
         "cd",
         "cp",
-        "cron",
         "ftp",
         "grep",
         "ls",
@@ -16,34 +38,35 @@
         "ps",
         "pwd",
         "rm",
-        "rmdir"
-    ],
-    "dos_similar": [
-        "type, copy",
-        "cd",
-        "copy, xcopy",
-        "schtasks",
-        "ftp",
-        "find",
-        "dir",
-        "help",
-        "mkdir",
-        "more",
-        "rename",
-        "netstat",
-        "nslookup",
-        "ping",
-        "tasklist",
-        "cd",
-        "del",
-        "rmdir"
-    ],
-    
-    "unix_unique": [
+        "rmdir" ] ,
+        "unique": [
 
-    ],
-    "dos_unique": [
+        ]
 
-    ]
+    },
+    "dos": {
+
+        "standard": [
+            "type, copy",
+            "cd",
+            "copy, xcopy",
+            "ftp",
+            "find",
+            "dir",
+            "help",
+            "mkdir",
+            "more",
+            "rename",
+            "netstat",
+            "nslookup",
+            "ping",
+            "tasklist",
+            "cd",
+            "del",
+            "rmdir" ],
+            "unique": [
+                
+            ]
+    }
     
 }
