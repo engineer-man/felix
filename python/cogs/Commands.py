@@ -27,14 +27,19 @@ from os import path
 import re
 import json
 
+
+
 class Commands():
     def __init__(self, client):
         self.client = client
-
+        self.felix_commands = ['list', 'unique', 'search', 'trans']
+        self.os_type = ['unix', 'dos']
         # TODO Need to load the list of commands for each operating system.
         with open(path.join(path.dirname(__file__), 'commands.json')) as f:
             self.os_commands = json.load(f)
+            print()
             print(self.os_commands)
+            print()
 
 
     # ----------------------------------------------
@@ -49,6 +54,19 @@ class Commands():
     async def list_all_unix_commands(self,  ctx):
         info = ctx.message.content
         user_cmd = info.split()
+        
+        response = ''
+        for x in range(len(self.os_commands['standard_desc'])):
+            response += self.os_commands[self.os_type[0]]['standard'][x] + ': ' + self.os_commands['standard_desc'][x] + '\n'
+
+        if len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[0]:
+            await ctx.send('```' + response + '```');
+        elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[1]:
+            await ctx.send('```unique```');
+        elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[2]:
+            await ctx.send('```search``');
+        elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[3]:
+            await ctx.send('```trans```');
         print(user_cmd)
 
     # ----------------------------------------------
@@ -63,6 +81,20 @@ class Commands():
     async def list_all_dos_commands(self, ctx):
         info = ctx.message.content
         user_cmd = info.split()
+
+        response = ''
+        for x in range(len(self.os_commands['standard_desc'])):
+            response += self.os_commands[self.os_type[1]]['standard'][x] + ': ' + self.os_commands['standard_desc'][x] + '\n'
+
+        if len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[0]:
+            await ctx.send('```' + response + '```');
+        elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[1]:
+            await ctx.send('```unique```');
+        elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[2]:
+            await ctx.send('```search```');
+        elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[3]:
+            await ctx.send('```trans```');
+
         print(user_cmd)
 
 def setup(client):

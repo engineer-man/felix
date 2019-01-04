@@ -1,23 +1,23 @@
 {
     
     "standard_desc": [
-        "Standard command used to read files sequentially.",
-        "Standard command used to change the current working directory.",
-        "Standard command used for copying files and directories.",
-        "Standard command used to start the user interface to the Internet Standard File Transfer Protocol.",
-        "Standard command used to search a file for a paticularn pattern of characters.",
-        "Standard command used to list computer files and directories.",
-        "Standard command ",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "Command used to read files sequentially.",
+        "Command used to change the current working directory.",
+        "Command used for copying files and directories.",
+        "Command used to start the user interface to the Internet Standard File Transfer Protocol.",
+        "Command used to search a file for a paticularn pattern of characters.",
+        "Command used to list computer files and directories.",
+        "Command used to provide information about commands and the shell environment.",
+        "Command used to make a new directory.",
+        "Command used to view the contents of a text file.",
+        "Command used to move a file to a new directory and rename a files.",
+        "Command used as a network utility tool that displays network connections.",
+        "Command used for network administration.",
+        "Command used in determining TCP/IP networks IP address.",
+        "Command used to display a list of currently running processes.",
+        "Command used to display your location in the file system.",
+        "Command used to remove files or directories from a file system.",
+        "Command used to remove an empty directory."
     ],
     "unix": {
 
