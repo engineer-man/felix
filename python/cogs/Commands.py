@@ -40,6 +40,11 @@ class Commands():
             print(self.os_commands)
             print()
 
+    def search(self, array, word):
+        print('search')
+
+    def create_response(self, array):
+        print('create response')
 
     # ----------------------------------------------
     # Function to display similar commands list for unix commands.
