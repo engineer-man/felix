@@ -33,7 +33,6 @@ class Commands():
     def __init__(self, client):
         self.client = client
         self.felix_commands = ['list', 'unique', 'search', 'trans']
-        self.os_type = ['unix', 'dos']
         # TODO Need to load the list of commands for each operating system.
         with open(path.join(path.dirname(__file__), 'commands.json')) as f:
             self.os_commands = json.load(f)
@@ -56,17 +55,27 @@ class Commands():
         user_cmd = info.split()
         
         response = ''
-        for x in range(len(self.os_commands['standard_desc'])):
-            response += self.os_commands[self.os_type[0]]['standard'][x] + ': ' + self.os_commands['standard_desc'][x] + '\n'
+        os = 'unix'
+        second_column = ''
+        length = -1
 
         if len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[0]:
-            await ctx.send('```' + response + '```');
+            second_column = 'standard'
+            length = len(self.os_commands[os][second_column])
+            for x in range(length):
+                response += self.os_commands[os][second_column][x] + ': ' + self.os_commands['standard_desc'][x] + '\n'
         elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[1]:
-            await ctx.send('```unique```');
-        elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[2]:
-            await ctx.send('```search``');
-        elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[3]:
-            await ctx.send('```trans```');
+            second_column = 'unique'
+            length = len(self.os_commands[os][second_column])            
+            for x in range(length):
+                response += x + ': Unique Description ' + x + '\n'
+        #elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[2]:
+            #await ctx.send('```search``')
+        #elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[3]:
+            #await ctx.send('```trans```')
+
+        await ctx.send('```' + response + '```')
+        
         print(user_cmd)
 
     # ----------------------------------------------
@@ -83,17 +92,26 @@ class Commands():
         user_cmd = info.split()
 
         response = ''
-        for x in range(len(self.os_commands['standard_desc'])):
-            response += self.os_commands[self.os_type[1]]['standard'][x] + ': ' + self.os_commands['standard_desc'][x] + '\n'
+        os = 'dos'
+        second_column = ''
+        length = -1
 
         if len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[0]:
-            await ctx.send('```' + response + '```');
+            second_column = 'standard'
+            length = len(self.os_commands[os][second_column])
+            for x in range(length):
+                response += self.os_commands[os][second_column][x] + ': ' + self.os_commands['standard_desc'][x] + '\n'
         elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[1]:
-            await ctx.send('```unique```');
-        elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[2]:
-            await ctx.send('```search```');
-        elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[3]:
-            await ctx.send('```trans```');
+            second_column = 'unique'
+            length = len(self.os_commands[os][second_column])
+            for x in range(length):
+                response += x + ': Unique Description ' + x + '\n'
+        #elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[2]:
+            #await ctx.send('```search```')
+        #elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[3]:
+            #await ctx.send('```trans```')
+
+        await ctx.send('```' + response + '```')
 
         print(user_cmd)
 
