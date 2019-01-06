@@ -31,20 +31,24 @@ import json
 class Commands():
     def __init__(self, client):
         self.client = client
-        self.felix_commands = ['list', 'unique', 'search', 'trans']
+        self.list_commands = ['all', 'standard', 'unique']
         # TODO Need to load the list of commands for each operating system.
         with open(path.join(path.dirname(__file__), 'commands.json')) as f:
             self.os_commands = json.load(f)
 
     def create_response(self, array):
+
         response = ''
+
         for x in range(len(array)):
             response += array[x]['name'] + ': ' + array[x]['desc'] + '\n'
+
         return response
 
     def get_commands(self, os, option):
+        
         commands = []
-
+        
         if 'all' in option:
             commands = self.os_commands[os]['standard'] + self.os_commands[os]['unique']
         elif 'standard' in option or 'unique' in option:
@@ -57,12 +61,14 @@ class Commands():
 
 
 
-    
+    # TODO
+    # 1.Complete search functionality
+    # 2.Complete translate functionality
+    # 3.Add color for command names
 
     # ----------------------------------------------
     # Function to display similar commands list for unix commands.
     # ----------------------------------------------
-
     @commands.command(
         name='unix',
         brief='Unix command utility program.',
@@ -74,8 +80,10 @@ class Commands():
 
         commands = []
 
-        if len(user_cmd) == 3:
+        if len(user_cmd) == 3 and user_cmd[2] in self.list_commands:
             commands = self.get_commands(user_cmd[1], user_cmd[2])
+
+        
 
         if len(commands) > 0:
             response = self.create_response(commands)
@@ -86,7 +94,6 @@ class Commands():
     # ----------------------------------------------
     # Function to display similar commands list for ms-dos commands.
     # ----------------------------------------------
-
     @commands.command(
         name='ms-dos',
         brief='Ms-dos command utility program.',
@@ -98,7 +105,7 @@ class Commands():
 
         commands = []
 
-        if len(user_cmd) == 3:
+        if len(user_cmd) == 3 and user_cmd[2] in self.list_commands:
             commands = self.get_commands(user_cmd[1], user_cmd[2])
 
         if len(commands) > 0:

@@ -17,14 +17,16 @@
             { "name": "ps", "desc": "Command used to display a list of currently running processes." },
             { "name": "pwd", "desc": "Command used to display your location in the file system." },
             { "name": "rm", "desc": "Command used to remove files or directories from a file system." },
-            { "name": "rmdir", "desc":  "Command used to remove an empty directory." } 
+            { "name": "rmdir", "desc":  "Command used to remove an empty directory." },
+            { "name": "date", "desc": "Command that displays the system date and prompts the user to enter a new date." },
+            { "name": "exit", "desc": "Command that exists the current command processor." }
         ],
         "unique": [
-            { "name": "Unique Unix 1", "desc": "Unique Unix Description 1" },
-            { "name": "Unique Unix 2", "desc": "Unique Unix Description 2" },
-            { "name": "Unique Unix 3", "desc": "Unique Unix Description 3" },
-            { "name": "Unique Unix 4", "desc": "Unique Unix Description 4" },
-            { "name": "Unique Unix 5", "desc": "Unique Unix Description 5" }
+            { "name": "who", "desc": "Command that tells you who's logged onto the current machine." },
+            { "name": "passwd", "desc": "Command that let's you change your password." },
+            { "name": "kill", "desc": "Command that lets you kills the processes with the ID you gave." },
+            { "name": "chmod", "desc": "Command that lets you change the read, write, and execute permission on your files." },
+            { "name": "diff", "desc": "Command that lets you compare files and shows where they differ." }
         ]
     },
     "ms-dos": {
@@ -45,14 +47,16 @@
             { "name": "tasklist", "desc": "Command used to display a list of currently running processes." },
             { "name": "cd", "desc": "Command used to display your location in the file system." },
             { "name": "del", "desc": "Command used to remove files or directories from a file system." },
-            { "name": "rmdir", "desc":  "Command used to remove an empty directory." } 
+            { "name": "rmdir", "desc":  "Command used to remove an empty directory." },
+            { "name": "date", "desc": "Command that displays the system date and prompts the user to enter a new date." },
+            { "name": "exit", "desc": "Command that exists the current command processor." }
         ],
         "unique": [
-            { "name": "Unique Dos 1", "desc": "Unique Dos Description 1" },
-            { "name": "Unique Dos 2", "desc": "Unique Dos Description 2" },
-            { "name": "Unique Dos 3", "desc": "Unique Dos Description 3" },
-            { "name": "Unique Dos 4", "desc": "Unique Dos Description 4" },
-            { "name": "Unique Dos 5", "desc": "Unique Dos Description 5" }
+            { "name": "ver", "desc": "Command that reports the DOS version presently running." },
+            { "name": "tree", "desc": "Command that graphically displays the path of each directory and sub-directories." },
+            { "name": "title", "desc": "Command that enables the user to change the title of their ms-dos window." },
+            { "name": "pause", "desc": "Command that suspends processing of a batch program and displays the message 'Press any key to continue...'." },
+            { "name": "call", "desc": "Command that starts a batch file from within another batch file." }
         ]
     }
 }
