@@ -67,23 +67,6 @@ class Commands():
 
         return commands
 
-    def translate_command(self, os, cmd):
-
-        all_os_commands = self.os_commands[os]['standard']
-        commands = []
-
-        # TODO Fix, fin, commit, pull 
-        #for x in range(len(all_os_commands)):
-            #if word.lower() in all_os_commands[x]['desc'].lower():
-                #commands.append(all_os_commands[x])
-
-        #commands = self.os_commands['ms-dos']['standard'][self.os_commands['unix']['standard'].index(user_cmd[3])]
-
-        return commands
-
-    # TODO
-    # 1.Complete translate functionality
-
     # ----------------------------------------------
     # Function to display similar commands list for unix commands.
     # ----------------------------------------------
@@ -103,9 +86,6 @@ class Commands():
                 commands = self.get_commands(user_cmd[1], user_cmd[2])
             elif len(user_cmd) == 4 and (self.list_commands.index(user_cmd[2]) == 3):
                 commands = self.search_commands(user_cmd[1], user_cmd[3])
-            elif len(user_cmd) == 4 and (self.list_commands.index(user_cmd[2]) == 4): 
-                print('unix trans')
-                commands = self.translate_command('ms-dos',user_cmd[3])
 
         if len(commands) > 0:
             response = self.create_response(commands)
@@ -131,10 +111,6 @@ class Commands():
                 commands = self.get_commands(user_cmd[1], user_cmd[2])
             elif len(user_cmd) == 4 and (self.list_commands.index(user_cmd[2]) == 3):
                 commands = self.search_commands(user_cmd[1], user_cmd[3])
-            elif len(user_cmd) == 4 and (self.list_commands.index(user_cmd[2]) == 4):
-                print('ms-dos trans')
-                self.translate_command('unix',user_cmd[3])
-
 
         if len(commands) > 0:
             response = self.create_response(commands)
