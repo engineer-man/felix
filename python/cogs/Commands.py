@@ -31,7 +31,7 @@ import json
 class Commands():
     def __init__(self, client):
         self.client = client
-        self.list_commands = ['all', 'standard', 'unique']
+        self.list_commands = ['all', 'standard', 'unique', 'search', 'trans']
         # TODO Need to load the list of commands for each operating system.
         with open(path.join(path.dirname(__file__), 'commands.json')) as f:
             self.os_commands = json.load(f)
@@ -41,7 +41,7 @@ class Commands():
         response = ''
 
         for x in range(len(array)):
-            response += array[x]['name'] + ': ' + array[x]['desc'] + '\n'
+            response += '[' + array[x]['name'] + ']' + ': ' + array[x]['desc'] + '\n'
 
         return response
 
@@ -56,15 +56,21 @@ class Commands():
 
         return commands
 
-    def search(self, array, word):
-        print('search')
+    def search_commands(self, os, word):
+
+        all_os_commands = self.os_commands[os]['standard'] + self.os_commands[os]['unique']
+        commands = []
+
+        for x in range(len(all_os_commands)):
+            if word.lower() in all_os_commands[x]['desc'].lower():
+                commands.append(all_os_commands[x])
+
+        return commands
 
 
 
     # TODO
-    # 1.Complete search functionality
-    # 2.Complete translate functionality
-    # 3.Add color for command names
+    # 1.Complete translate functionality
 
     # ----------------------------------------------
     # Function to display similar commands list for unix commands.
@@ -80,16 +86,15 @@ class Commands():
 
         commands = []
 
-        if len(user_cmd) == 3 and user_cmd[2] in self.list_commands:
+        if len(user_cmd) == 3 and (self.list_commands.index(user_cmd[2]) < 3):
             commands = self.get_commands(user_cmd[1], user_cmd[2])
-
-        
+        elif len(user_cmd) == 4 and (self.list_commands.index(user_cmd[2]) == 3):
+            commands = self.search_commands(user_cmd[1], user_cmd[3])
 
         if len(commands) > 0:
             response = self.create_response(commands)
-            await ctx.send('```' + response + '```')
+            await ctx.send('```css\n' + response + '\n```')
 
-        print(user_cmd)
 
     # ----------------------------------------------
     # Function to display similar commands list for ms-dos commands.
@@ -105,14 +110,15 @@ class Commands():
 
         commands = []
 
-        if len(user_cmd) == 3 and user_cmd[2] in self.list_commands:
+        if len(user_cmd) == 3 and (self.list_commands.index(user_cmd[2]) < 3):
             commands = self.get_commands(user_cmd[1], user_cmd[2])
+        elif len(user_cmd) == 4 and (self.list_commands.index(user_cmd[2]) == 3):
+            commands = self.search_commands(user_cmd[1], user_cmd[3])
 
         if len(commands) > 0:
             response = self.create_response(commands)
-            await ctx.send('```' + response + '```')
+            await ctx.send('```css\n' + response + '\n```')
 
-        print(user_cmd)
 
 def setup(client):
     client.add_cog(Commands(client))
