@@ -62,7 +62,7 @@ class Commands():
         commands = []
 
         for x in range(len(all_os_commands)):
-            if word.lower() in all_os_commands[x]['desc'].lower():
+            if word.lower() in all_os_commands[x]['desc'].lower() or word.lower() in all_os_commands[x]['name'].lower():
                 commands.append(all_os_commands[x])
 
         return commands
@@ -98,7 +98,7 @@ class Commands():
 
         commands = []
 
-        if len(user_cmd) > 3 and user_cmd[2] in self.list_commands:
+        if len(user_cmd) >= 3 and user_cmd[2] in self.list_commands:
             if len(user_cmd) == 3 and (self.list_commands.index(user_cmd[2]) < 3):
                 commands = self.get_commands(user_cmd[1], user_cmd[2])
             elif len(user_cmd) == 4 and (self.list_commands.index(user_cmd[2]) == 3):
@@ -126,7 +126,7 @@ class Commands():
 
         commands = []
 
-        if len(user_cmd) > 3 and user_cmd[2] in self.list_commands:
+        if len(user_cmd) >= 3 and user_cmd[2] in self.list_commands:
             if len(user_cmd) == 3 and (self.list_commands.index(user_cmd[2]) < 3):
                 commands = self.get_commands(user_cmd[1], user_cmd[2])
             elif len(user_cmd) == 4 and (self.list_commands.index(user_cmd[2]) == 3):
