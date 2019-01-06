@@ -2,17 +2,16 @@
 It adds 4 commands.
 
 Commands:
-    unix list               Displays a list of the top used linux commands.
-    dos list                Displays a list of the top used dos commands.
-    unix unique             Displays the unique commands for a unix terminal.
-    dos unique              Displays the unique commands for dos terminal.
-    unix search {word}      Searches the descriptions of the unix terminal based on the word provided.
-    dos search {word}       Searches the descriptions of the dos terminal based on the word provided.
-    unix trans {command}    Searches the descriptions of the unix terminal based on the word provided.
-    dos trans {command}     Searches the descriptions of the dos terminal based on the word provided.
-
-The purpose of this cog is to show users the different versions of the same command 
-between operating systems and the uniqueness that comes with each as well.
+    unix all                Displays a list of the most common unix commands.
+    ms-dos all              Displays a list of the most common ms-dos commands.
+    unix standard           Displays a list of the most standard unix commands.
+    ms-dos standard         Displays a list of the most standard ms-dos commands.
+    unix unique             Displays a list of the most unique unix commands.
+    ms-dos unique           Displays a list of the most unique ms-dos commands.
+    unix search {word}      Searches the descriptions of the unix commands based on the word provided.
+    ms-dos search {word}    Searches the descriptions of the ms-dos commands based on the word provided.
+    unix trans {command}    Searches the list of unix commands for the ms-dos equivalent provided.
+    ms-dos trans {command}  Searches the list of ms-dos commands for the unix equivalent provided.
 
 Load the cog by calling client.load_extension with the name of this python file
 as an argument (without the file-type extension)
@@ -36,15 +35,29 @@ class Commands():
         # TODO Need to load the list of commands for each operating system.
         with open(path.join(path.dirname(__file__), 'commands.json')) as f:
             self.os_commands = json.load(f)
-            print()
-            print(self.os_commands)
-            print()
+
+    def create_response(self, array):
+        response = ''
+        for x in range(len(array)):
+            response += array[x]['name'] + ': ' + array[x]['desc'] + '\n'
+        return response
+
+    def get_commands(self, os, option):
+        commands = []
+
+        if 'all' in option:
+            commands = self.os_commands[os]['standard'] + self.os_commands[os]['unique']
+        elif 'standard' in option or 'unique' in option:
+            commands = self.os_commands[os][option]
+
+        return commands
 
     def search(self, array, word):
         print('search')
 
-    def create_response(self, array):
-        print('create response')
+
+
+    
 
     # ----------------------------------------------
     # Function to display similar commands list for unix commands.
@@ -58,29 +71,16 @@ class Commands():
     async def list_all_unix_commands(self,  ctx):
         info = ctx.message.content
         user_cmd = info.split()
-        
-        response = ''
-        os = 'unix'
-        second_column = ''
-        length = -1
 
-        if len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[0]:
-            second_column = 'standard'
-            length = len(self.os_commands[os][second_column])
-            for x in range(length):
-                response += self.os_commands[os][second_column][x] + ': ' + self.os_commands['standard_desc'][x] + '\n'
-        elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[1]:
-            second_column = 'unique'
-            length = len(self.os_commands[os][second_column])            
-            for x in range(length):
-                response += x + ': Unique Description ' + x + '\n'
-        #elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[2]:
-            #await ctx.send('```search``')
-        #elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[3]:
-            #await ctx.send('```trans```')
+        commands = []
 
-        await ctx.send('```' + response + '```')
-        
+        if len(user_cmd) == 3:
+            commands = self.get_commands(user_cmd[1], user_cmd[2])
+
+        if len(commands) > 0:
+            response = self.create_response(commands)
+            await ctx.send('```' + response + '```')
+
         print(user_cmd)
 
     # ----------------------------------------------
@@ -88,35 +88,22 @@ class Commands():
     # ----------------------------------------------
 
     @commands.command(
-        name='dos',
-        brief='Dos command utility program.',
+        name='ms-dos',
+        brief='Ms-dos command utility program.',
         hidden=False,
     )
-    async def list_all_dos_commands(self, ctx):
+    async def list_all_ms_dos_commands(self, ctx):
         info = ctx.message.content
         user_cmd = info.split()
 
-        response = ''
-        os = 'dos'
-        second_column = ''
-        length = -1
+        commands = []
 
-        if len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[0]:
-            second_column = 'standard'
-            length = len(self.os_commands[os][second_column])
-            for x in range(length):
-                response += self.os_commands[os][second_column][x] + ': ' + self.os_commands['standard_desc'][x] + '\n'
-        elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[1]:
-            second_column = 'unique'
-            length = len(self.os_commands[os][second_column])
-            for x in range(length):
-                response += x + ': Unique Description ' + x + '\n'
-        #elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[2]:
-            #await ctx.send('```search```')
-        #elif len(user_cmd) == 3 and user_cmd[2] in self.felix_commands[3]:
-            #await ctx.send('```trans```')
+        if len(user_cmd) == 3:
+            commands = self.get_commands(user_cmd[1], user_cmd[2])
 
-        await ctx.send('```' + response + '```')
+        if len(commands) > 0:
+            response = self.create_response(commands)
+            await ctx.send('```' + response + '```')
 
         print(user_cmd)
 

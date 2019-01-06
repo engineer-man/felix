@@ -1,72 +1,58 @@
 {
-    
-    "standard_desc": [
-        "Command used to read files sequentially.",
-        "Command used to change the current working directory.",
-        "Command used for copying files and directories.",
-        "Command used to start the user interface to the Internet Standard File Transfer Protocol.",
-        "Command used to search a file for a paticularn pattern of characters.",
-        "Command used to list computer files and directories.",
-        "Command used to provide information about commands and the shell environment.",
-        "Command used to make a new directory.",
-        "Command used to view the contents of a text file.",
-        "Command used to move a file to a new directory and rename a files.",
-        "Command used as a network utility tool that displays network connections.",
-        "Command used for network administration.",
-        "Command used in determining TCP/IP networks IP address.",
-        "Command used to display a list of currently running processes.",
-        "Command used to display your location in the file system.",
-        "Command used to remove files or directories from a file system.",
-        "Command used to remove an empty directory."
-    ],
     "unix": {
-
         "standard": [
-        "cat",
-        "cd",
-        "cp",
-        "ftp",
-        "grep",
-        "ls",
-        "man",
-        "mkdir",
-        "more",
-        "mv",
-        "netstat",
-        "nslookup",
-        "ping",
-        "ps",
-        "pwd",
-        "rm",
-        "rmdir" ] ,
+            { "name": "cat", "desc": "Command used to read files sequentially." },
+            { "name": "cd", "desc": "Command used to change the current working directory." },
+            { "name": "cp", "desc": "Command used for copying files and directories." },
+            { "name": "ftp", "desc": "Command used to start the user interface to the Internet Standard File Transfer Protocol." },
+            { "name": "grep", "desc": "Command used to search a file for a paticularn pattern of characters." },
+            { "name": "ls", "desc": "Command used to list computer files and directories." },
+            { "name": "man", "desc": "Command used to provide information about commands and the shell environment." },
+            { "name": "mkdir", "desc": "Command used to make a new directory." },
+            { "name": "more", "desc": "Command used to view the contents of a text file." },
+            { "name": "mv", "desc": "Command used to move a file to a new directory and rename a files." },
+            { "name": "netstat", "desc": "Command used as a network utility tool that displays network connections." },
+            { "name": "nslookup", "desc": "Command used for to start a network administration command-line tool." },
+            { "name": "ping", "desc": "Command used to test the connection between the local server/computer and a remote server." },
+            { "name": "ps", "desc": "Command used to display a list of currently running processes." },
+            { "name": "pwd", "desc": "Command used to display your location in the file system." },
+            { "name": "rm", "desc": "Command used to remove files or directories from a file system." },
+            { "name": "rmdir", "desc":  "Command used to remove an empty directory." } 
+        ],
         "unique": [
-
+            { "name": "Unique Unix 1", "desc": "Unique Unix Description 1" },
+            { "name": "Unique Unix 2", "desc": "Unique Unix Description 2" },
+            { "name": "Unique Unix 3", "desc": "Unique Unix Description 3" },
+            { "name": "Unique Unix 4", "desc": "Unique Unix Description 4" },
+            { "name": "Unique Unix 5", "desc": "Unique Unix Description 5" }
         ]
-
     },
-    "dos": {
-
+    "ms-dos": {
         "standard": [
-            "type, copy",
-            "cd",
-            "copy, xcopy",
-            "ftp",
-            "find",
-            "dir",
-            "help",
-            "mkdir",
-            "more",
-            "rename",
-            "netstat",
-            "nslookup",
-            "ping",
-            "tasklist",
-            "cd",
-            "del",
-            "rmdir" ],
-            "unique": [
-                
-            ]
+            { "name": "type", "desc": "Command used to read files sequentially." },
+            { "name": "cd", "desc": "Command used to change the current working directory." },
+            { "name": "copy", "desc": "Command used for copying files and directories." },
+            { "name": "ftp", "desc": "Command used to start the user interface to the Internet Standard File Transfer Protocol." },
+            { "name": "find", "desc": "Command used to search a file for a paticularn pattern of characters." },
+            { "name": "dir", "desc": "Command used to list computer files and directories." },
+            { "name": "help", "desc": "Command used to provide information about commands and the shell environment." },
+            { "name": "mkdir", "desc": "Command used to make a new directory." },
+            { "name": "more", "desc": "Command used to view the contents of a text file." },
+            { "name": "rename", "desc": "Command used to move a file to a new directory and rename a files." },
+            { "name": "netstat", "desc": "Command used as a network utility tool that displays network connections." },
+            { "name": "nslookup", "desc": "Command used for to start a network administration command-line tool." },
+            { "name": "ping", "desc": "Command used to test the connection between the local server/computer and a remote server." },
+            { "name": "tasklist", "desc": "Command used to display a list of currently running processes." },
+            { "name": "cd", "desc": "Command used to display your location in the file system." },
+            { "name": "del", "desc": "Command used to remove files or directories from a file system." },
+            { "name": "rmdir", "desc":  "Command used to remove an empty directory." } 
+        ],
+        "unique": [
+            { "name": "Unique Dos 1", "desc": "Unique Dos Description 1" },
+            { "name": "Unique Dos 2", "desc": "Unique Dos Description 2" },
+            { "name": "Unique Dos 3", "desc": "Unique Dos Description 3" },
+            { "name": "Unique Dos 4", "desc": "Unique Dos Description 4" },
+            { "name": "Unique Dos 5", "desc": "Unique Dos Description 5" }
+        ]
     }
-    
 }
