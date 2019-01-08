@@ -343,7 +343,7 @@ return bot
         if (content.match(/^felix google/gi)) {
             var text = content.split('google')[1].trim();
 
-            channel.send('here you go! <https://www.google.com/search?q=' + text.split(' ').join('+') + '>');
+            channel.send('here you go! <https://www.google.com/search?q=' + text.replace(/[+]/g, '%2B').split(' ').join('+') + '>');
         }
 
         if (content.match(/^(hi|what's up|yo|hey|hello) felix/gi)) {
