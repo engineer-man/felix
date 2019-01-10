@@ -1,5 +1,4 @@
 """This is a cog for a discord.py bot.
-It adds 4 commands.
 
 Commands:
     unix all                Displays a list of the most common unix commands.
@@ -33,22 +32,18 @@ class Commands():
         self.client = client
         self.list_commands = ['all', 'standard', 'unique', 'search', 'trans']
 
-        with open(path.join(path.dirname(__file__), 'commands.json')) as f:
+        with open(path.join(path.dirname(__file__), 'terminal.json')) as f:
             self.os_commands = json.load(f)
 
     def create_response(self, array):
-
         response = ''
-
         for x in range(len(array)):
             response += '[' + array[x]['name'] + ']' + ': ' + array[x]['desc'] + '\n'
 
         return response
 
     def get_commands(self, os, option):
-        
         commands = []
-        
         if 'all' in option:
             commands = self.os_commands[os]['standard'] + self.os_commands[os]['unique']
         elif 'standard' in option or 'unique' in option:
@@ -57,10 +52,8 @@ class Commands():
         return commands
 
     def search_commands(self, os, word):
-
         all_os_commands = self.os_commands[os]['standard'] + self.os_commands[os]['unique']
         commands = []
-
         for x in range(len(all_os_commands)):
             if word.lower() in all_os_commands[x]['desc'].lower() or word.lower() in all_os_commands[x]['name'].lower():
                 commands.append(all_os_commands[x])
@@ -78,9 +71,7 @@ class Commands():
     async def list_all_unix_commands(self,  ctx):
         info = ctx.message.content
         user_cmd = info.split()
-
         commands = []
-
         if len(user_cmd) >= 3 and user_cmd[2] in self.list_commands:
             if len(user_cmd) == 3 and (self.list_commands.index(user_cmd[2]) < 3):
                 commands = self.get_commands(user_cmd[1], user_cmd[2])
@@ -103,9 +94,7 @@ class Commands():
     async def list_all_ms_dos_commands(self, ctx):
         info = ctx.message.content
         user_cmd = info.split()
-
         commands = []
-
         if len(user_cmd) >= 3 and user_cmd[2] in self.list_commands:
             if len(user_cmd) == 3 and (self.list_commands.index(user_cmd[2]) < 3):
                 commands = self.get_commands(user_cmd[1], user_cmd[2])
