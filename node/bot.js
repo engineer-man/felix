@@ -369,6 +369,12 @@ return bot
             case 'you wanna fight, felix?':
                 message.reply('bring it on pal (╯°□°）╯︵ ┻━┻');
                 break;
+            case 'arrays start at 0':
+                message.reply('arrays definitely start at 0');
+                break;
+            case 'arrays start at 1':
+                message.reply('arrays do not start at 1, they start at 0 instead');
+                break;
         }
 
         // mod only stuff here
