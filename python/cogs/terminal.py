@@ -67,6 +67,11 @@ class Commands():
         name='unix',
         brief='Unix command utility program.',
         hidden=False,
+        description='Example use:\n' +
+        'felix unix all\n' +
+        'felix unix standard\n' +
+        'felix unix unique\n' +
+        'felix unix search [search_term]',
     )
     async def list_all_unix_commands(self,  ctx):
         info = ctx.message.content
@@ -90,6 +95,11 @@ class Commands():
         name='ms-dos',
         brief='Ms-dos command utility program.',
         hidden=False,
+        description='Example use:\n' +
+        'felix ms-dos all\n' +
+        'felix ms-dos standard\n' +
+        'felix ms-dos unique\n' +
+        'felix ms-dos search [search_term]',
     )
     async def list_all_ms_dos_commands(self, ctx):
         info = ctx.message.content
