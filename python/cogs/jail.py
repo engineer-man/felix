@@ -179,7 +179,11 @@ class Jail():
     )
     @commands.guild_only()
     async def jail(self, ctx, member: Member):
-        r = await self.send_to_jail(member)
+        member_roles = [role.id for role in member.roles]
+        if any(role in self.permitted_roles for role in member_roles):
+            r = f'`Sorry {member} is my friend`'
+        else:
+            r = await self.send_to_jail(member)
         await ctx.send(r)
 
     @commands.command(
