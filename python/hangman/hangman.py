@@ -60,7 +60,7 @@ class Hangman(commands.Cog, name='Hangman Game'):
         self.hangmanval[gameid] = {}
         self.hangmanval[gameid]["word"] = rand.choice(self.words).lower()
         self.hangmanval[gameid]["guess"] = (
-            "\_ " * len(self.hangmanval[gameid]["word"])).split(" ")
+            "\\_ " * len(self.hangmanval[gameid]["word"])).split(" ")
         self.hangmanval[gameid]["guessesw"] = ""
         self.hangmanval[gameid]["guessesr"] = ""
         self.hangmanval[gameid]["letterval"] = 100 / \
@@ -199,7 +199,7 @@ class Hangman(commands.Cog, name='Hangman Game'):
         letter = ""
         try:
             letter = ctx.message.content.split(" ")[2][0].lower()
-        except Exception as e:
+        except Exception:
             await ctx.send("quaaaack quack?")
             return
         err = self.play(ctx.message.guild.id, ctx.message.channel.name, letter,
