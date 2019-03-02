@@ -24,7 +24,7 @@ with open("../config.json", "r") as conffile:
     config = json.load(conffile)
 
 
-class Stats():
+class Stats(commands.Cog, name='Stats'):
     def __init__(self, client):
         self.client = client
         self.last_time = self.load_stats()

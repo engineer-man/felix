@@ -156,7 +156,7 @@ def is_staff():
     return commands.check(predicate)
 
 
-class Help():
+class Help(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, client):
         self.client = client
 

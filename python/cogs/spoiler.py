@@ -15,7 +15,7 @@ from discord import DMChannel, Embed, Color
 import asyncio
 
 
-class Spoiler():
+class Spoiler(commands.Cog, name='Spoiler'):
     def __init__(self, client):
         self.client = client
         self.spoilers = {}

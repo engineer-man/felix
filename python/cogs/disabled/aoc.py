@@ -27,7 +27,7 @@ INTERVAL = 180
 cookie = {'session': config['aoc_session']}
 
 
-class AdventOfCode():
+class AdventOfCode(commands.Cog, name='Advent of Code'):
     def __init__(self, client):
         self.client = client
         self.task = self.client.loop.create_task(self.aoc_monitor())

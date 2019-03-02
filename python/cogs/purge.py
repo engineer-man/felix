@@ -32,7 +32,7 @@ import typing
 import asyncio
 
 
-class Purge():
+class Purge(commands.Cog, name='Purge'):
     def __init__(self, client):
         self.client = client
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:

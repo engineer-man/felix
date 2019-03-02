@@ -31,7 +31,7 @@ import subprocess
 import json
 
 
-class Management():
+class Management(commands.Cog, name='Management'):
     def __init__(self, client):
         self.client = client
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:

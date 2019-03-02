@@ -27,7 +27,7 @@ import json
 
 
 
-class Commands():
+class Commands(commands.Cog, name='Terminal'):
     def __init__(self, client):
         self.client = client
         self.list_commands = ['all', 'standard', 'unique', 'search', 'trans']

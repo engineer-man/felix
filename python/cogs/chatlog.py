@@ -23,7 +23,7 @@ with open('../config.json', 'r') as conffile:
 LOG_FILENAME = '../logs/discord_chat.log'
 
 
-class ChatLog():
+class ChatLog(commands.Cog, name='Chat Log'):
     def __init__(self, client):
         self.client = client
         self.logfile = open(LOG_FILENAME, 'a', encoding='utf-8')

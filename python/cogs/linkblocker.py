@@ -31,7 +31,7 @@ FORBIDDEN = [
 ]
 
 
-class LinkBlocker():
+class LinkBlocker(commands.Cog, name='Link Blocker'):
     def __init__(self, client):
         self.client = client
         self.allowed_once = []

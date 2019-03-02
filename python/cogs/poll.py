@@ -28,7 +28,7 @@ import re
 import json
 
 
-class Poll():
+class Poll(commands.Cog, name='Jail'):
     def __init__(self, client):
         self.client = client
         self.polls = {}

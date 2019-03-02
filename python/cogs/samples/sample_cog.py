@@ -14,7 +14,9 @@ from discord import Member
 import asyncio
 
 
-class COG_CLASS_NAME():
+class COG_CLASS_NAME(commands.Cog,
+                     name='COG_DISPLAY_NAME',
+                     command_attrs=dict(hidden=False)): # Hide Cog in help
     def __init__(self, client):
         self.client = client
         self.my_task = self.client.loop.create_task(self.TASK())

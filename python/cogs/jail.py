@@ -27,7 +27,7 @@ SPAM_NAUGHTY_DURATION = 900  # Seconds
 SPAM_NAUGHTY_CHECK_INTERVAL = 300  # Seconds
 
 
-class Jail():
+class Jail(commands.Cog, name='Jail'):
     def __init__(self, client):
         self.client = client
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:

@@ -17,7 +17,7 @@ import random
 import re
 
 
-class Responses():
+class Responses(commands.Cog):
     def __init__(self, client):
         self.client = client
 

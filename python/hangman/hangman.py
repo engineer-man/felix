@@ -28,7 +28,7 @@ import os
 import json
 
 
-class Hangman():
+class Hangman(commands.Cog, name='Hangman Game'):
     def __init__(self, client):
         self.bot = client
         with open(__file__.replace('hangman.py', 'dict.txt')) as f:
