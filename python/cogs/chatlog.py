@@ -28,6 +28,7 @@ class ChatLog(commands.Cog, name='Chat Log'):
         self.client = client
         self.logfile = open(LOG_FILENAME, 'a', encoding='utf-8')
 
+    @commands.Cog.listener()
     async def on_message(self, msg):
         if msg.author.bot:
             # Dont log messages of bots

@@ -37,13 +37,14 @@ class Management(commands.Cog, name='Management'):
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
             self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
 
-    async def __local_check(self, ctx):
+    async def cog_check(self, ctx):
         try:
             user_roles = [role.id for role in ctx.message.author.roles]
         except AttributeError:
             return False
         return any(role in self.permitted_roles for role in user_roles)
 
+    @commands.Cog.listener()
     async def on_ready(self):
         felix_version = self.get_version_info()[0][:7]
         await self.client.change_presence(

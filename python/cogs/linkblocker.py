@@ -40,7 +40,7 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
             self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
 
-    async def __local_check(self, ctx):
+    async def cog_check(self, ctx):
         try:
             user_roles = [role.id for role in ctx.message.author.roles]
         except AttributeError:
@@ -112,9 +112,11 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         if await self.has_forbidden_text(msg):
             return
 
+    @commands.Cog.listener()
     async def on_message(self, msg):
         await self.check_message(msg)
 
+    @commands.Cog.listener()
     async def on_message_edit(self, before, after):
         await self.check_message(after)
 

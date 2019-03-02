@@ -41,6 +41,7 @@ class Responses(commands.Cog):
         year_percent = (now - year_start) / (year_end - year_start) * 100
         return f'For your information, the year is {year_percent:.1f}% over!'
 
+    @commands.Cog.listener()
     async def on_message(self, msg):
         # Ignore messages sent by bots
         if msg.author.bot:

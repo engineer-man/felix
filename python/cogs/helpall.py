@@ -142,7 +142,7 @@ def is_staff():
     """Used as a decorator for bot commands
     to make sure only staff can see/use it
 
-    we don't use __local_checks in this cog because we have 2 different commands
+    we don't use cog_checks in this cog because we have 2 different commands
     that have different role restrictions
     """
     async def predicate(ctx):

@@ -33,9 +33,6 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
         self.task = self.client.loop.create_task(self.aoc_monitor())
         self.members = {}
 
-    async def on_ready(self):
-        pass
-
     async def aoc_monitor(self):
         await self.client.wait_until_ready()
         await asyncio.sleep(5)
@@ -145,7 +142,7 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
 
             await ctx.send('\n'.join(paginator))
 
-    def __unload(self):
+    def cog_unload(self):
         self.task.cancel()
 
 

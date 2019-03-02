@@ -44,7 +44,7 @@ class Jail(commands.Cog, name='Jail'):
         # 15 minutes - will also clear self.history to not let it get too big
         self.my_task = self.client.loop.create_task(self.clear_naughty_list())
 
-    async def __local_check(self, ctx):
+    async def cog_check(self, ctx):
         try:
             user_roles = [role.id for role in ctx.message.author.roles]
         except AttributeError:
@@ -120,6 +120,7 @@ class Jail(commands.Cog, name='Jail'):
     # ----------------------------------------------
     # Cog Event listeners
     # ----------------------------------------------
+    @commands.Cog.listener()
     async def on_message(self, msg):
         member = msg.author
         if member == self.client.user:
@@ -157,6 +158,7 @@ class Jail(commands.Cog, name='Jail'):
         # Save the users history again (the oldest message was popped)
         self.history[uid] = user_history
 
+    @commands.Cog.listener()
     async def on_member_join(self, member):
         """Checks if a joining user is "perma-jailed"
         and jails him if needed
@@ -217,7 +219,7 @@ class Jail(commands.Cog, name='Jail'):
         except asyncio.CancelledError:
             pass
 
-    def __unload(self):
+    def cog_unload(self):
         self.my_task.cancel()
 
 

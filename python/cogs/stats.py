@@ -31,7 +31,7 @@ class Stats(commands.Cog, name='Stats'):
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
             self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
 
-    async def __local_check(self, ctx):
+    async def cog_check(self, ctx):
         try:
             user_roles = [role.id for role in ctx.message.author.roles]
         except AttributeError:
@@ -60,7 +60,7 @@ class Stats(commands.Cog, name='Stats'):
         hidden=True,
     )
     @commands.guild_only()
-   # @commands.cooldown(1, 3600, commands.BucketType.user)
+    @commands.cooldown(1, 300, commands.BucketType.user)
     async def stats(self, ctx):
         url = ('https://www.googleapis.com/youtube/v3/channels'
                '?part=statistics'

@@ -31,6 +31,7 @@ class Spoiler(commands.Cog, name='Spoiler'):
         embed.set_author(name=user, icon_url=user.avatar_url_as(format='png'))
         return embed
 
+    @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         if user.bot:
             return

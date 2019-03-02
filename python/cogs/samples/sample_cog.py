@@ -21,7 +21,7 @@ class COG_CLASS_NAME(commands.Cog,
         self.client = client
         self.my_task = self.client.loop.create_task(self.TASK())
 
-    async def __local_check(self, ctx):
+    async def cog_check(self, ctx):
         """This check will automatically be applied to each command contained
         in this cog.
         Use it to decide who can use the commands in this cog.
@@ -37,6 +37,7 @@ class COG_CLASS_NAME(commands.Cog,
     # ----------------------------------------------
     # Cog Event listeners
     # ----------------------------------------------
+    @commands.Cog.listener()
     async def on_message(self, msg):
         """This event is called every time the bot sees a new message.
         This event does not replace the bot's normal on_message event.
@@ -95,7 +96,7 @@ class COG_CLASS_NAME(commands.Cog,
         except asyncio.CancelledError:
             pass
 
-    def __unload(self):
+    def cog_unload(self):
         """This Method is called when a cog is unloaded via unload_extension
         This is useful to cancel tasks that were created inside the cog"""
         self.my_task.cancel()

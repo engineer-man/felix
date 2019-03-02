@@ -28,7 +28,7 @@ import re
 import json
 
 
-class Poll(commands.Cog, name='Jail'):
+class Poll(commands.Cog, name='Poll'):
     def __init__(self, client):
         self.client = client
         self.polls = {}
@@ -73,13 +73,14 @@ class Poll(commands.Cog, name='Jail'):
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
             self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
 
-    async def __local_check(self, ctx):
+    async def cog_check(self, ctx):
         try:
             user_roles = [role.id for role in ctx.message.author.roles]
         except AttributeError:
             return False
         return any(role in self.permitted_roles for role in user_roles)
 
+    @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         msg = reaction.message
         message_id = str(msg.id)
