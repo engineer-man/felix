@@ -46,13 +46,13 @@ class Responses(commands.Cog):
         year_start = dt(now.year, 1, 1)
         year_percent = (now - year_start) / (year_end - year_start) * 100
         return f'For your information, the year is {year_percent:.1f}% over!'
-    
+
     def gif_url(self, terms):
         try:
             gifs = requests.get(f'http://api.giphy.com/v1/gifs/search?api_key={config["giphy_key"]}&q=\
                 {terms}&limit=20&rating=R&lang=en').json()  # offset is 0 by default
 
-            data = random.choice([[gifs['data'][i]['title'], 
+            data = random.choice([[gifs['data'][i]['title'],
                 gifs['data'][i]['images']['original']['url']] for i in range(len(gifs['data']))])
 
             title, gif = data[0], data[1]
@@ -85,11 +85,12 @@ class Responses(commands.Cog):
             msg.content
         ):
             await msg.channel.send('😏 *sensible chuckle*')
-    
+
     @commands.command(
         name='gif-embed',
         brief='Dispalys a specified gif',
-        aliases=['jif', 'embed-gif']
+        aliases=['jif', 'embed-gif'],
+        hidden=True
     )
     async def gif_embed(self, ctx, *, gif):
         g = self.gif_url(gif)
