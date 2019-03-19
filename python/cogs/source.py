@@ -23,12 +23,12 @@ class Source(commands.Cog, name='Source'):
             self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
 
     async def cog_check(self, ctx):
-        return True
-        # try:
-            # user_roles = [role.id for role in ctx.message.author.roles]
-        # except AttributeError:
-            # return False
-        # return any(role in self.permitted_roles for role in user_roles)
+        #return True
+        try:
+            user_roles = [role.id for role in ctx.message.author.roles]
+        except AttributeError:
+            return False
+        return any(role in self.permitted_roles for role in user_roles)
 
     @commands.command(
         name='source',
