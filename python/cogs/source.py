@@ -37,11 +37,10 @@ class Source(commands.Cog, name='Source'):
         hidden=False,
     )
     async def source(self, ctx):
-        await ctx.send('Here are all the source code links:' +
-        '\nYoutube : https://github.com/engineer-man/youtube-code' +
-        '\nEMKC: https://github.com/engineer-man/emkc' +
-        '\nFelix: https://github.com/engineer-man/felix' +
-        '\nPiston a.k.a. Felix run: https://github.com/engineer-man/piston')
+        await ctx.send('Youtube : <https://github.com/engineer-man/youtube-code>' +
+        '\nEMKC: <https://github.com/engineer-man/emkc>' +
+        '\nFelix: <https://github.com/engineer-man/felix>' +
+        '\nPiston a.k.a. Felix run: <https://github.com/engineer-man/piston>')
 
 def setup(client):
     """This is called when the cog is loaded via load_extension"""
