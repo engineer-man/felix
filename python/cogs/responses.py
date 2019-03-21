@@ -85,6 +85,19 @@ class Responses(commands.Cog):
             msg.content
         ):
             await msg.channel.send('😏 *sensible chuckle*')
+    
+    @commands.command(
+        name='source',
+        brief='Links to source code',
+        description='Show all links to EMKC github repos',
+        aliases=['code', 'sauce', 'repo', 'repos'],
+        hidden=False,
+    )
+    async def source(self, ctx):
+        await ctx.send('Youtube : <https://github.com/engineer-man/youtube-code>' +
+        '\nEMKC: <https://github.com/engineer-man/emkc>' +
+        '\nFelix: <https://github.com/engineer-man/felix>' +
+        '\nPiston a.k.a. Felix run: <https://github.com/engineer-man/piston>')
 
     @commands.command(
         name='gif-embed',
