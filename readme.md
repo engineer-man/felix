@@ -24,7 +24,9 @@ Duplicate `state.json.sample` and rename it `state.json`.
 
 ### Running the bot
 ```
-./start
+cd python
+python3 bot.py
+
 ```
 
 ### Creating your own bot extension
