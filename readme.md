@@ -23,10 +23,14 @@ Duplicate `config.json.sample` and rename it `config.json` and update it with yo
 Duplicate `state.json.sample` and rename it `state.json`.
 
 ### Running the bot
+Using python
 ```
 cd python
 python3 bot.py
-
+```
+Using Docker
+```
+docker-compose up
 ```
 
 ### Creating your own bot extension
