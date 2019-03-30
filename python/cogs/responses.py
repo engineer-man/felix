@@ -19,9 +19,9 @@ import re
 import requests
 import json
 
-
 with open("../config.json", "r") as conffile:
     config = json.load(conffile)
+
 
 class Responses(commands.Cog):
     def __init__(self, client):
@@ -52,11 +52,8 @@ class Responses(commands.Cog):
             gifs = requests.get(f'http://api.giphy.com/v1/gifs/search?api_key={config["giphy_key"]}&q=\
                 {terms}&limit=20&rating=R&lang=en').json()  # offset is 0 by default
 
-            data = random.choice([[gifs['data'][i]['title'],
-                gifs['data'][i]['images']['original']['url']] for i in range(len(gifs['data']))])
-
-            title, gif = data[0], data[1]
-            return title, gif
+            gif = random.choice(gifs['data'])['images']['original']['url']
+            return gif
         except IndexError:  # for when no results are returned
             pass
 
@@ -85,7 +82,7 @@ class Responses(commands.Cog):
             msg.content
         ):
             await msg.channel.send('😏 *sensible chuckle*')
-    
+
     @commands.command(
         name='source',
         brief='Links to source code',
@@ -107,13 +104,14 @@ class Responses(commands.Cog):
     )
     async def gif_embed(self, ctx, *, gif):
         g = self.gif_url(gif)
-        if g == None:
-            await ctx.send(f'Sorry <@{ctx.message.author.id}>, no gifs found 😔')
+        if g is None:
+            await ctx.send(f'Sorry {ctx.author.mention}, no gifs found 😔')
             await ctx.message.add_reaction('❌')
         else:
-            e = Embed(title=g[0], color=0x000000)
-            e.set_image(url=g[1])
-            e.set_footer(text=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+            e = Embed(title='Your **jif** boss', color=0x000000)
+            e.set_image(url=g)
+            e.set_footer(text=ctx.author.display_name,
+                         icon_url=ctx.author.avatar_url)
 
             await ctx.send(embed=e)
             await ctx.message.add_reaction('✅')
@@ -123,6 +121,64 @@ class Responses(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send('Name the gif you want next time pls')
             await ctx.message.add_reaction('❌')
+
+
+    @commands.group(
+        invoke_without_command=True,
+        name='how-to',
+        brief='Shows useful information for newcomers',
+        description='A group of commands that help newcomers'
+    )
+    async def how_to(self, ctx):
+        await self.client.help_command.command_callback(ctx, command='how-to')
+
+    @how_to.command(
+        brief='How to paste code',
+        description='Instructions on how to properly paste code',
+        aliases=['codeblock', 'code-blocks', 'code-block']
+    )
+    async def codeblocks(self, ctx):
+        code_instructions = (
+            '''Discord has an awesome feature called **Text Markdown**\
+            which supports code with full syntax highlighting using codeblocks.\
+            To use codeblocks all you need to do is properly place the backtick\
+            characters *(located left to nr.1 on most keyboards)* and specify your\
+            language *(optional, but preferred)*.\n
+            **This is what your message should look like:**
+            *\\`\\`\\`[programming language]\nYour code here\n\\`\\`\\`*\n
+            **Here's an example:**
+            *\\`\\`\\`python\nprint('Hello world!')\n\\`\\`\\`*\n
+            **This will result in the following:**\n```python\nprint('Hello world!')\n```\n
+            **NOTE:** Codeblocks are required for me to run your code.'''
+        )
+        link = '210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline-'
+
+        e = Embed(title='Text markdown',
+                  url=f'https://support.discordapp.com/hc/en-us/articles/{link}',
+                  description=code_instructions,
+                  color=0x2ECC71)
+        await ctx.send(embed=e)
+
+    @how_to.command(
+        brief='How to properly ask a question',
+        description='Instructions on how to properly ask a question'
+    )
+    async def ask(self, ctx):
+        ask_instructions = (
+            """From time to time you'll stumble upon a question like this:
+            *Is anyone good at [this] or [that]?*
+            Please don't **ask to ask** and **just ask**.\n
+            • Make sure your question is easy to understand.
+            • Use the appropriate channels to ask your question.
+            • Always search before you ask (the internet is a big place).
+            • Be patient (someone will eventually try to answer your question)."""
+        )
+
+        e = Embed(title='Just ask',
+                  description=ask_instructions,
+                  color=0x2ECC71)
+        await ctx.send(embed=e)
+
 
 def setup(client):
     client.add_cog(Responses(client))
