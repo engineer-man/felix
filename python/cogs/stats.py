@@ -15,8 +15,8 @@ from discord.ext import commands
 from discord import Member
 from os import path
 from datetime import datetime, timedelta
+from aiohttp import ClientSession
 import json
-import requests
 import time
 import typing
 
@@ -66,8 +66,10 @@ class Stats(commands.Cog, name='Stats'):
                '?part=statistics'
                '&id=UCrUL8K81R4VBzm-KOYwrcxQ'
                f'&key={config["yt_key"]}')
-        r = requests.get(url)
-        statistics = r.json()['items'][0]['statistics']
+        async with ClientSession() as session:
+            async with session.get(url) as response:
+                r = await response.json()
+        statistics = r['items'][0]['statistics']
         subs = int(statistics['subscriberCount'])
         vids = int(statistics['videoCount'])
         views = int(statistics['viewCount'])
@@ -107,17 +109,19 @@ class Stats(commands.Cog, name='Stats'):
     @stats.command(
         name='users',
         brief='User message stats',
-        description='Show top users by messages for past n days',
-        aliases=['users_30d'])
+        description='Show top users by messages for past n days'
+    )
     @commands.guild_only()
     async def users(self, ctx, n: typing.Optional[int] = 30):
         params = {
             'start': (datetime.now() - timedelta(days=n)).isoformat(),
             'limit': 25,
         }
-        res = requests.get(
-            'https://emkc.org/api/v1/stats/discord/messages', params=params
-        ).json()
+
+        url = 'https://emkc.org/api/v1/stats/discord/messages'
+        async with ClientSession() as session:
+            async with session.get(url, params=params) as response:
+                res = await response.json()
 
         padding = max([len(i['user']) for i in res])
 
@@ -130,8 +134,8 @@ class Stats(commands.Cog, name='Stats'):
     @stats.command(
         name='channels',
         brief='Channel message stats',
-        description='Show top channels by messages for past n days',
-        aliases=['channels_30d'])
+        description='Show top channels by messages for past n days'
+    )
     @commands.guild_only()
     async def channels(
         self, ctx,
@@ -146,9 +150,10 @@ class Stats(commands.Cog, name='Stats'):
         if user:
             params['user'] = user
 
-        res = requests.get(
-            'https://emkc.org/api/v1/stats/discord/channels', params=params
-        ).json()
+        url = 'https://emkc.org/api/v1/stats/discord/channels'
+        async with ClientSession() as session:
+            async with session.get(url, params=params) as response:
+                res = await response.json()
 
         padding = max([len(i['channel']) for i in res])
 

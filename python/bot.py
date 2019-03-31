@@ -9,7 +9,6 @@ The extension "management" provides the commands to load/unload other extensions
 
 This bot requires discord.py rewrite
 pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py
-pip install requests
 """
 from discord.ext.commands import Bot, CommandOnCooldown
 import json

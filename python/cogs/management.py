@@ -26,7 +26,7 @@ in the permissions.json file can use the commands.
 from discord.ext import commands
 from discord import Activity, Embed, Role
 from os import path
-import requests
+from aiohttp import ClientSession
 import subprocess
 import json
 
@@ -64,7 +64,7 @@ class Management(commands.Cog, name='Management'):
             pass
         return (version, date)
 
-    def get_num_remote_commits(self):
+    async def get_num_remote_commits(self):
         last_commit = self.get_version_info()[0]
         ext = f'?per_page=10&sha=master'
         repo = 'engineer-man/felix'
@@ -72,8 +72,10 @@ class Management(commands.Cog, name='Management'):
         repo_data = []
         repo_shas = []
         while last_commit not in repo_shas:
-            r = requests.get(nxt)
-            repo_data += r.json()
+            async with ClientSession() as session:
+                async with session.get(nxt) as response:
+                    r = await response.json()
+            repo_data += r
             repo_shas = [x['sha'] for x in repo_data]
             try:
                 nxt = r.links['next']['url']
@@ -93,7 +95,7 @@ class Management(commands.Cog, name='Management'):
     )
     async def version(self, ctx):
         version, date = self.get_version_info()
-        remote_commits, remote_date = self.get_num_remote_commits()
+        remote_commits, remote_date = await self.get_num_remote_commits()
         status = "I am up to date with 'origin/master'"
         if remote_commits:
             status = f"I am [{remote_commits}] commits behind 'origin/master'"\

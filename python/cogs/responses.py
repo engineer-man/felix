@@ -14,11 +14,11 @@ or by calling it with the path and the name of this python file
 from discord.ext import commands
 from discord import Embed
 from datetime import datetime as dt
+from urllib.parse import quote
+from aiohttp import ClientSession
 import random
 import re
-import requests
 import json
-from urllib.parse import quote
 
 with open("../config.json", "r") as conffile:
     config = json.load(conffile)
@@ -48,15 +48,18 @@ class Responses(commands.Cog, name='General'):
         year_percent = (now - year_start) / (year_end - year_start) * 100
         return f'For your information, the year is {year_percent:.1f}% over!'
 
-    def gif_url(self, terms):
-        gifs = requests.get(
+    async def gif_url(self, terms):
+        url = (
             f'http://api.giphy.com/v1/gifs/search' +
             f'?api_key={config["giphy_key"]}' +
             f'&q={terms}' +
             f'&limit=20' +
             f'&rating=R' +
             f'&lang=en'
-        ).json()
+        )
+        async with ClientSession() as session:
+            async with session.get(url) as response:
+                gifs = await response.json()
         if 'data' not in gifs:
             if 'message' in gifs:
                 if 'Invalid authentication credentials' in gifs['message']:
@@ -139,7 +142,7 @@ class Responses(commands.Cog, name='General'):
             await ctx.send('Please provide a search term')
             return False
         gif = ' '.join(gif)
-        gif_url = self.gif_url(gif)
+        gif_url = await self.gif_url(gif)
         if gif_url is None:
             await ctx.send(f'Sorry {ctx.author.mention}, no gif found 😔')
             # await ctx.message.add_reaction('❌')

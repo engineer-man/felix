@@ -13,7 +13,7 @@ or by calling it with the path and the name of this python file
 from discord.ext import commands
 from discord import TextChannel
 from datetime import datetime
-import requests
+from aiohttp import ClientSession
 import json
 
 with open('../config.json', 'r') as conffile:
@@ -48,16 +48,24 @@ class ChatLog(commands.Cog, name='Chat Log'):
         self.logfile.write('|'.join(paginator) + '\n')
         self.logfile.flush()
         # send chat message to emkc
-        requests.post('https://emkc.org/api/internal/chats',
-            headers={
-                'authorization': config['emkc_key']
-            },
-            data={
-                'channel': paginator[1],
-                'user': paginator[2],
-                'message': paginator[3],
-                'timestamp': paginator[0]
-            })
+        headers = {
+            'authorization': config['emkc_key']
+        }
+        data = {
+            'channel': paginator[1],
+            'user': paginator[2],
+            'message': paginator[3],
+            'timestamp': paginator[0]
+        }
+        async with ClientSession() as session:
+            async with session.post(
+                'https://emkc.org/api/internal/chats',
+                headers=headers,
+                data=data
+            ) as response:
+                s = response.status
+                if not s == 200:
+                    print(f'ERROR while sending chat log to EMKC. Response {s}')
 
 
 def setup(client):
