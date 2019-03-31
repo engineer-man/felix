@@ -108,7 +108,7 @@ class Responses(commands.Cog):
             await ctx.send(f'Sorry {ctx.author.mention}, no gifs found 😔')
             await ctx.message.add_reaction('❌')
         else:
-            e = Embed(title='Your **jif** boss', color=0x000000)
+            e = Embed(title='Your **gif** boss', color=0x000000)
             e.set_image(url=g)
             e.set_footer(text=ctx.author.display_name,
                          icon_url=ctx.author.avatar_url)
@@ -127,29 +127,32 @@ class Responses(commands.Cog):
         invoke_without_command=True,
         name='how-to',
         brief='Shows useful information for newcomers',
-        description='A group of commands that help newcomers'
+        description='A group of commands that help newcomers',
+        aliases=['howto', 'info']
     )
     async def how_to(self, ctx):
         await self.client.help_command.command_callback(ctx, command='how-to')
 
     @how_to.command(
-        brief='How to paste code',
+        name='codeblocks',
+        brief='How to use code blocks to paste code',
         description='Instructions on how to properly paste code',
-        aliases=['codeblock', 'code-blocks', 'code-block']
+        aliases=['codeblock', 'code-blocks', 'code-block', 'code']
     )
     async def codeblocks(self, ctx):
         code_instructions = (
             '''Discord has an awesome feature called **Text Markdown**\
             which supports code with full syntax highlighting using codeblocks.\
             To use codeblocks all you need to do is properly place the backtick\
-            characters *(located left to nr.1 on most keyboards)* and specify your\
+            characters (not single quotes) and specify your\
             language *(optional, but preferred)*.\n
             **This is what your message should look like:**
             *\\`\\`\\`[programming language]\nYour code here\n\\`\\`\\`*\n
             **Here's an example:**
             *\\`\\`\\`python\nprint('Hello world!')\n\\`\\`\\`*\n
-            **This will result in the following:**\n```python\nprint('Hello world!')\n```\n
-            **NOTE:** Codeblocks are required for me to run your code.'''
+            **This will result in the following:**
+            ```python\nprint('Hello world!')\n```\n
+            **NOTE:** Codeblocks are also used to run code via `felix run`.'''
         )
         link = '210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline-'
 
@@ -160,16 +163,18 @@ class Responses(commands.Cog):
         await ctx.send(embed=e)
 
     @how_to.command(
+        name='ask',
         brief='How to properly ask a question',
-        description='Instructions on how to properly ask a question'
+        description='Instructions on how to properly ask a question',
+        aliases=['questions', 'question']
     )
     async def ask(self, ctx):
         ask_instructions = (
             """From time to time you'll stumble upon a question like this:
-            *Is anyone good at [this] or [that]?*
-            Please don't **ask to ask** and **just ask**.\n
+            *Is anyone good at [this] or [that]?* / *Does anyone know [topic]?*
+            Please **just ask** your question.\n
             • Make sure your question is easy to understand.
-            • Use the appropriate channels to ask your question.
+            • Use the appropriate channel to ask your question.
             • Always search before you ask (the internet is a big place).
             • Be patient (someone will eventually try to answer your question)."""
         )
