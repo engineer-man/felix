@@ -33,12 +33,37 @@ Using Docker
 docker-compose up
 ```
 
-### Creating your own bot extension
+### Creating your own bot extension (cog)
 This bot uses the `discord.py rewrite API` (https://discordpy.readthedocs.io/en/rewrite/api.html)
 
 You can create new bot commands or tasks by creating your own extension/cog.
 
 A `sample_cog.py` is included inside the `python/extension` folder.
 
-If you have questions visit us on our discord: https://engineerman.org/discord
-To ask questions and see felix in action.
+### Contributing to Felix
+If you want to contribute to Felix you can just submit a pull request.
+#### Code styling / IDE Settings
+Please style your code according to these guidelines when writing python code for Felix:
+* maximum line length is 80 columns 
+* use 4 spaces for indentation
+* files end with a newline 
+* lines should not have trailing whitespace
+
+If you want to use an auto formatter please use `autopep8`
+
+Example config for VSCode:
+```
+"[python]": {
+    "editor.rulers": [
+        80
+    ],
+    "editor.tabSize": 4,
+},
+"files.insertFinalNewline": true,
+"files.trimTrailingWhitespace": true,
+"editor.trimAutoWhitespace": true,
+"python.formatting.provider": "autopep8",
+```
+
+You can visit us on our discord: https://discord.gg/engineerman
+ to ask questions and see felix in action.
