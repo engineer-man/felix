@@ -23,7 +23,7 @@ with open("../config.json", "r") as conffile:
     config = json.load(conffile)
 
 
-class Responses(commands.Cog):
+class Responses(commands.Cog, name='General'):
     def __init__(self, client):
         self.client = client
 
@@ -91,8 +91,8 @@ class Responses(commands.Cog):
 
     @commands.command(
         name='source',
-        brief='Links to source code',
-        description='Show all links to EMKC github repos',
+        brief='Show links to source code',
+        description='Show links to engineer-man github repositories',
         aliases=['code', 'sauce', 'repo', 'repos'],
         hidden=False,
     )
@@ -131,7 +131,7 @@ class Responses(commands.Cog):
     @commands.group(
         invoke_without_command=True,
         name='how-to',
-        brief='Shows useful information for newcomers',
+        brief='Show useful information for newcomers',
         description='A group of commands that help newcomers',
         aliases=['howto', 'info', 'faq']
     )
