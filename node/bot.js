@@ -340,11 +340,11 @@ return bot
             return handlers.code(message);
         }
 
-        if (content.match(/^felix google/gi)) {
-            var text = content.split('google')[1].trim();
+        // if (content.match(/^felix google/gi)) {
+        //     var text = content.split('google')[1].trim();
 
-            channel.send('here you go! <https://www.google.com/search?q=' + encodeURIComponent(text) + '>');
-        }
+        //     channel.send('here you go! <https://www.google.com/search?q=' + encodeURIComponent(text) + '>');
+        // }
 
         if (content.match(/^(hi|what's up|yo|hey|hello) felix/gi)) {
             message.reply('hello!');

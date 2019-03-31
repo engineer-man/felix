@@ -18,6 +18,7 @@ import random
 import re
 import requests
 import json
+from urllib.parse import quote
 
 with open("../config.json", "r") as conffile:
     config = json.load(conffile)
@@ -88,6 +89,20 @@ class Responses(commands.Cog, name='General'):
             msg.content
         ):
             await msg.channel.send('😏 *sensible chuckle*')
+
+    @commands.command(
+        name='google',
+        brief='Post a google search link',
+        description='Post a google search link',
+        aliases=['lmgtfy'],
+        hidden=False,
+    )
+    async def google(self, ctx, *text):
+        if not text:
+            await ctx.send('Please provide a search term')
+            return False
+        text = quote(' '.join(text))
+        await ctx.send(f'here you go! <https://www.google.com/search?q={text}>')
 
     @commands.command(
         name='source',
