@@ -57,11 +57,16 @@ class Management(commands.Cog, name='Management'):
         try:
             gitlog = subprocess.check_output(
                 ['git', 'log', '-n', '1', '--date=iso']).decode()
-            version = gitlog.split('\n')[0].split(' ')[1]
-            date = gitlog.split('\n')[2][5:].strip()
-            date = date.replace(' +', 'Z+').replace(' ', 'T')
-        except:
-            pass
+            for line in gitlog.split('\n'):
+                if line.startswith('commit'):
+                    version = line.split(' ')[1]
+                elif line.startswith('Date'):
+                    date = line[5:].strip()
+                    date = date.replace(' +', 'Z+').replace(' ', 'T')
+                else:
+                    pass
+        except Exception as e:
+            print(e)
         return (version, date)
 
     async def get_num_remote_commits(self):
