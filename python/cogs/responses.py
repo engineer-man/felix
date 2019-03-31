@@ -105,6 +105,15 @@ class Responses(commands.Cog, name='General'):
         await ctx.send(f'here you go! <https://www.google.com/search?q={text}>')
 
     @commands.command(
+        name='run',
+        brief='Run some code',
+        description='Run some code - type "felix run" for instructions',
+        hidden=False,
+    )
+    async def run(self, ctx, *code):
+        pass
+
+    @commands.command(
         name='source',
         brief='Show links to source code',
         description='Show links to engineer-man github repositories',
