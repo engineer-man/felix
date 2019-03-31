@@ -1,6 +1,5 @@
 Coding
 run:run code
-Fetch stuff
-gif:search giphy for a gif
+LMGTFY
 google:post a google search link
 --- commands and categories below the triple dash line will only show in helpall

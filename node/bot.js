@@ -192,45 +192,45 @@ var handlers = {
         channel.send('~ letter ' + letter);
     },
 
-    gif(message) {
-        const content = message.content;
-        const channel = message.channel;
+    // gif(message) {
+    //     const content = message.content;
+    //     const channel = message.channel;
 
-        message.reply('coming right up boss!');
+    //     message.reply('coming right up boss!');
 
-        var text = content.split('gif')[1].trim();
+    //     var text = content.split('gif')[1].trim();
 
-        return request
-            ({
-                method: 'get',
-                url:
-                    'https://api.giphy.com/v1/gifs/search' +
-                    '?api_key=' + config.giphy_key +
-                    '&q=' + text.split(' ').join('+') +
-                    '&limit=20' +
-                    '&offset=0' +
-                    '&rating=R' +
-                    '&lang=en',
-                json: true,
-                simple: true
-            })
-            .then(res => {
-                var data = res.data;
+    //     return request
+    //         ({
+    //             method: 'get',
+    //             url:
+    //                 'https://api.giphy.com/v1/gifs/search' +
+    //                 '?api_key=' + config.giphy_key +
+    //                 '&q=' + text.split(' ').join('+') +
+    //                 '&limit=20' +
+    //                 '&offset=0' +
+    //                 '&rating=R' +
+    //                 '&lang=en',
+    //             json: true,
+    //             simple: true
+    //         })
+    //         .then(res => {
+    //             var data = res.data;
 
-                if (data.length <= 0) {
-                    // no gif
-                    channel.send('sorry, no gif found for: ' + text);
-                    return null;
-                }
+    //             if (data.length <= 0) {
+    //                 // no gif
+    //                 channel.send('sorry, no gif found for: ' + text);
+    //                 return null;
+    //             }
 
-                var gif = data[Math.floor(Math.random() * data.length)].images.original.url;
+    //             var gif = data[Math.floor(Math.random() * data.length)].images.original.url;
 
-                channel.send(gif);
-            })
-            .catch(err => {
-                channel.send('sorry, you broke me, no gifs right now :(');
-            });
-    },
+    //             channel.send(gif);
+    //         })
+    //         .catch(err => {
+    //             channel.send('sorry, you broke me, no gifs right now :(');
+    //         });
+    // },
 
     code(message) {
         const content = message.content;
@@ -332,9 +332,9 @@ return bot
             return handlers.hangman(message);
         }
 
-        if (content.match(/^felix gif /gi)) {
-            return handlers.gif(message);
-        }
+        // if (content.match(/^felix gif /gi)) {
+        //     return handlers.gif(message);
+        // }
 
         if (content.match(/^felix run (js|javascript|python(2|3)?|node|c|c\+\+|cpp|ruby|go|r|cs|csharp|php|c#|nasm|asm|java|swift|brainfuck|bf)/gi)) {
             return handlers.code(message);

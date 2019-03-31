@@ -48,15 +48,21 @@ class Responses(commands.Cog):
         return f'For your information, the year is {year_percent:.1f}% over!'
 
     def gif_url(self, terms):
-        try:
-            gifs = requests.get(f'http://api.giphy.com/v1/gifs/search?api_key={config["giphy_key"]}&q=\
-                {terms}&limit=20&rating=R&lang=en').json()  # offset is 0 by default
-
-            gif = random.choice(gifs['data'])['images']['original']['url']
-            return gif
-        except IndexError:  # for when no results are returned
-            pass
-
+        gifs = requests.get(
+            f'http://api.giphy.com/v1/gifs/search' +
+            f'?api_key={config["giphy_key"]}' +
+            f'&q={terms}' +
+            f'&limit=20' +
+            f'&rating=R' +
+            f'&lang=en'
+        ).json()
+        if 'data' not in gifs:
+            if 'message' in gifs:
+                if 'Invalid authentication credentials' in gifs['message']:
+                    print('ERROR: Giphy API key is not valid')
+            return None
+        gif = random.choice(gifs['data'])['images']['original']['url']
+        return gif
 
     @commands.Cog.listener()
     async def on_message(self, msg):
@@ -91,44 +97,43 @@ class Responses(commands.Cog):
         hidden=False,
     )
     async def source(self, ctx):
-        await ctx.send('Youtube : <https://github.com/engineer-man/youtube-code>' +
-        '\nEMKC: <https://github.com/engineer-man/emkc>' +
-        '\nFelix: <https://github.com/engineer-man/felix>' +
-        '\nPiston a.k.a. Felix run: <https://github.com/engineer-man/piston>')
+        await ctx.send(
+            'Youtube : <https://github.com/engineer-man/youtube-code>' +
+            '\nEMKC: <https://github.com/engineer-man/emkc>' +
+            '\nFelix: <https://github.com/engineer-man/felix>' +
+            '\nPiston / Felix run: <https://github.com/engineer-man/piston>'
+        )
 
     @commands.command(
-        name='gif-embed',
-        brief='Dispalys a specified gif',
-        aliases=['jif', 'embed-gif'],
-        hidden=True
+        name='gif',
+        brief='Post a gif',
+        description='Dispalys a random gif for the specified search term',
+        hidden=False
     )
-    async def gif_embed(self, ctx, *, gif):
-        g = self.gif_url(gif)
-        if g is None:
-            await ctx.send(f'Sorry {ctx.author.mention}, no gifs found 😔')
-            await ctx.message.add_reaction('❌')
+    async def gif_embed(self, ctx, *gif):
+        if not gif:
+            await ctx.send('Please provide a search term')
+            return False
+        gif = ' '.join(gif)
+        gif_url = self.gif_url(gif)
+        if gif_url is None:
+            await ctx.send(f'Sorry {ctx.author.mention}, no gif found 😔')
+            # await ctx.message.add_reaction('❌')
         else:
-            e = Embed(title='Your **gif** boss', color=0x000000)
-            e.set_image(url=g)
+            e = Embed(color=0x000000)
+            e.set_image(url=gif_url)
             e.set_footer(text=ctx.author.display_name,
                          icon_url=ctx.author.avatar_url)
 
             await ctx.send(embed=e)
-            await ctx.message.add_reaction('✅')
-
-    @gif_embed.error
-    async def info_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send('Name the gif you want next time pls')
-            await ctx.message.add_reaction('❌')
-
+            # await ctx.message.add_reaction('✅')
 
     @commands.group(
         invoke_without_command=True,
         name='how-to',
         brief='Shows useful information for newcomers',
         description='A group of commands that help newcomers',
-        aliases=['howto', 'info']
+        aliases=['howto', 'info', 'faq']
     )
     async def how_to(self, ctx):
         await self.client.help_command.command_callback(ctx, command='how-to')
