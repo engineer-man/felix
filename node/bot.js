@@ -102,17 +102,20 @@ var handlers = {
         const content = message.content;
         const channel = message.channel;
 
-        var input_language = content.split('```', 1)[0].split(' ', 3)[2];
+        var input_language = content.split('```', 1)[0].split(' ', 3)[2] || null;
         // everything between the first felix run and ```
 
-        input_language = input_language.trim().to_lower_case();
-        // allow uppercase characters and extra whitespace
+        if(input_language){
+            // allow uppercase characters and extra whitespace
+            input_language = input_language.trim().to_lower_case();
+        }
 
-        var highlighting_language = content.split('```', 2)[1].split(' ', 1)[0];
-        // everything between the first ``` and the next space
+        var highlighting_language = (/```(.+)\s/g.exec(content) || [, null])[1];
+        // everything between the first ``` and the next whitespace character
 
 
-        
+
+        // if you add any languages please make sure to change 'highlighting_languages' as well
         const input_languages = {
             python: 'python3',
             python3: 'python3',
@@ -141,6 +144,9 @@ var handlers = {
         // sources:
         // https://sourceforge.net/p/discord/wiki/markdown_syntax/#md_ex_code
         // => http://pygments.org/docs/lexers/
+
+        // I wrote a small script that generates this list from the 'input_languages'
+        // feel free to message me @soruh#8824 on discord if you need it
         const highlighting_languages = {
             python: 'python3',
             py: 'python3',
@@ -170,12 +176,18 @@ var handlers = {
         };
         
         var language = null;
+
         if (input_languages.hasOwnProperty(input_language)) {
             language = input_languages[input_language];
         } else if(highlighting_languages.hasOwnProperty(highlighting_language)) {
             language = highlighting_languages[highlighting_language];
         } else {
-            channel.send(input_language + ' is not supported');
+            const invalid_language = input_language || highlighting_language;
+            if (invalid_language) {
+                channel.send("'" + invalid_language + "' is not supported");
+            } else {
+                channel.send('please specify a language');
+            }
             return;
         }
 
