@@ -56,18 +56,15 @@ class rc(commands.Cog, name='rc', command_attrs=dict(hidden=True)):
     )
     @commands.guild_only()
     async def remote_control(self, ctx, target_channel: TextChannel = None):
-        print('rc on')
         if self.rc_active:
-            if not ctx.author == self.rc_user:
-                await ctx.send(f'{self.rc_user.name} is already using rc!')
-                return
+            return
         if not target_channel:
             await ctx.send('Error: Please specify a channel!')
             return
         self.rc_target_channel = target_channel
         self.rc_user = ctx.author
         self.rc_channel = ctx.channel
-        self.active = True
+        self.rc_active = True
         await ctx.send(f'Now remote controlling {target_channel.mention}')
 
     @remote_control.command(
@@ -78,15 +75,16 @@ class rc(commands.Cog, name='rc', command_attrs=dict(hidden=True)):
     )
     @commands.guild_only()
     async def rc_off(self, ctx):
-        print('rc off')
-        if self.rc_active:
-            if not ctx.author == self.rc_user:
-                await ctx.send(f'{self.rc_user.name} is already using rc!')
-                return
+        if not self.rc_active:
+            return
+        if not ctx.author == self.rc_user:
+            await ctx.send(f'{self.rc_user.name} is currently using rc!')
+            return
         self.rc_target_channel = None
         self.rc_user = None
         self.rc_channel = None
-        self.active = False
+        self.rc_active = False
+        await ctx.send(f'Remote Control Stopped!')
 
 
 def setup(client):
