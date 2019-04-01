@@ -175,6 +175,20 @@ var handlers = {
             bf: 'brainfuck'
         };
         
+
+        const code_message = content.replace(/```.+\s/gi, '```');
+
+        const matches = /```((.|\n)+)```/gi.exec(code_message);
+
+        if (!matches) {
+            channel.send('no code present')
+            return;
+        }
+
+        const source = matches[1].trim();
+
+
+
         var language = null;
 
         if (input_languages.hasOwnProperty(input_language)) {
@@ -191,16 +205,7 @@ var handlers = {
             return;
         }
 
-        const code_message = content.replace(/```.+\s/gi, '```');
 
-        const matches = /```((.|\n)+)```/gi.exec(code_message);
-
-        if (!matches) {
-            channel.send('no code present')
-            return;
-        }
-
-        const source = matches[1].trim();
 
         return request
             ({
