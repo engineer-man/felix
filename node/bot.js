@@ -194,18 +194,8 @@ return bot
             return handlers.state_change(message);
         }
 
-        if (content.match(/^felix run (js|javascript|python(2|3)?|node|c|c\+\+|cpp|ruby|go|r|cs|csharp|php|c#|nasm|asm|java|swift|brainfuck|bf)/gi)) {
-            return handlers.code(message);
-        }
-
-        if (content.match(/^(hi|what's up|yo|hey|hello) felix/gi)) {
-            message.reply('hello!');
-            return;
-        }
-
-        // easter eggs and various content
-        switch (content) {
-            case 'felix run':
+        if (content.match(/^felix run/gi)) {
+            if(content === "felix run"){
                 channel.send(
                     'i can run code!\n\n' +
                     '**here are my supported languages:**'+
@@ -214,7 +204,18 @@ return bot
                     'felix run js\n' +
                     '\\`\\`\\`\nyour code\n\\`\\`\\`'
                 );
-                break;
+            }else{
+                return handlers.code(message);
+            }
+        }
+
+        if (content.match(/^(hi|what's up|yo|hey|hello) felix/gi)) {
+            message.reply('hello!');
+            return;
+        }
+
+        // easter eggs
+        switch (content) {
             case 'html is a programming language':
                 message.reply('no it\'s not, don\'t be silly');
                 break;
