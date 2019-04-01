@@ -105,7 +105,7 @@ var handlers = {
         var input_language = content.split('```', 1)[0].split(' ', 3)[2] || null;
         // everything between the first felix run and ```
 
-        if(input_language){
+        if (input_language) {
             // allow uppercase characters and extra whitespace
             input_language = input_language.trim().to_lower_case();
         }
