@@ -30,6 +30,8 @@ FORBIDDEN = [
     'gofund.me'
 ]
 
+REPORT_CHANNEL = 483978527549554698
+
 
 class LinkBlocker(commands.Cog, name='Link Blocker'):
     def __init__(self, client):
@@ -56,6 +58,8 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
 
     def is_allowed(self, msg):
         """return True if user is permitted to post links"""
+        if msg.author == self.client.user:
+            return True
         author_roles = [role.id for role in msg.author.roles]
         if not self.client.user == msg.author:
             if any(role in self.permitted_roles for role in author_roles):
@@ -65,12 +69,9 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
     async def has_discord_link(self, msg):
         """Handle message and return True if a discord link was detected"""
         if len(re.findall(r'(?i)(discord\.(gg|io|me)\/\S+)', msg.content)):
-            if self.client.user == msg.author:
-                await msg.delete()
-            elif msg.author.id in self.allowed_once:
+            if msg.author.id in self.allowed_once:
                 self.allowed_once.remove(msg.author.id)
             else:
-                await msg.delete()
                 if str(msg.author.id) in self.naughty_list:
                     last_time = self.naughty_list[str(msg.author.id)]
                     if time.time() - last_time > self.NAUGHTY_LIST_TIME:
@@ -78,7 +79,7 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
                     else:
                         return
                 await msg.channel.send(
-                    f'<@&500710389131247636>\nSorry {msg.author.mention}. ' +
+                    f'Sorry {msg.author.mention}. ' +
                     'Posting links to other servers is not allowed.\n' +
                     'You can ask permission from an engineer-man team member!'
                 )
@@ -94,9 +95,16 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
             '))',
             msg.content
         )):
-            await msg.delete()
             return True
         return False
+
+    async def post_report(self, msg):
+        target = self.client.get_channel(REPORT_CHANNEL)
+        await target.send(f'<@&500710389131247636> I deleted a message')
+        await target.send(
+            f'Message sent by {msg.author.mention} in {msg.channel.mention}' +
+            f'\n```{msg.content}```'
+        )
 
     # ----------------------------------------------
     # Event listeners
@@ -104,13 +112,17 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
     async def check_message(self, msg):
         """Run checks on a message"""
         if self.is_dm(msg):
-            return
+            return True
         if self.is_allowed(msg):
-            return
+            return True
         if await self.has_discord_link(msg):
-            return
+            await self.post_report(msg)
+            await msg.delete()
+            return False
         if await self.has_forbidden_text(msg):
-            return
+            await self.post_report(msg)
+            await msg.delete()
+            return False
 
     @commands.Cog.listener()
     async def on_message(self, msg):
