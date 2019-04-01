@@ -102,8 +102,18 @@ var handlers = {
         const content = message.content;
         const channel = message.channel;
 
-        var input_language = content.split('```')[0].split(' ')[2];
-        var language = {
+        var input_language = content.split('```', 1)[0].split(' ', 3)[2];
+        // everything between the first felix run and ```
+
+        input_language = input_language.trim().to_lower_case();
+        // allow uppercase characters and extra whitespace
+
+        var highlighting_language = content.split('```', 2)[1].split(' ', 1)[0];
+        // everything between the first ``` and the next space
+
+
+        
+        const input_languages = {
             python: 'python3',
             python3: 'python3',
             python2: 'python2',
@@ -126,9 +136,45 @@ var handlers = {
             swift: 'swift',
             brainfuck: 'brainfuck',
             bf: 'brainfuck',
-        }[input_language.trim().to_lower_case()] || null;
+        };
 
-        if (!language) {
+        // sources:
+        // https://sourceforge.net/p/discord/wiki/markdown_syntax/#md_ex_code
+        // => http://pygments.org/docs/lexers/
+        const highlighting_languages = {
+            python: 'python3',
+            py: 'python3',
+            sage: 'python3',
+            python3: 'python3',
+            py3: 'python3',
+            js: 'javascript',
+            javascript: 'javascript',
+            go: 'go',
+            rb: 'ruby',
+            ruby: 'ruby',
+            duby: 'ruby',
+            c: 'c',
+            cpp: 'cpp',
+            'c++': 'cpp',
+            csharp: 'csharp',
+            'c#': 'csharp',
+            php: 'php',
+            php3: 'php',
+            php4: 'php',
+            php5: 'php',
+            nasm: 'nasm',
+            java: 'java',
+            swift: 'swift',
+            brainfuck: 'brainfuck',
+            bf: 'brainfuck'
+        };
+        
+        var language = null;
+        if (input_languages.hasOwnProperty(input_language)) {
+            language = input_languages[input_language];
+        } else if(highlighting_languages.hasOwnProperty(highlighting_language)) {
+            language = highlighting_languages[highlighting_language];
+        } else {
             channel.send(input_language + ' is not supported');
             return;
         }
@@ -195,7 +241,7 @@ return bot
         }
 
         if (content.match(/^felix run/gi)) {
-            if(content === "felix run"){
+            if (content === "felix run") {
                 channel.send(
                     'i can run code!\n\n' +
                     '**here are my supported languages:**'+
@@ -204,7 +250,7 @@ return bot
                     'felix run js\n' +
                     '\\`\\`\\`\nyour code\n\\`\\`\\`'
                 );
-            }else{
+            } else {
                 return handlers.code(message);
             }
         }
