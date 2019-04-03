@@ -265,7 +265,10 @@ return bot
                     '\npython2\npython3\njavascript\nruby\ngo\nc\nc++/cpp\ncs/csharp/c#\nr\nasm/nasm\nphp\njava\nswift\nbrainfuck/bf\n\n' +
                     '**you can run code by telling me things like:**\n' +
                     'felix run js\n' +
-                    '\\`\\`\\`\nyour code\n\\`\\`\\`'
+                    '\\`\\`\\`\nyour code\n\\`\\`\\`\n' +
+                    '**or:**\n' +
+                    'felix run\n' +
+                    '\\`\\`\\`js\nyour code\n\\`\\`\\`'
                 );
             } else {
                 return handlers.code(message);
