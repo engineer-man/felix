@@ -32,7 +32,7 @@ FORBIDDEN = [
 ]
 
 REPORT_CHANNEL = 483978527549554698
-
+REPORT_ROLE= 500710389131247636
 
 class LinkBlocker(commands.Cog, name='Link Blocker'):
     def __init__(self, client):
@@ -103,7 +103,7 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
     async def post_report(self, msg):
         """Post report of deletion to target channel"""
         target = self.client.get_channel(REPORT_CHANNEL)
-        await target.send(f'<@&500710389131247636> I deleted a message')
+        await target.send(f'<@&{REPORT_ROLE}> I deleted a message')
         e = Embed(description=msg.content,
                   color=random.randint(0, 0xFFFFFF))
         await target.send(
