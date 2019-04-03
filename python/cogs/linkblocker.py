@@ -18,11 +18,12 @@ in the permissions.json file can use the commands.
 """
 
 from discord.ext import commands
-from discord import Member, DMChannel
+from discord import Member, DMChannel, Embed
 from os import path
 import json
 import re
 import time
+import random
 
 FORBIDDEN = [
     'patreon.com',
@@ -103,9 +104,11 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         """Post report of deletion to target channel"""
         target = self.client.get_channel(REPORT_CHANNEL)
         await target.send(f'<@&500710389131247636> I deleted a message')
+        e = Embed(description=msg.content,
+                  color=random.randint(0, 0xFFFFFF))
         await target.send(
-            f'Message sent by {msg.author.mention} in {msg.channel.mention}' +
-            f'\n```{msg.content}```'
+            f'Message sent by {msg.author.mention} in {msg.channel.mention}',
+            embed=e
         )
         return True
 
