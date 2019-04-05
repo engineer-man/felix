@@ -61,6 +61,7 @@ class Stats(commands.Cog, name='Stats'):
     @commands.guild_only()
     @commands.cooldown(1, 300, commands.BucketType.user)
     async def stats(self, ctx):
+        await ctx.trigger_typing()
         url = ('https://www.googleapis.com/youtube/v3/channels'
                '?part=statistics'
                '&id=UCrUL8K81R4VBzm-KOYwrcxQ'
@@ -112,6 +113,7 @@ class Stats(commands.Cog, name='Stats'):
     )
     @commands.guild_only()
     async def users(self, ctx, n: typing.Optional[int] = 30):
+        await ctx.trigger_typing()
         params = {
             'start': (datetime.now() - timedelta(days=n)).isoformat(),
             'limit': 25,
@@ -141,6 +143,7 @@ class Stats(commands.Cog, name='Stats'):
         n: typing.Optional[int] = 30,
         user: Member = None
     ):
+        await ctx.trigger_typing()
         params = {
             'start': (datetime.now() - timedelta(days=n)).isoformat(),
             'limit': 25,

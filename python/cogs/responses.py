@@ -110,6 +110,7 @@ class Responses(commands.Cog, name='General'):
         hidden=False,
     )
     async def google(self, ctx, *, search_text):
+        await ctx.trigger_typing()
         await ctx.send(
             f'here you go! <https://www.google.com/search?q={search_text}>'
         )
@@ -145,6 +146,7 @@ class Responses(commands.Cog, name='General'):
         hidden=False
     )
     async def gif_embed(self, ctx, *, gif_name):
+        await ctx.trigger_typing()
         gif_url = await self.gif_url(gif_name)
         if gif_url is None:
             await ctx.send(f'Sorry {ctx.author.mention}, no gif found 😔')
