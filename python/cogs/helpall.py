@@ -1,21 +1,10 @@
 """This is a cog for a discord.py bot.
-It adds 2 commands
+It adds 1 command
 
-    help        show all non hidden commands + the commands from node_help.txt
-    helpall     show all commands + the commands from node_help.txt
+    helpall     show all commands (including all hidden ones)
 
     The commands will output to the current channel or to a dm channel
     according to the pm_help kwarg of the bot.
-
-The default help command has to be renamed to 'defaulthelp'
-and should be hidden by constructing the bot with the
-"help_attrs={'name': 'defaulthelp', 'hidden': True}" kwarg.
-
-Load the cog by calling client.load_extension with the name of this python file
-as an argument (without .py)
-    example:    bot.load_extension('filename')
-or by calling it with the path and the name of this python file
-    example:    bot.load_extension('my_extensions.filename')
 
 Only users belonging to a role that is specified under the module's name
 in the permissions.json file can use the commands.

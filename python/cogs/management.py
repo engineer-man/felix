@@ -2,23 +2,15 @@
 It will add some management commands to a bot.
 
 Commands:
+    embed           make the bot post an embed for you
+    version         show the hash of the latest commit
     load            load an extension / cog
     unload          unload an extension / cog
     reload          reload an extension / cog
     cogs            show currently active extensions / cogs
     activity        set the bot's status message
-    version         show the hash of the latest commit
     list            make felix compute a list
-        duplicates      find duplicate usernames
-
-Events:
-    on_ready        Set the bot's status to show the hash of the latest commit
-
-Load the cog by calling client.load_extension with the name of this python file
-as an argument (without the file-type extension)
-    example:    bot.load_extension('management')
-or by calling it with the path and the name of this python file
-    example:    bot.load_extension('cogs.management')
+     └duplicates        find duplicate usernames
 
 Only users belonging to a role that is specified under the module's name
 in the permissions.json file can use the commands.
@@ -119,15 +111,18 @@ class Management(commands.Cog, name='Management'):
         description='Create a text embed | usage: felix embed Title|Text',
         hidden=True,
     )
-    async def embed(self, ctx, *embed_str: str):
-        msg = ctx.message
-        title, text = msg.content[12:].split('|')
+    async def embed(self, ctx, *, embed_message):
+        title, text = embed_message.split('|')
         embed = Embed(
             title=title,
             description=text
         )
+        embed.set_footer(
+            text=ctx.author.display_name,
+            icon_url=ctx.author.avatar_url
+        )
         await ctx.send(embed=embed)
-        await msg.delete()
+        await ctx.message.delete()
 
     # ----------------------------------------------
     # Function to load extensions
@@ -135,10 +130,10 @@ class Management(commands.Cog, name='Management'):
     @commands.command(
         name='load',
         brief='Load bot extension',
-        description='Load bot extension',
+        description='Load bot extension\n\nExample: felix load cogs.stats',
         hidden=True,
     )
-    async def load_extension(self, ctx, extension_name: str):
+    async def load_extension(self, ctx, extension_name):
         try:
             self.client.load_extension(extension_name)
         except Exception as e:
@@ -152,12 +147,15 @@ class Management(commands.Cog, name='Management'):
     @commands.command(
         name='unload',
         brief='Unload bot extension',
-        description='Unload bot extension',
+        description='Unload bot extension\n\nExample: felix unload cogs.stats',
         hidden=True,
     )
-    async def unload_extension(self, ctx, extension_name: str):
+    async def unload_extension(self, ctx, extension_name):
         if extension_name.lower() in 'cogs.management':
-            await ctx.send(f'```diff\n- Cannot unload {extension_name}```')
+            await ctx.send(
+                f"```diff\n- {extension_name} can't be unloaded" +
+                f"\n+ try felix reload {extension_name}!```"
+            )
             return
         if self.client.extensions.get(extension_name) is None:
             return
@@ -170,11 +168,11 @@ class Management(commands.Cog, name='Management'):
     @commands.command(
         name='reload',
         brief='Reload bot extension',
-        description='Reload bot extension',
+        description='Reload bot extension\n\nExample: felix reload cogs.stats',
         hidden=True,
         aliases=['re']
     )
-    async def reload_extension(self, ctx, extension_name: str):
+    async def reload_extension(self, ctx, extension_name):
         target_extensions = [extension_name]
         if extension_name in 'all':
             target_extensions = list(self.client.extensions.keys())
@@ -260,7 +258,8 @@ class Management(commands.Cog, name='Management'):
     )
     @commands.guild_only()
     async def _list(self, ctx):
-        await ctx.send('I can list stuff. Type felix help list to see what.')
+        # await ctx.send('I can list stuff. Type `felix help list` to see what.')
+        await self.client.help_command.command_callback(ctx, command='list')
         return True
 
     @_list.command(

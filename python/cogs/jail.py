@@ -3,8 +3,11 @@ It will provide commands to jail users
 and auto jail users for excessive messaging.
 
 Commands:
-    jail, silence                   Jail a @user
-    unjail, release, unsilence      Release a @user from jail
+    jail                Jail a @user
+    unjail              Release a @user from jail
+
+Only users belonging to a role that is specified under the module's name
+in the permissions.json file can use the commands.
 """
 
 from discord.ext import commands

@@ -1,14 +1,9 @@
 """This is a cog for a discord.py bot.
-It will log all messages the bot can see to a file
+It will log all messages the bot can see to a file and to the emkc chatlog api
 
 Commands:
     None
 
-Load the cog by calling client.load_extension with the name of this python file
-as an argument (without the file-type extension)
-    example:    bot.load_extension('chatlog')
-or by calling it with the path and the name of this python file
-    example:    bot.load_extension('my_extensions.chatlog')
 """
 from discord.ext import commands
 from discord import TextChannel

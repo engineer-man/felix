@@ -10,7 +10,7 @@ The extension "management" provides the commands to load/unload other extensions
 This bot requires discord.py rewrite
 pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py
 """
-from discord.ext.commands import Bot, CommandOnCooldown
+from discord.ext.commands import Bot, CommandOnCooldown, MissingRequiredArgument
 import json
 import os
 import sys
@@ -65,6 +65,20 @@ async def on_command_error(ctx, exception):
         await ctx.author.send(exception)
         await ctx.message.delete()
         print(f'{ctx.command} on cooldown for {ctx.author}', file=sys.stderr)
+        return
+
+    if type(exception) == MissingRequiredArgument:
+        par = str(exception.param)
+        missing = par.split(": ")[0]
+        if ':' in par:
+            missing_type = ' (' + str(par).split(": ")[1] + ')'
+        else:
+            missing_type = ''
+        await ctx.send(
+            f'Missing parameter: `{missing}{missing_type}`' +
+            f'\nIf you are not sure how to use the command, try running ' +
+            f'`felix help {ctx.command.name}`'
+        )
         return
 
     print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)

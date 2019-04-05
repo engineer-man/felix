@@ -7,12 +7,6 @@ Commands:
     allow           Specify a user. User is then allowed to post 1
                     discord.gg invite link
 
-Load the cog by calling client.load_extension with the name of this python file
-as an argument (without the file-type extension)
-    example:    bot.load_extension('linkblocker')
-or by calling it with the path and the name of this python file
-    example:    bot.load_extension('cogs.linkblocker')
-
 Only users belonging to a role that is specified under the module's name
 in the permissions.json file can use the commands.
 """

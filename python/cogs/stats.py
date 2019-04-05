@@ -1,14 +1,13 @@
 """This is a cog for a discord.py bot.
-It prints out the current number of discord members and yt subs.
+It adds some commands to print youtube / discord stats
 
 Commands:
-    numbers         print yt subs + discord members
+    stats         print yt subs + discord members
+     ├ users        print stats about discord members
+     └ channels     print stats about discord channels
 
-Load the cog by calling client.load_extension with the name of this python file
-as an argument (without .py)
-    example:    bot.load_extension('example')
-or by calling it with the path and the name of this python file
-    example:    bot.load_extension('folder.example')
+Only users belonging to a role that is specified under the module's name
+in the permissions.json file can use the commands.
 """
 
 from discord.ext import commands
