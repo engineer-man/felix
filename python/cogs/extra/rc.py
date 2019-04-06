@@ -39,6 +39,8 @@ class rc(commands.Cog, name='rc', command_attrs=dict(hidden=True)):
     # ----------------------------------------------
     @commands.Cog.listener()
     async def on_message(self, msg):
+        if not self.rc_active:
+            return
         if msg.author.bot:
             return
         if msg.channel == self.rc_target_channel:
@@ -54,6 +56,8 @@ class rc(commands.Cog, name='rc', command_attrs=dict(hidden=True)):
 
     @commands.Cog.listener()
     async def on_typing(self, channel, user, when):
+        if not self.rc_active:
+            return
         if not channel == self.rc_channel:
             return
         if not user == self.rc_user:
