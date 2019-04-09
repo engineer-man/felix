@@ -57,7 +57,9 @@ class rc(commands.Cog, name='rc', command_attrs=dict(hidden=True)):
     @commands.guild_only()
     async def remote_control(self, ctx, target_channel: TextChannel = None):
         if self.rc_active:
-            return
+            if not ctx.author == self.rc_user:
+                await ctx.send(f'{self.rc_user.name} is currently using rc!')
+                return
         if not target_channel:
             await ctx.send('Error: Please specify a channel!')
             return
