@@ -7,22 +7,17 @@ Commands:
     allow           Specify a user. User is then allowed to post 1
                     discord.gg invite link
 
-Load the cog by calling client.load_extension with the name of this python file
-as an argument (without the file-type extension)
-    example:    bot.load_extension('linkblocker')
-or by calling it with the path and the name of this python file
-    example:    bot.load_extension('cogs.linkblocker')
-
 Only users belonging to a role that is specified under the module's name
 in the permissions.json file can use the commands.
 """
 
 from discord.ext import commands
-from discord import Member, DMChannel
+from discord import Member, DMChannel, Embed
 from os import path
 import json
 import re
 import time
+import random
 
 FORBIDDEN = [
     'patreon.com',
@@ -31,7 +26,7 @@ FORBIDDEN = [
 ]
 
 REPORT_CHANNEL = 483978527549554698
-
+REPORT_ROLE= 500710389131247636
 
 class LinkBlocker(commands.Cog, name='Link Blocker'):
     def __init__(self, client):
@@ -67,17 +62,18 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         return False
 
     async def has_discord_link(self, msg):
-        """Handle message and return True if a discord link was detected"""
+        """Check message and return True if a discord link was detected"""
         if len(re.findall(r'(?i)(discord\.(gg|io|me)\/\S+)', msg.content)):
             if msg.author.id in self.allowed_once:
                 self.allowed_once.remove(msg.author.id)
+                return False
             else:
                 if str(msg.author.id) in self.naughty_list:
                     last_time = self.naughty_list[str(msg.author.id)]
                     if time.time() - last_time > self.NAUGHTY_LIST_TIME:
                         self.naughty_list.pop(str(msg.author.id))
                     else:
-                        return
+                        return True
                 await msg.channel.send(
                     f'Sorry {msg.author.mention}. ' +
                     'Posting links to other servers is not allowed.\n' +
@@ -88,7 +84,7 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         return False
 
     async def has_forbidden_text(self, msg):
-        """Delete message and return True if forbidden text was detected"""
+        """Check message and return True if forbidden text was detected"""
         if len(re.findall(
             r'(?i)(http(s)?\:\/\/(www\.)?(' +
             '|'.join([s.replace('.', '\\.') for s in FORBIDDEN]) +
@@ -99,38 +95,43 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         return False
 
     async def post_report(self, msg):
+        """Post report of deletion to target channel"""
         target = self.client.get_channel(REPORT_CHANNEL)
-        await target.send(f'<@&500710389131247636> I deleted a message')
+        await target.send(f'<@&{REPORT_ROLE}> I deleted a message')
+        e = Embed(description=msg.content,
+                  color=random.randint(0, 0xFFFFFF))
         await target.send(
-            f'Message sent by {msg.author.mention} in {msg.channel.mention}' +
-            f'\n```{msg.content}```'
+            f'Message sent by {msg.author.mention} in {msg.channel.mention}',
+            embed=e
         )
+        return True
+
+    async def check_message(self, msg):
+        """Check message - return True if message contains forbidden text"""
+        if self.is_dm(msg):
+            return False
+        if self.is_allowed(msg):
+            return False
+        if await self.has_discord_link(msg):
+            return True
+        if await self.has_forbidden_text(msg):
+            return True
+        return False
 
     # ----------------------------------------------
     # Event listeners
     # ----------------------------------------------
-    async def check_message(self, msg):
-        """Run checks on a message"""
-        if self.is_dm(msg):
-            return True
-        if self.is_allowed(msg):
-            return True
-        if await self.has_discord_link(msg):
-            await self.post_report(msg)
-            await msg.delete()
-            return False
-        if await self.has_forbidden_text(msg):
-            await self.post_report(msg)
-            await msg.delete()
-            return False
-
     @commands.Cog.listener()
     async def on_message(self, msg):
-        await self.check_message(msg)
+        if await self.check_message(msg):
+            await msg.delete()
+            await self.post_report(msg)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
-        await self.check_message(after)
+        if await self.check_message(after):
+            await after.delete()
+            await self.post_report(after)
 
     # ----------------------------------------------
     # Command to allow 1 discord.gg link

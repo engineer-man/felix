@@ -1,14 +1,13 @@
 """This is a cog for a discord.py bot.
-It prints out the current number of discord members and yt subs.
+It adds some commands to print youtube / discord stats
 
 Commands:
-    numbers         print yt subs + discord members
+    stats         print yt subs + discord members
+     ├ users        print stats about discord members
+     └ channels     print stats about discord channels
 
-Load the cog by calling client.load_extension with the name of this python file
-as an argument (without .py)
-    example:    bot.load_extension('example')
-or by calling it with the path and the name of this python file
-    example:    bot.load_extension('folder.example')
+Only users belonging to a role that is specified under the module's name
+in the permissions.json file can use the commands.
 """
 
 from discord.ext import commands
@@ -62,6 +61,7 @@ class Stats(commands.Cog, name='Stats'):
     @commands.guild_only()
     @commands.cooldown(1, 300, commands.BucketType.user)
     async def stats(self, ctx):
+        await ctx.trigger_typing()
         url = ('https://www.googleapis.com/youtube/v3/channels'
                '?part=statistics'
                '&id=UCrUL8K81R4VBzm-KOYwrcxQ'
@@ -113,6 +113,7 @@ class Stats(commands.Cog, name='Stats'):
     )
     @commands.guild_only()
     async def users(self, ctx, n: typing.Optional[int] = 30):
+        await ctx.trigger_typing()
         params = {
             'start': (datetime.now() - timedelta(days=n)).isoformat(),
             'limit': 25,
@@ -142,6 +143,7 @@ class Stats(commands.Cog, name='Stats'):
         n: typing.Optional[int] = 30,
         user: Member = None
     ):
+        await ctx.trigger_typing()
         params = {
             'start': (datetime.now() - timedelta(days=n)).isoformat(),
             'limit': 25,

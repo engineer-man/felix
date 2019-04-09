@@ -2,13 +2,13 @@
 It will add some responses to a bot
 
 Commands:
-    N/A
-
-Load the cog by calling client.load_extension with the name of this python file
-as an argument (without the file-type extension)
-    example:    bot.load_extension('duckresponse')
-or by calling it with the path and the name of this python file
-    example:    bot.load_extension('cogs.duckresponse')
+    google          make the bot post a google link
+    source          make the bot post links to the engineerman github pages
+    run             dummy function (is implemented in node.js part)
+    gif             make felix post a random gif for a given search term
+    how-to          make felix post tutorials
+     ├ codeblocks       how to send discord markdown codeblocks
+     └ ask              how to ask question on the server
 """
 
 from discord.ext import commands
@@ -28,6 +28,9 @@ class Responses(commands.Cog, name='General'):
     def __init__(self, client):
         self.client = client
 
+    # ----------------------------------------------
+    # Helper Functions
+    # ----------------------------------------------
     def get_quack_string(self):
         intro = ['Ghost of duckie... Quack', 'Ghost of duckie... QUACK',
                  'Ghost of duckie... Quaaack']
@@ -68,6 +71,9 @@ class Responses(commands.Cog, name='General'):
         gif = random.choice(gifs['data'])['images']['original']['url']
         return gif
 
+    # ----------------------------------------------
+    # Cog Event listeners
+    # ----------------------------------------------
     @commands.Cog.listener()
     async def on_message(self, msg):
         # Ignore messages sent by bots
@@ -93,6 +99,9 @@ class Responses(commands.Cog, name='General'):
         ):
             await msg.channel.send('😏 *sensible chuckle*')
 
+    # ----------------------------------------------
+    # Cog Commands
+    # ----------------------------------------------
     @commands.command(
         name='google',
         brief='Post a google search link',
@@ -100,12 +109,11 @@ class Responses(commands.Cog, name='General'):
         aliases=['lmgtfy'],
         hidden=False,
     )
-    async def google(self, ctx, *text):
-        if not text:
-            await ctx.send('Please provide a search term')
-            return False
-        text = quote(' '.join(text))
-        await ctx.send(f'here you go! <https://www.google.com/search?q={text}>')
+    async def google(self, ctx, *, search_text):
+        await ctx.trigger_typing()
+        await ctx.send(
+            f'here you go! <https://www.google.com/search?q={search_text}>'
+        )
 
     @commands.command(
         name='run',
@@ -137,12 +145,9 @@ class Responses(commands.Cog, name='General'):
         description='Dispalys a random gif for the specified search term',
         hidden=False
     )
-    async def gif_embed(self, ctx, *gif):
-        if not gif:
-            await ctx.send('Please provide a search term')
-            return False
-        gif = ' '.join(gif)
-        gif_url = await self.gif_url(gif)
+    async def gif_embed(self, ctx, *, gif_name):
+        await ctx.trigger_typing()
+        gif_url = await self.gif_url(gif_name)
         if gif_url is None:
             await ctx.send(f'Sorry {ctx.author.mention}, no gif found 😔')
             # await ctx.message.add_reaction('❌')

@@ -13,19 +13,13 @@ Commands:
     purge all       All messages in the channel will be deleted.
                     (might take a long time)
 
-
-Load the cog by calling client.load_extension with the name of this python file
-as an argument (without the file-type extension)
-    example:    bot.load_extension('purge')
-or by calling it with the path and the name of this python file
-    example:    bot.load_extension('cogs.purge')
-
 Only users belonging to a role that is specified under the module's name
 in the permissions.json file can use the commands.
 """
 
 from discord.ext import commands
 from discord import Member
+from inspect import Parameter
 from os import path
 import json
 import typing
@@ -56,10 +50,10 @@ class Purge(commands.Cog, name='Purge'):
         + '\nExamples:'
         + '\n*  purge 10'
         + '\n*  purge @user'
-        + '\n*  purge 10 @user'
-        + '\n*  purge @user 10'
+        + '\n*  purge 10 @user  -  (number of messages first, then user)'
+        + '\n*  purge @user 10  -  (user first, then number of messages)'
         + '\n*  purge @user1 @user2'
-        + '\n*  purge all',
+        + '\n*  purge all       -  (delete all messages in current channel)',
         hidden=True,
     )
     @commands.guild_only()
@@ -71,7 +65,8 @@ class Purge(commands.Cog, name='Purge'):
         # This allows the command to be used with either order of [num] [user]
     ):
         if not users and not n:
-            return
+            param = Parameter('number_of_messages', Parameter.POSITIONAL_ONLY)
+            raise commands.MissingRequiredArgument(param)
         channel = ctx.message.channel
         if not users:
             msg_limit = n+1 if n else 100

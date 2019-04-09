@@ -1,5 +1,13 @@
 """This is a cog for a discord.py bot.
-RC
+It adds a command to "remote control" the bot from the channel it is called in
+The channel specified after the command will be the channel the bot posts
+messages to and relays messages from.
+
+Only the Person who started the remote control can use it and also stop it
+
+Commands:
+    rc          start remote control
+    rc off      stop remote control
 """
 
 from discord.ext import commands
@@ -31,6 +39,8 @@ class rc(commands.Cog, name='rc', command_attrs=dict(hidden=True)):
     # ----------------------------------------------
     @commands.Cog.listener()
     async def on_message(self, msg):
+        if not self.rc_active:
+            return
         if msg.author.bot:
             return
         if msg.channel == self.rc_target_channel:
@@ -43,6 +53,16 @@ class rc(commands.Cog, name='rc', command_attrs=dict(hidden=True)):
             await self.rc_target_channel.send(msg.content)
         else:
             return
+
+    @commands.Cog.listener()
+    async def on_typing(self, channel, user, when):
+        if not self.rc_active:
+            return
+        if not channel == self.rc_channel:
+            return
+        if not user == self.rc_user:
+            return
+        await self.rc_target_channel.trigger_typing()
 
     # ----------------------------------------------
     # Cog Commands

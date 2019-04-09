@@ -102,8 +102,21 @@ var handlers = {
         const content = message.content;
         const channel = message.channel;
 
-        var input_language = content.split('```')[0].split(' ')[2];
-        var language = {
+        var input_language = content.split('```', 1)[0].split(' ', 3)[2] || null;
+        // everything between the first felix run and ```
+
+        if (input_language) {
+            // allow uppercase characters and extra whitespace
+            input_language = input_language.trim().to_lower_case();
+        }
+
+        var highlighting_language = (/```(.+)\s/g.exec(content) || [, null])[1];
+        // everything between the first ``` and the next whitespace character
+
+
+
+        // if you add any languages please make sure to change 'highlighting_languages' as well
+        const input_languages = {
             python: 'python3',
             python3: 'python3',
             python2: 'python2',
@@ -126,12 +139,42 @@ var handlers = {
             swift: 'swift',
             brainfuck: 'brainfuck',
             bf: 'brainfuck',
-        }[input_language.trim().to_lower_case()] || null;
+        };
 
-        if (!language) {
-            channel.send(input_language + ' is not supported');
-            return;
-        }
+        // sources:
+        // https://sourceforge.net/p/discord/wiki/markdown_syntax/#md_ex_code
+        // => http://pygments.org/docs/lexers/
+
+        // I wrote a small script that generates this list from the 'input_languages'
+        // feel free to message me @soruh#8824 on discord if you need it
+        const highlighting_languages = {
+            python: 'python3',
+            py: 'python3',
+            sage: 'python3',
+            python3: 'python3',
+            py3: 'python3',
+            js: 'javascript',
+            javascript: 'javascript',
+            go: 'go',
+            rb: 'ruby',
+            ruby: 'ruby',
+            duby: 'ruby',
+            c: 'c',
+            cpp: 'cpp',
+            'c++': 'cpp',
+            csharp: 'csharp',
+            'c#': 'csharp',
+            php: 'php',
+            php3: 'php',
+            php4: 'php',
+            php5: 'php',
+            nasm: 'nasm',
+            java: 'java',
+            swift: 'swift',
+            brainfuck: 'brainfuck',
+            bf: 'brainfuck'
+        };
+        
 
         const code_message = content.replace(/```.+\s/gi, '```');
 
@@ -143,6 +186,26 @@ var handlers = {
         }
 
         const source = matches[1].trim();
+
+
+
+        var language = null;
+
+        if (input_languages.hasOwnProperty(input_language)) {
+            language = input_languages[input_language];
+        } else if(highlighting_languages.hasOwnProperty(highlighting_language)) {
+            language = highlighting_languages[highlighting_language];
+        } else {
+            const invalid_language = input_language || highlighting_language;
+            if (invalid_language) {
+                channel.send("'" + invalid_language + "' is not supported");
+            } else {
+                channel.send('please specify a language');
+            }
+            return;
+        }
+
+
 
         return request
             ({
@@ -194,8 +257,22 @@ return bot
             return handlers.state_change(message);
         }
 
-        if (content.match(/^felix run (js|javascript|python(2|3)?|node|c|c\+\+|cpp|ruby|go|r|cs|csharp|php|c#|nasm|asm|java|swift|brainfuck|bf)/gi)) {
-            return handlers.code(message);
+        if (content.match(/^felix run/gi)) {
+            if (content === "felix run") {
+                channel.send(
+                    'i can run code!\n\n' +
+                    '**here are my supported languages:**'+
+                    '\npython2\npython3\njavascript\nruby\ngo\nc\nc++/cpp\ncs/csharp/c#\nr\nasm/nasm\nphp\njava\nswift\nbrainfuck/bf\n\n' +
+                    '**you can run code by telling me things like:**\n' +
+                    'felix run js\n' +
+                    '\\`\\`\\`\nyour code\n\\`\\`\\`\n' +
+                    '**or:**\n' +
+                    'felix run\n' +
+                    '\\`\\`\\`js\nyour code\n\\`\\`\\`'
+                );
+            } else {
+                return handlers.code(message);
+            }
         }
 
         if (content.match(/^(hi|what's up|yo|hey|hello) felix/gi)) {
@@ -203,18 +280,8 @@ return bot
             return;
         }
 
-        // easter eggs and various content
+        // easter eggs
         switch (content) {
-            case 'felix run':
-                channel.send(
-                    'i can run code!\n\n' +
-                    '**here are my supported languages:**'+
-                    '\npython2\npython3\njavascript\nruby\ngo\nc\nc++/cpp\ncs/csharp/c#\nr\nasm/nasm\nphp\njava\nswift\nbrainfuck/bf\n\n' +
-                    '**you can run code by telling me things like:**\n' +
-                    'felix run js\n' +
-                    '\\`\\`\\`\nyour code\n\\`\\`\\`'
-                );
-                break;
             case 'html is a programming language':
                 message.reply('no it\'s not, don\'t be silly');
                 break;

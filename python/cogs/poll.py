@@ -9,14 +9,8 @@ votes a second time.
 The bot will also remove any new reactions added to the message.
 
 NOTE that the bot can only check reactions on the last 15000 messages it saw.
-So after 15000 messages (by default) the poll monitoring breaks.
-It also breaks if the bot-cog is reloaded or the bot is restarted.
-
-Load the cog by calling client.load_extension with the name of this python file
-as an argument (without the file-type extension)
-    example:    bot.load_extension('poll')
-or by calling it with the path and the name of this python file
-    example:    bot.load_extension('my_extensions.poll')
+So after 15000 messages (max_messages setting) the poll monitoring breaks.
+It also breaks if the poll-cog is reloaded or the bot is restarted.
 
 Only users belonging to a role that is specified under the module's name
 in the permissions.json file can use the commands.
@@ -113,11 +107,10 @@ class Poll(commands.Cog, name='Poll'):
         '\nb) Possibility3',
         hidden=True,
     )
-    async def make_poll(self, ctx):
-        poll = ctx.message.content
-        if poll in 'felix poll ':
-            return
-        re_find = re.findall(r'^([0-9a-zA-Z])(?:\.|\:|\))\s', poll, flags=re.M)
+    async def make_poll(self, ctx, *, poll_string):
+        re_find = re.findall(
+            r'^([0-9a-zA-Z])(?:\.|\:|\))\s', poll_string, flags=re.M
+        )
         choices = [r for r in re_find]
         poll_msg = ctx.message
         poll_id = str(poll_msg.id)
