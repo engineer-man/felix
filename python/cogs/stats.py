@@ -15,6 +15,7 @@ from discord import Member
 from os import path
 from datetime import datetime, timedelta
 from aiohttp import ClientSession
+from asyncio import ensure_future
 import json
 import time
 import typing
@@ -29,6 +30,7 @@ class Stats(commands.Cog, name='Stats'):
         self.last_time = self.load_stats()
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
             self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
+        self.session = ClientSession()
 
     async def cog_check(self, ctx):
         try:
@@ -66,9 +68,8 @@ class Stats(commands.Cog, name='Stats'):
                '?part=statistics'
                '&id=UCrUL8K81R4VBzm-KOYwrcxQ'
                f'&key={config["yt_key"]}')
-        async with ClientSession() as session:
-            async with session.get(url) as response:
-                r = await response.json()
+        async with self.session.get(url) as response:
+            r = await response.json()
         statistics = r['items'][0]['statistics']
         subs = int(statistics['subscriberCount'])
         vids = int(statistics['videoCount'])
@@ -120,9 +121,8 @@ class Stats(commands.Cog, name='Stats'):
         }
 
         url = 'https://emkc.org/api/v1/stats/discord/messages'
-        async with ClientSession() as session:
-            async with session.get(url, params=params) as response:
-                res = await response.json()
+        async with self.session.get(url, params=params) as response:
+            res = await response.json()
 
         padding = max([len(i['user']) for i in res])
 
@@ -153,9 +153,8 @@ class Stats(commands.Cog, name='Stats'):
             params['user'] = user
 
         url = 'https://emkc.org/api/v1/stats/discord/channels'
-        async with ClientSession() as session:
-            async with session.get(url, params=params) as response:
-                res = await response.json()
+        async with self.session.get(url, params=params) as response:
+            res = await response.json()
 
         padding = max([len(i['channel']) for i in res])
 
@@ -164,6 +163,9 @@ class Stats(commands.Cog, name='Stats'):
         ]
 
         await ctx.send('```css\n' + '\n'.join(formatted) + '```')
+
+    def cog_unload(self):
+        ensure_future(self.session.close())
 
 
 def setup(client):

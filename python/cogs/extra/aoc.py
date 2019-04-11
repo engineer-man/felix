@@ -32,21 +32,20 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
         self.client = client
         self.task = self.client.loop.create_task(self.aoc_monitor())
         self.members = {}
+        self.session = ClientSession()
 
     async def aoc_monitor(self):
         await self.client.wait_until_ready()
         await asyncio.sleep(5)
         channel = self.client.get_guild(EM_SERVER).get_channel(AOC_CHANNEL)
-        async with ClientSession() as session:
-            async with session.get(API_URL, cookies=cookie) as response:
-                r = await response.json()
+        async with self.session.get(API_URL, cookies=cookie) as response:
+            r = await response.json()
         self.members = r['members']
         try:
             while not self.client.is_closed():
                 msg = []
-                async with ClientSession() as session:
-                    async with session.get(API_URL, cookies=cookie) as response:
-                        r = await response.json()
+                async with self.session.get(API_URL, cookies=cookie) as response:
+                    r = await response.json()
                 current_members = r['members']
                 for member, data in current_members.items():
                     if member not in self.members:
@@ -108,9 +107,8 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
             return
         if not ctx.channel.id == AOC_CHANNEL:
             return
-        async with ClientSession() as session:
-            async with session.get(API_URL, cookies=cookie) as response:
-                r = await response.json()
+        async with self.session.get(API_URL, cookies=cookie) as response:
+            r = await response.json()
         members = r['members']
         parts = {'1': [], '2': []}
         for data in members.values():
@@ -150,6 +148,7 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
 
     def cog_unload(self):
         self.task.cancel()
+        asyncio.ensure_future(self.session.close())
 
 
 def setup(client):

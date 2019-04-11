@@ -16,6 +16,7 @@ from discord import Embed
 from datetime import datetime as dt
 from urllib.parse import quote
 from aiohttp import ClientSession
+from asyncio import ensure_future
 import random
 import re
 import json
@@ -27,6 +28,7 @@ with open("../config.json", "r") as conffile:
 class Responses(commands.Cog, name='General'):
     def __init__(self, client):
         self.client = client
+        self.session = ClientSession()
 
     # ----------------------------------------------
     # Helper Functions
@@ -60,9 +62,8 @@ class Responses(commands.Cog, name='General'):
             f'&rating=R' +
             f'&lang=en'
         )
-        async with ClientSession() as session:
-            async with session.get(url) as response:
-                gifs = await response.json()
+        async with self.session.get(url) as response:
+            gifs = await response.json()
         if 'data' not in gifs:
             if 'message' in gifs:
                 if 'Invalid authentication credentials' in gifs['message']:
@@ -220,6 +221,9 @@ class Responses(commands.Cog, name='General'):
                   description=ask_instructions,
                   color=0x2ECC71)
         await ctx.send(embed=e)
+
+    def cog_unload(self):
+        ensure_future(self.session.close())
 
 
 def setup(client):

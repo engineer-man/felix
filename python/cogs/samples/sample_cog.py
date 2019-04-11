@@ -11,6 +11,7 @@ or by calling it with the path and the name of this python file
 
 from discord.ext import commands
 from discord import Member
+from aiohttp import ClientSession
 import asyncio
 
 
@@ -20,6 +21,7 @@ class COG_CLASS_NAME(commands.Cog,
     def __init__(self, client):
         self.client = client
         self.my_task = self.client.loop.create_task(self.TASK())
+        self.session = ClientSession()
 
     async def cog_check(self, ctx):
         """This check will automatically be applied to each command contained
@@ -98,8 +100,10 @@ class COG_CLASS_NAME(commands.Cog,
 
     def cog_unload(self):
         """This Method is called when a cog is unloaded via unload_extension
-        This is useful to cancel tasks that were created inside the cog"""
+        This is useful to cancel tasks that were created inside the cog
+        and to close aiohttp Client Sessions"""
         self.my_task.cancel()
+        asyncio.ensure_future(self.session.close())
 
 
 def setup(client):

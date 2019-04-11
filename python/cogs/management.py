@@ -19,6 +19,7 @@ from discord.ext import commands
 from discord import Activity, Embed, Role
 from os import path
 from aiohttp import ClientSession
+from asyncio import ensure_future
 import subprocess
 import json
 
@@ -28,6 +29,7 @@ class Management(commands.Cog, name='Management'):
         self.client = client
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
             self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
+        self.session = ClientSession()
 
     async def cog_check(self, ctx):
         try:
@@ -69,9 +71,8 @@ class Management(commands.Cog, name='Management'):
         repo_data = []
         repo_shas = []
         while last_commit not in repo_shas:
-            async with ClientSession() as session:
-                async with session.get(nxt) as response:
-                    r = await response.json()
+            async with self.session.get(nxt) as response:
+                r = await response.json()
             repo_data += r
             repo_shas = [x['sha'] for x in repo_data]
             try:
@@ -296,6 +297,9 @@ class Management(commands.Cog, name='Management'):
 
         for n, page in enumerate(pages):
             await ctx.send(f'{n+1}/{len(pages)}\n```' + '\n'.join(page) + '```')
+
+    def cog_unload(self):
+        ensure_future(self.session.close())
 
 
 def setup(client):

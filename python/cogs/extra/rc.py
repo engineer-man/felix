@@ -13,7 +13,6 @@ Commands:
 from discord.ext import commands
 from discord import Member, TextChannel
 from os import path
-import asyncio
 import json
 
 
