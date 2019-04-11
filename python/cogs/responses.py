@@ -69,6 +69,8 @@ class Responses(commands.Cog, name='General'):
                 if 'Invalid authentication credentials' in gifs['message']:
                     print('ERROR: Giphy API key is not valid')
             return None
+        if not gifs['data']:
+            return None
         gif = random.choice(gifs['data'])['images']['original']['url']
         return gif
 
