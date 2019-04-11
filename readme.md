@@ -15,7 +15,7 @@ cd felix
 cd node
 npm install
 cd ..
-pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py
+pip install -U discord.py
 ```
 Duplicate `config.json.sample` and rename it `config.json` and update it with your own discord bot token.
 
@@ -32,8 +32,8 @@ Using Docker
 docker-compose up
 ```
 
-### Creating your own bot extension (cog)
-This bot uses the `discord.py rewrite API` (https://discordpy.readthedocs.io/en/rewrite/api.html)
+### Creating your own python bot extension (cog)
+This bot uses the `discord.py API wrapper` (https://rapptz.github.io/discord.py/docs/index.html)
 
 You can create new bot commands or tasks by creating your own extension/cog.
 
