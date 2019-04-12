@@ -125,7 +125,7 @@ class Responses(commands.Cog, name='General'):
         hidden=False,
     )
     async def run(self, ctx, *code):
-        pass
+        await ctx.trigger_typing()
 
     @commands.command(
         name='source',
