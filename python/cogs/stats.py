@@ -150,7 +150,7 @@ class Stats(commands.Cog, name='Stats'):
         }
 
         if user:
-            params['user'] = user
+            params['user'] = str(user)
 
         url = 'https://emkc.org/api/v1/stats/discord/channels'
         async with self.session.get(url, params=params) as response:
