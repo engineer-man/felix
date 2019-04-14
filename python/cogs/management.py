@@ -79,8 +79,8 @@ class Management(commands.Cog, name='Management'):
                 nxt = r.links['next']['url']
             except:
                 nxt = ''
-        num_commits = repo_shas.index(last_commit)
-        return (num_commits, repo_data[0:(num_commits or 10)])
+        num_comm = repo_shas.index(last_commit)
+        return (num_comm, repo_data[0:(num_comm if num_comm > 10 else 10)])
 
     # ----------------------------------------------
     # Function to disply the version
@@ -96,15 +96,16 @@ class Management(commands.Cog, name='Management'):
         version, date = self.get_version_info()
         num_commits, remote_data = await self.get_remote_commits()
         status = "I am up to date with 'origin/master'"
-        changelog = 'Latest Changes (newest first):\n'
+        changelog = 'Changelog:\n'
         if num_commits:
             status = f"I am [{num_commits}] commits behind 'origin/master'"\
                 f" [{remote_data[0]['commit']['author']['date']}]"
-        for commit in remote_data:
-            changelog += '- ' + commit['commit']['message'] + '\n'
+        for i, commit in enumerate(remote_data):
+            changelog += ('+ ' if i < num_commits else '* ')  \
+                + commit['commit']['message'] + '\n'
         await ctx.send(
             f'```css\nCurrent Version: [{version[:7]}].from [{date}]' +
-            f'\n{status}``````fix\n{changelog}```'
+            f'\n{status}``````diff\n{changelog}```'
         )
 
     # ----------------------------------------------
