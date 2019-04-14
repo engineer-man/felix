@@ -17,7 +17,7 @@ in the permissions.json file can use the commands.
 """
 from discord.ext import commands
 from discord import Activity, Embed, Role
-from os import path
+from os import path, listdir
 from aiohttp import ClientSession
 from asyncio import ensure_future
 import subprocess
@@ -82,6 +82,23 @@ class Management(commands.Cog, name='Management'):
         num_comm = repo_shas.index(last_commit)
         return (num_comm, repo_data[0:(num_comm if num_comm > 10 else 10)])
 
+    def crawl_cogs(self, directory='cogs'):
+        cogs = []
+        for element in listdir(directory):
+            if element == 'samples':
+                continue
+            abs_el = path.join(directory, element)
+            if path.isdir(abs_el):
+                cogs += self.crawl_cogs(abs_el)
+            else:
+                filename, ext = path.splitext(element)
+                if ext == '.py':
+                    dot_dir = directory.replace('\\', '.')
+                    dot_dir = dot_dir.replace('/', '.')
+                    cogs.append(f'{dot_dir}.' + filename)
+        return cogs
+
+
     # ----------------------------------------------
     # Function to disply the version
     # ----------------------------------------------
@@ -140,6 +157,8 @@ class Management(commands.Cog, name='Management'):
         hidden=True,
     )
     async def load_extension(self, ctx, extension_name):
+        if '.' not in extension_name:
+            extension_name = 'cogs.' + extension_name
         try:
             self.client.load_extension(extension_name)
         except Exception as e:
@@ -157,6 +176,8 @@ class Management(commands.Cog, name='Management'):
         hidden=True,
     )
     async def unload_extension(self, ctx, extension_name):
+        if '.' not in extension_name:
+            extension_name = 'cogs.' + extension_name
         if extension_name.lower() in 'cogs.management':
             await ctx.send(
                 f"```diff\n- {extension_name} can't be unloaded" +
@@ -179,16 +200,18 @@ class Management(commands.Cog, name='Management'):
         aliases=['re']
     )
     async def reload_extension(self, ctx, extension_name):
-        target_extensions = [extension_name]
         if extension_name in 'all':
             target_extensions = list(self.client.extensions.keys())
-        elif extension_name not in self.client.extensions:
-            return
+        else:
+            if '.' not in extension_name:
+                extension_name = 'cogs.' + extension_name
+            target_extensions = [extension_name]
+            if extension_name not in self.client.extensions:
+                return
         result = []
         for ext in target_extensions:
-            self.client.unload_extension(ext)
             try:
-                self.client.load_extension(ext)
+                self.client.reload_extension(ext)
                 result.append(f'Extension [{ext}] reloaded.')
             except Exception as e:
                 await ctx.send(f'```py\n{ext}:{type(e).__name__}:{str(e)}\n```')
@@ -208,12 +231,11 @@ class Management(commands.Cog, name='Management'):
         hidden=True,
     )
     async def print_cogs(self, ctx):
-        extensions = self.client.extensions
-        response = [
-            f'```css\nLoaded extensions:',
-            f' {[e for e in extensions]}```'
-        ]
-        await ctx.send(''.join(response))
+        loaded = self.client.extensions
+        unloaded = [x for x in self.crawl_cogs() if x not in loaded]
+        response = ['\n[Loaded extensions]'] + ['\n  ' + x for x in loaded]
+        response += ['\n[Unloaded extensions]'] + ['\n  ' + x for x in unloaded]
+        await ctx.send(f'```css{"".join(response)}```')
         return True
 
     # ----------------------------------------------
