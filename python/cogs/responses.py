@@ -115,7 +115,7 @@ class Responses(commands.Cog, name='General'):
     async def google(self, ctx, *, search_text):
         await ctx.trigger_typing()
         await ctx.send(
-            f'here you go! <https://www.google.com/search?q={search_text}>'
+            f'here you go! <https://google.com/search?q={quote(search_text)}>'
         )
 
     @commands.command(
