@@ -63,7 +63,7 @@ class Management(commands.Cog, name='Management'):
             print(e)
         return (version, date)
 
-    async def get_num_remote_commits(self):
+    async def get_remote_commits(self):
         last_commit = self.get_version_info()[0]
         ext = f'?per_page=10&sha=master'
         repo = 'engineer-man/felix'
@@ -79,28 +79,32 @@ class Management(commands.Cog, name='Management'):
                 nxt = r.links['next']['url']
             except:
                 nxt = ''
-        return (repo_shas.index(last_commit),
-                repo_data[0]['commit']['author']['date'])
+        num_commits = repo_shas.index(last_commit)
+        return (num_commits, repo_data[0:(num_commits or 10)])
 
     # ----------------------------------------------
     # Function to disply the version
     # ----------------------------------------------
     @commands.command(
         name='version',
-        brief='Show latest commit hash',
-        description='Show latest commit hash',
+        brief='Show current version of felix',
+        description='Show current version and changelog of felix',
         hidden=True,
     )
     async def version(self, ctx):
+        await ctx.trigger_typing()
         version, date = self.get_version_info()
-        remote_commits, remote_date = await self.get_num_remote_commits()
+        num_commits, remote_data = await self.get_remote_commits()
         status = "I am up to date with 'origin/master'"
-        if remote_commits:
-            status = f"I am [{remote_commits}] commits behind 'origin/master'"\
-                f" [{remote_date}]"
+        changelog = 'Latest Changes (newest first):\n'
+        if num_commits:
+            status = f"I am [{num_commits}] commits behind 'origin/master'"\
+                f" [{remote_data[0]['commit']['author']['date']}]"
+        for commit in remote_data:
+            changelog += '- ' + commit['commit']['message'] + '\n'
         await ctx.send(
             f'```css\nCurrent Version: [{version[:7]}].from [{date}]' +
-            f'\n{status}```'
+            f'\n{status}``````fix\n{changelog}```'
         )
 
     # ----------------------------------------------
