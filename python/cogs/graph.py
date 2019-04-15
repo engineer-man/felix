@@ -1,12 +1,12 @@
 """This is a cog for a discord.py bot.
 Graphing
 """
-
 from discord.ext import commands
 from discord import Member, File
 from aiohttp import ClientSession
 from datetime import datetime, timedelta
 from os import path
+from multidict import CIMultiDict
 import matplotlib.pyplot as plt
 import asyncio
 import json
@@ -29,8 +29,8 @@ class Graph(commands.Cog,
         return any(role in self.permitted_roles for role in user_roles)
 
     async def create_graph_messages(self, n, limit=0, user=None):
+        url = "https://emkc.org/api/v1/stats/discord/messages"
         if not user:
-            url = "https://emkc.org/api/v1/stats/discord/messages"
 
             """gets the top people of n days and puts them in toplist"""
 
@@ -55,32 +55,29 @@ class Graph(commands.Cog,
         for i in toplist:
             temp[i] = []
         for i in range(n):
-            url = "https://emkc.org/api/v1/stats/discord/messages"
             date = datetime.now() - timedelta(days=n) + timedelta(days=i)
             date2 = datetime.now() - timedelta(days=n) + timedelta(days=i+1)
-            params = {
-                'start': (date).isoformat(),
-                'end': (date2).isoformat(),
-            }
+            params = [('start', (date).isoformat()),
+                      ('end', (date2).isoformat())]
+            params += [("user", i) for i in toplist]
             async with self.session.get(url, params=params) as response:
                 messagesdaily = await response.json()
-            tempday = {}
-            [tempday.update({i['user']:i['messages']}) for i in messagesdaily]
-            for i2 in tempday:
-                for i3 in toplist:
-                    if i3 in i2:
-                        temp[i2].append([i+1, tempday[i3]])
+            if not messagesdaily:
+                return False
+            for x in messagesdaily:
+                temp[x['user']].append([i+1, x['messages']])
 
         for x in temp:
             xaxis = [i[0] for i in temp[x]]
             yaxis = [i[1] for i in temp[x]]
-            plt.plot(xaxis, yaxis, label=x)
+            plt.plot(xaxis, yaxis, label=x[:-5], marker='o', markersize=3)
         plt.legend()
         plt.ylabel("Messages")
-        plt.xlabel("Time from start in days")
+        plt.xlabel(
+            f"Time since {(datetime.now() - timedelta(days=n)).isoformat()[:10]} in days")
         plt.savefig("last_graph.png", bbox_inches='tight')
         plt.cla()
-        print('success')
+        return True
 
     # ----------------------------------------------
     # Cog Commands
@@ -98,37 +95,49 @@ class Graph(commands.Cog,
 
     @graph.command(
         name='top',
-        brief='Print Message Graphs',
-        description='Print Message Graphs',
+        brief='Print Message Graph',
+        description=('Print Message Graph of the top n ' +
+                     'users over the specified number of days'),
     )
     @commands.guild_only()
     async def top(
         self,
         ctx,
-        days: int,
-        top: int
+        n: int,
+        days: int
     ):
-        await self.create_graph_messages(days, top)
-        with open('last_graph.png', 'rb') as g:
-            file_to_send = File(g)
-        await ctx.send(file=file_to_send)
+        await ctx.trigger_typing()
+        if days > 30:
+            days = 30
+        if await self.create_graph_messages(days, n):
+            with open('last_graph.png', 'rb') as g:
+                file_to_send = File(g)
+            await ctx.send(file=file_to_send)
+        else:
+            await ctx.send('Nothing found')
 
     @graph.command(
         name='users',
-        brief='Print Message Graphs',
-        description='Print Message Graphs',
+        brief='Print Message Graph',
+        description=('Print Message Graph of the specified ' +
+                     'users over the specified number of days'),
     )
     @commands.guild_only()
     async def users(
         self,
         ctx,
-        days: int,
-        members: commands.Greedy[Member]
+        members: commands.Greedy[Member],
+        days: int
     ):
-        await self.create_graph_messages(days, 0, [str(x) for x in members])
-        with open('last_graph.png', 'rb') as g:
-            file_to_send = File(g)
-        await ctx.send(file=file_to_send)
+        await ctx.trigger_typing()
+        if days > 30:
+            days = 30
+        if await self.create_graph_messages(days, 0, [str(x) for x in members]):
+            with open('last_graph.png', 'rb') as g:
+                file_to_send = File(g)
+            await ctx.send(file=file_to_send)
+        else:
+            await ctx.send('Nothing found')
 
     def cog_unload(self):
         asyncio.ensure_future(self.session.close())
