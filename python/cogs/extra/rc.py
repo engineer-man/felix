@@ -16,7 +16,7 @@ from os import path
 import json
 
 
-class rc(commands.Cog, name='rc', command_attrs=dict(hidden=True)):
+class RemoteControl(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, client):
         self.client = client
         with open(path.join(path.dirname(__file__), '../permissions.json')) as f:
@@ -110,4 +110,4 @@ class rc(commands.Cog, name='rc', command_attrs=dict(hidden=True)):
 
 def setup(client):
     """This is called when the cog is loaded via load_extension"""
-    client.add_cog(rc(client))
+    client.add_cog(RemoteControl(client))
