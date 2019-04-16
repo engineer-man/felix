@@ -41,7 +41,11 @@ class Graph(commands.Cog,
             async with self.session.get(url, params=params) as response:
                 top = await response.json()
             toplist = []
+            totalmsg = {}
+            [totalmsg.update({i['user']: i['messages']}) for i in top]
             [toplist.append(i['user']) for i in top]
+            if not top:
+                return False
         else:
 
             """puts either the list of people or a signle person in toplist"""
@@ -50,7 +54,14 @@ class Graph(commands.Cog,
                 toplist = [i.replace('@', '') for i in user]
             else:
                 toplist = [user.replace('@', '')]
-
+            params = [('start', (datetime.now() - timedelta(days=n)).isoformat())]
+            params += [("user", i) for i in toplist]
+            async with self.session.get(url, params=params) as response:
+                top = await response.json()
+            if not top:
+                return False
+            totalmsg = {}
+            [totalmsg.update({i['user']: i['messages']}) for i in top]
         temp = {}
         for i in toplist:
             temp[i] = []
@@ -62,15 +73,16 @@ class Graph(commands.Cog,
             params += [("user", i) for i in toplist]
             async with self.session.get(url, params=params) as response:
                 messagesdaily = await response.json()
-            if not messagesdaily:
-                return False
             for x in messagesdaily:
-                temp[x['user']].append([i+1, x['messages']])
-
+                if x['user'] in temp:
+                    temp[x['user']].append([i+1, x['messages']])
+        if all([not x for x in temp.values()]):
+            return False
         for x in temp:
             xaxis = [i[0] for i in temp[x]]
             yaxis = [i[1] for i in temp[x]]
-            plt.plot(xaxis, yaxis, label=x[:-5], marker='o', markersize=3)
+            templabel = '{} {}'.format(x[:-5], totalmsg[x])
+            plt.plot(xaxis, yaxis, label=templabel, marker='o', markersize=3)
         plt.legend()
         plt.ylabel("Messages")
         plt.xlabel(
@@ -109,6 +121,10 @@ class Graph(commands.Cog,
         await ctx.trigger_typing()
         if days > 30:
             days = 30
+        if n > 10:
+            n = 10
+        if not days or not n:
+            return
         if await self.create_graph_messages(days, n):
             with open('last_graph.png', 'rb') as g:
                 file_to_send = File(g)
@@ -132,6 +148,10 @@ class Graph(commands.Cog,
         await ctx.trigger_typing()
         if days > 30:
             days = 30
+        if n > 10:
+            n = 10
+        if not days or not n:
+            return
         if await self.create_graph_messages(days, 0, [str(x) for x in members]):
             with open('last_graph.png', 'rb') as g:
                 file_to_send = File(g)
