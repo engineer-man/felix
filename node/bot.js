@@ -280,6 +280,16 @@ return bot
             return;
         }
 
+        // felix' coin toss -> "felix should I call my mother today?"
+        if (content.match(/^felix should i/gi)) {
+            if (Math.random()>=0.5) { 
+                message.reply('the answer I am getting from my entropy is: Yes.');
+            }
+            else {
+                message.reply('the answer I am getting from my entropy is: No.');
+            }
+        }
+    
         // easter eggs
         switch (content) {
             case 'html is a programming language':
