@@ -118,8 +118,11 @@ class Management(commands.Cog, name='Management'):
             status = f"I am [{num_commits}] commits behind 'origin/master'"\
                 f" [{remote_data[0]['commit']['author']['date']}]"
         for i, commit in enumerate(remote_data):
+            commitmessage = commit['commit']['message']
+            if 'merge pull' in commitmessage.lower():
+                continue
             changelog += ('+ ' if i < num_commits else '* ')  \
-                + commit['commit']['message'] + '\n'
+                + commitmessage.split('\n')[0] + '\n'
         await ctx.send(
             f'```css\nCurrent Version: [{version[:7]}].from [{date}]' +
             f'\n{status}``````diff\n{changelog}```'
