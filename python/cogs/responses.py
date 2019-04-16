@@ -181,23 +181,25 @@ class Responses(commands.Cog, name='General'):
     )
     async def codeblocks(self, ctx):
         code_instructions = (
-            '''Discord has an awesome feature called **Text Markdown**\
-            which supports code with full syntax highlighting using codeblocks.\
-            To use codeblocks all you need to do is properly place the backtick\
-            characters (not single quotes) and specify your\
-            language *(optional, but preferred)*.\n
-            **This is what your message should look like:**
-            *\\`\\`\\`[programming language]\nYour code here\n\\`\\`\\`*\n
-            **Here's an example:**
-            *\\`\\`\\`python\nprint('Hello world!')\n\\`\\`\\`*\n
-            **This will result in the following:**
-            ```python\nprint('Hello world!')\n```\n
-            **NOTE:** Codeblocks are also used to run code via `felix run`.'''
+            "Discord has an awesome feature called **Text Markdown** "
+            "which supports code with full syntax highlighting using codeblocks."
+            "To use codeblocks all you need to do is properly place the backtick "
+            "characters *(not single quotes)* and specify your "
+            "language *(optional, but preferred)*.\n\n"
+            "**This is what your message should look like:**\n"
+            "*\\`\\`\\`[programming language]\nYour code here\n\\`\\`\\`*\n\n"
+            "**Here's an example:**\n"
+            "*\\`\\`\\`python\nprint('Hello world!')\n\\`\\`\\`*\n\n"
+            "**This will result in the following:**\n"
+            "```python\nprint('Hello world!')\n```\n"
+            "**NOTE:** Codeblocks are also used to run code via `felix run`."
         )
-        link = '210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline-'
+        link = ('https://support.discordapp.com/hc/en-us/articles/'
+            '210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline-'
+        )
 
         e = Embed(title='Text markdown',
-                  url=f'https://support.discordapp.com/hc/en-us/articles/{link}',
+                  url=link,
                   description=code_instructions,
                   color=0x2ECC71)
         await ctx.send(embed=e)
@@ -210,13 +212,13 @@ class Responses(commands.Cog, name='General'):
     )
     async def ask(self, ctx):
         ask_instructions = (
-            """From time to time you'll stumble upon a question like this:
-            *Is anyone good at [this] or [that]?* / *Does anyone know [topic]?*
-            Please **just ask** your question.\n
-            • Make sure your question is easy to understand.
-            • Use the appropriate channel to ask your question.
-            • Always search before you ask (the internet is a big place).
-            • Be patient (someone will eventually try to answer your question)."""
+            "From time to time you'll stumble upon a question like this:\n"
+            "*Is anyone good at [this] or [that]?* / *Does anyone know [topic]?*\n"
+            "Please **just ask** your question.\n\n"
+            "• Make sure your question is easy to understand.\n"
+            "• Use the appropriate channel to ask your question.\n"
+            "• Always search before you ask (the internet is a big place).\n"
+            "• Be patient (someone will eventually try to answer your question)."
         )
 
         e = Embed(title='Just ask',
