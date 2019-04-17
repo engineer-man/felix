@@ -123,6 +123,8 @@ class Graph(commands.Cog,
             days = 30
         if n > 10:
             n = 10
+            await ctx.send('Cut down to 10 people')
+            await ctx.trigger_typing()
         if not days or not n:
             return
         if await self.create_graph_messages(days, n):
@@ -148,11 +150,15 @@ class Graph(commands.Cog,
         await ctx.trigger_typing()
         if days > 30:
             days = 30
-        if n > 10:
-            n = 10
-        if not days or not n:
+        memberslist = [str(x) for x in members]
+        if len(memberslist) > 10:
+            memberslist = memberslist[:10]
+            await ctx.send('Cut down to 10 people')
+            await ctx.trigger_typing()
+
+        if not days or not memberslist:
             return
-        if await self.create_graph_messages(days, 0, [str(x) for x in members]):
+        if await self.create_graph_messages(days, 0, memberslist):
             with open('last_graph.png', 'rb') as g:
                 file_to_send = File(g)
             await ctx.send(file=file_to_send)
