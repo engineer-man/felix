@@ -9,32 +9,7 @@ const config = JSON.parse(fs.read_file_sync('../config.json').to_string());
 
 const bot = new discord.Client();
 
-var state = {
-    hangman_solver: false
-};
-
 var handlers = {
-
-    state_change(message) {
-        const content = message.content;
-        const channel = message.channel;
-
-        if (content.match(/^felix enable/gi)) {
-            var mode = content.split('enable')[1].trim();
-
-            state[mode] = true;
-
-            message.reply(mode + ' enabled');
-        }
-
-        if (content.match(/^felix disable/gi)) {
-            var mode = content.split('disable')[1].trim();
-
-            state[mode] = false;
-
-            message.reply(mode + ' disabled');
-        }
-    },
 
     async video(message) {
         const content = message.content;
@@ -251,10 +226,6 @@ return bot
 
         if (content.match(/^felix video/gi)) {
             return handlers.video(message);
-        }
-
-        if (content.match(/^felix (enable|disable)/gi)) {
-            return handlers.state_change(message);
         }
 
         if (content.match(/^felix run/gi)) {
