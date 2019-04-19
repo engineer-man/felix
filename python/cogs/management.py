@@ -19,12 +19,15 @@ from discord.ext import commands
 from discord import Activity, Embed
 from os import path, listdir
 import subprocess
+import json
 
 
 class Management(commands.Cog, name='Management'):
     def __init__(self, client):
         self.client = client
-        self.permitted_roles = self.client.permissions(path.dirname(__file__))['management']
+        self.reload_config()
+        self.reload_permissions()
+        self.permitted_roles = self.client.permissions['management']
 
     async def cog_check(self, ctx):
         try:
@@ -39,6 +42,14 @@ class Management(commands.Cog, name='Management'):
         await self.client.change_presence(
             activity=Activity(name=f'on {felix_version}', type=0)
         )
+
+    def reload_config(self):
+        with open("../config.json") as conffile:
+            self.client.config = json.load(conffile)
+
+    def reload_permissions(self):
+        with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
+            self.client.permissions = json.load(f)
 
     def get_version_info(self):
         version = 'unknown'
@@ -198,13 +209,14 @@ class Management(commands.Cog, name='Management'):
     )
     async def reload_extension(self, ctx, extension_name):
         if extension_name in 'all':
-            target_extensions = list(self.client.extensions.keys())
+            target_extensions = [__name__] + \
+                [x for x in self.client.extensions.keys() if not x == __name__]
         else:
             if '.' not in extension_name:
                 extension_name = 'cogs.' + extension_name
-            target_extensions = [extension_name]
             if extension_name not in self.client.extensions:
                 return
+            target_extensions = [extension_name]
         result = []
         for ext in target_extensions:
             try:
@@ -231,7 +243,8 @@ class Management(commands.Cog, name='Management'):
         loaded = self.client.extensions
         unloaded = [x for x in self.crawl_cogs() if x not in loaded]
         response = ['\n[Loaded extensions]'] + ['\n  ' + x for x in loaded]
-        response += ['\n[Unloaded extensions]'] + ['\n  ' + x for x in unloaded]
+        response += ['\n[Unloaded extensions]'] + \
+            ['\n  ' + x for x in unloaded]
         await ctx.send(f'```css{"".join(response)}```')
         return True
 

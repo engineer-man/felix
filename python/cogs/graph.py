@@ -4,7 +4,6 @@ Graphing
 from discord.ext import commands
 from discord import Member, File
 from datetime import datetime, timedelta
-from os import path
 from multidict import CIMultiDict
 import matplotlib.pyplot as plt
 
@@ -14,7 +13,7 @@ class Graph(commands.Cog,
             command_attrs=dict(hidden=False)):
     def __init__(self, client):
         self.client = client
-        self.permitted_roles = self.client.permissions(path.dirname(__file__))['graph']
+        self.permitted_roles = self.client.permissions['graph']
 
     async def cog_check(self, ctx):
         try:
@@ -49,7 +48,8 @@ class Graph(commands.Cog,
                 toplist = [i.replace('@', '') for i in user]
             else:
                 toplist = [user.replace('@', '')]
-            params = [('start', (datetime.now() - timedelta(days=n)).isoformat())]
+            params = [
+                ('start', (datetime.now() - timedelta(days=n)).isoformat())]
             params += [("user", i) for i in toplist]
             async with self.client.session.get(url, params=params) as response:
                 top = await response.json()

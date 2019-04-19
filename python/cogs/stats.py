@@ -12,7 +12,6 @@ in the permissions.json file can use the commands.
 
 from discord.ext import commands
 from discord import Member
-from os import path
 from datetime import datetime, timedelta
 import json
 import time
@@ -23,7 +22,7 @@ class Stats(commands.Cog, name='Stats'):
     def __init__(self, client):
         self.client = client
         self.last_time = self.load_stats()
-        self.permitted_roles = self.client.permissions(path.dirname(__file__))['stats']
+        self.permitted_roles = self.client.permissions['stats']
 
     async def cog_check(self, ctx):
         try:

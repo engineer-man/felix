@@ -17,7 +17,6 @@ in the permissions.json file can use the commands.
 """
 
 from discord.ext import commands
-from os import path
 import re
 
 
@@ -63,7 +62,7 @@ class Poll(commands.Cog, name='Poll'):
             "y": "🇾",
             "z": "🇿"
         }
-        self.permitted_roles = self.client.permissions(path.dirname(__file__))['poll']
+        self.permitted_roles = self.client.permissions['poll']
 
     async def cog_check(self, ctx):
         try:
@@ -93,7 +92,6 @@ class Poll(commands.Cog, name='Poll'):
     # ----------------------------------------------
     # Function to make a poll
     # ----------------------------------------------
-
     @commands.command(
         name='poll',
         brief='Create a Poll',

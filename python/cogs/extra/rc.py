@@ -12,13 +12,12 @@ Commands:
 
 from discord.ext import commands
 from discord import TextChannel
-from os import path
 
 
 class RemoteControl(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, client):
         self.client = client
-        self.permitted_roles = self.client.permissions(path.dirname(__file__))['rc']
+        self.permitted_roles = self.client.permissions['rc']
         self.rc_channel = None
         self.rc_user = None
         self.rc_target_channel = None

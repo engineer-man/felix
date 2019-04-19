@@ -12,7 +12,6 @@ in the permissions.json file can use the commands.
 
 from discord.ext import commands
 from discord.ext.commands import DefaultHelpCommand
-from os import path
 import itertools
 
 
@@ -135,7 +134,7 @@ class Help(commands.Cog):
         self.client = client
         self.client.help_command = myHelpCommand()
         self.client.get_command('help').hidden = True
-        self.permitted_roles = self.client.permissions(path.dirname(__file__))['helpall']
+        self.permitted_roles = self.client.permissions['helpall']
 
     async def cog_check(self, ctx):
         try:

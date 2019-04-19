@@ -12,7 +12,6 @@ in the permissions.json file can use the commands.
 
 from discord.ext import commands
 from discord import Member
-from os import path
 import asyncio
 import json
 import time
@@ -33,7 +32,7 @@ SPAM_NAUGHTY_CHECK_INTERVAL = 300  # Seconds
 class Jail(commands.Cog, name='Jail'):
     def __init__(self, client):
         self.client = client
-        self.permitted_roles = self.client.permissions(path.dirname(__file__))['jail']
+        self.permitted_roles = self.client.permissions['jail']
         # Roles to give/remove when people enter/leave jail
         self.jail_roles = [486621918821351436,
                            484183734686318613,

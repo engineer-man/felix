@@ -20,7 +20,6 @@ in the permissions.json file can use the commands.
 from discord.ext import commands
 from discord import Member
 from inspect import Parameter
-from os import path
 import typing
 import asyncio
 
@@ -28,7 +27,7 @@ import asyncio
 class Purge(commands.Cog, name='Purge'):
     def __init__(self, client):
         self.client = client
-        self.permitted_roles = self.client.permissions(path.dirname(__file__))['purge']
+        self.permitted_roles = self.client.permissions['purge']
 
     async def cog_check(self, ctx):
         try:
