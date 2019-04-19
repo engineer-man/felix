@@ -1,5 +1,16 @@
 """This is a cog for a discord.py bot.
-Graphing
+It adds commands to print graphs of user message stats
+
+Commands:
+    graph       print help message
+    ├ users     print graph containing specific users
+    └ top       print graph containing most active users
+
+This cog requires matplotlib:
+    pip install -U matplotlib
+
+Only users belonging to a role that is specified under the module's name
+in the permissions.json file can use the commands.
 """
 from discord.ext import commands
 from discord import Member, File

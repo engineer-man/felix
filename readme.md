@@ -16,6 +16,7 @@ cd node
 npm install
 cd ..
 pip install -U discord.py
+pip install -U matplotlib
 ```
 Duplicate `config.json.sample` and rename it `config.json` and update it with your own discord bot token.
 

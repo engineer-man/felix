@@ -1,14 +1,14 @@
-"""Python version of Felix
+"""Felix Discord Bot
 
-This file only starts the bot and loads all extensions/cogs
+This file starts the bot and loads all extensions/cogs and configs/permissions
 The Bot automatically tries to load all extensions found in the "cogs/" folder
 plus the hangman.hangman extension.
 
 An extension can be reloaded without restarting the bot.
 The extension "management" provides the commands to load/unload other extensions
 
-This bot requires discord.py rewrite
-pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py
+This bot requires discord.py
+    pip install -U discord.py
 """
 from discord.ext.commands import Bot, CommandOnCooldown, MissingRequiredArgument
 from aiohttp import ClientSession

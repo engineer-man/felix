@@ -1,12 +1,5 @@
 """This is a cog for a discord.py bot.
 SAMPLE
-
-Load the cog by calling client.load_extension with the name of this python file
-as an argument (without .py)
-    example:    bot.load_extension('example')
-or by calling it with the path and the name of this python file
-    example:    bot.load_extension('folder.example')
-
 """
 
 from discord.ext import commands
@@ -15,13 +8,12 @@ from aiohttp import ClientSession
 import asyncio
 
 
-class COG_CLASS_NAME(commands.Cog,
-                     name='COG_DISPLAY_NAME',
-                     command_attrs=dict(hidden=False)): # Hide Cog in help
+class COG_CLASS_NAME(
+    commands.Cog, name='DISPLAY_NAME', command_attrs=dict(hidden=False)
+):
     def __init__(self, client):
         self.client = client
         self.my_task = self.client.loop.create_task(self.TASK())
-        self.session = ClientSession()
 
     async def cog_check(self, ctx):
         """This check will automatically be applied to each command contained
@@ -81,7 +73,6 @@ class COG_CLASS_NAME(commands.Cog,
     # ----------------------------------------------
     # Cog Tasks
     # ----------------------------------------------
-
     async def TASK(self):
         """Coroutine that can be registered as a task by calling
         self.client.loop.create_task(self.TASK())
@@ -103,14 +94,9 @@ class COG_CLASS_NAME(commands.Cog,
         This is useful to cancel tasks that were created inside the cog
         and to close aiohttp Client Sessions"""
         self.my_task.cancel()
-        asyncio.ensure_future(self.session.close())
 
 
 def setup(client):
     """This is called when the cog is loaded via load_extension"""
     client.add_cog(COG_CLASS_NAME(client))
 
-
-def teardown(client):
-    """This is called when the cog is unloaded via unload_extension"""
-    pass

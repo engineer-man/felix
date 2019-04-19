@@ -2,7 +2,7 @@
 It adds some commands to print youtube / discord stats
 
 Commands:
-    stats         print yt subs + discord members
+    stats           print yt subs + discord members
      ├ users        print stats about discord members
      └ channels     print stats about discord channels
 
@@ -53,7 +53,7 @@ class Stats(commands.Cog, name='Stats'):
         hidden=True,
     )
     @commands.guild_only()
-    @commands.cooldown(1, 300, commands.BucketType.user)
+    # @commands.cooldown(1, 300, commands.BucketType.user)
     async def stats(self, ctx):
         await ctx.trigger_typing()
         url = ('https://www.googleapis.com/youtube/v3/channels'
