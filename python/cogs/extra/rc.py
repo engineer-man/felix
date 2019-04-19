@@ -11,16 +11,14 @@ Commands:
 """
 
 from discord.ext import commands
-from discord import Member, TextChannel
+from discord import TextChannel
 from os import path
-import json
 
 
 class RemoteControl(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, client):
         self.client = client
-        with open(path.join(path.dirname(__file__), '../permissions.json')) as f:
-            self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
+        self.permitted_roles = self.client.permissions(path.dirname(__file__))['rc']
         self.rc_channel = None
         self.rc_user = None
         self.rc_target_channel = None

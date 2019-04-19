@@ -7,13 +7,7 @@ Commands:
 """
 from discord.ext import commands
 from discord import TextChannel
-from datetime import datetime
-from aiohttp import ClientSession
-from asyncio import ensure_future
-import json
 
-with open('../config.json', 'r') as conffile:
-    config = json.load(conffile)
 
 # set up log path
 LOG_FILENAME = '../logs/discord_chat.log'
@@ -23,7 +17,6 @@ class ChatLog(commands.Cog, name='Chat Log'):
     def __init__(self, client):
         self.client = client
         self.logfile = open(LOG_FILENAME, 'a', encoding='utf-8')
-        self.session = ClientSession()
 
     @commands.Cog.listener()
     async def on_message(self, msg):
@@ -46,7 +39,7 @@ class ChatLog(commands.Cog, name='Chat Log'):
         self.logfile.flush()
         # send chat message to emkc
         headers = {
-            'authorization': config['emkc_key']
+            'authorization': self.client.config['emkc_key']
         }
         data = {
             'channel': paginator[1],
@@ -54,7 +47,7 @@ class ChatLog(commands.Cog, name='Chat Log'):
             'message': paginator[3],
             'timestamp': paginator[0]
         }
-        async with self.session.post(
+        async with self.client.session.post(
             'https://emkc.org/api/internal/chats',
             headers=headers,
             data=data
@@ -63,8 +56,6 @@ class ChatLog(commands.Cog, name='Chat Log'):
             if not s == 200:
                 print(f'ERROR while sending chat log to EMKC. Response {s}')
 
-    def cog_unload(self):
-        ensure_future(self.session.close())
 
 def setup(client):
     client.add_cog(ChatLog(client))

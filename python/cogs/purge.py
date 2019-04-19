@@ -21,7 +21,6 @@ from discord.ext import commands
 from discord import Member
 from inspect import Parameter
 from os import path
-import json
 import typing
 import asyncio
 
@@ -29,8 +28,7 @@ import asyncio
 class Purge(commands.Cog, name='Purge'):
     def __init__(self, client):
         self.client = client
-        with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
-            self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
+        self.permitted_roles = self.client.permissions(path.dirname(__file__))['purge']
 
     async def cog_check(self, ctx):
         try:

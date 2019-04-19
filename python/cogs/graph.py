@@ -3,13 +3,10 @@ Graphing
 """
 from discord.ext import commands
 from discord import Member, File
-from aiohttp import ClientSession
 from datetime import datetime, timedelta
 from os import path
 from multidict import CIMultiDict
 import matplotlib.pyplot as plt
-import asyncio
-import json
 
 
 class Graph(commands.Cog,
@@ -17,9 +14,7 @@ class Graph(commands.Cog,
             command_attrs=dict(hidden=False)):
     def __init__(self, client):
         self.client = client
-        self.session = ClientSession()
-        with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
-            self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
+        self.permitted_roles = self.client.permissions(path.dirname(__file__))['graph']
 
     async def cog_check(self, ctx):
         try:
@@ -38,7 +33,7 @@ class Graph(commands.Cog,
                 'start': (datetime.now() - timedelta(days=n)).isoformat(),
                 'limit': limit
             }
-            async with self.session.get(url, params=params) as response:
+            async with self.client.session.get(url, params=params) as response:
                 top = await response.json()
             toplist = []
             totalmsg = {}
@@ -56,7 +51,7 @@ class Graph(commands.Cog,
                 toplist = [user.replace('@', '')]
             params = [('start', (datetime.now() - timedelta(days=n)).isoformat())]
             params += [("user", i) for i in toplist]
-            async with self.session.get(url, params=params) as response:
+            async with self.client.session.get(url, params=params) as response:
                 top = await response.json()
             if not top:
                 return False
@@ -71,7 +66,7 @@ class Graph(commands.Cog,
             params = [('start', (date).isoformat()),
                       ('end', (date2).isoformat())]
             params += [("user", i) for i in toplist]
-            async with self.session.get(url, params=params) as response:
+            async with self.client.session.get(url, params=params) as response:
                 messagesdaily = await response.json()
             for x in messagesdaily:
                 if x['user'] in temp:
@@ -164,9 +159,6 @@ class Graph(commands.Cog,
             await ctx.send(file=file_to_send)
         else:
             await ctx.send('Nothing found')
-
-    def cog_unload(self):
-        asyncio.ensure_future(self.session.close())
 
 
 def setup(client):

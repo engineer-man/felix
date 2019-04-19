@@ -22,9 +22,7 @@ or by calling it with the path and the name of this python file
 
 from discord.ext import commands
 from os import path
-import re
 import json
-
 
 
 class Commands(commands.Cog, name='Terminal'):

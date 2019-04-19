@@ -15,20 +15,13 @@ from discord.ext import commands
 from discord import Embed
 from datetime import datetime as dt
 from urllib.parse import quote
-from aiohttp import ClientSession
-from asyncio import ensure_future
 import random
 import re
-import json
-
-with open("../config.json", "r") as conffile:
-    config = json.load(conffile)
 
 
 class Responses(commands.Cog, name='General'):
     def __init__(self, client):
         self.client = client
-        self.session = ClientSession()
 
     # ----------------------------------------------
     # Helper Functions
@@ -56,13 +49,13 @@ class Responses(commands.Cog, name='General'):
     async def gif_url(self, terms):
         url = (
             f'http://api.giphy.com/v1/gifs/search' +
-            f'?api_key={config["giphy_key"]}' +
+            f'?api_key={self.client.config["giphy_key"]}' +
             f'&q={terms}' +
             f'&limit=20' +
             f'&rating=R' +
             f'&lang=en'
         )
-        async with self.session.get(url) as response:
+        async with self.client.session.get(url) as response:
             gifs = await response.json()
         if 'data' not in gifs:
             if 'message' in gifs:
@@ -194,7 +187,8 @@ class Responses(commands.Cog, name='General'):
             "```python\nprint('Hello world!')\n```\n"
             "**NOTE:** Codeblocks are also used to run code via `felix run`."
         )
-        link = ('https://support.discordapp.com/hc/en-us/articles/'
+        link = (
+            'https://support.discordapp.com/hc/en-us/articles/'
             '210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline-'
         )
 
@@ -225,9 +219,6 @@ class Responses(commands.Cog, name='General'):
                   description=ask_instructions,
                   color=0x2ECC71)
         await ctx.send(embed=e)
-
-    def cog_unload(self):
-        ensure_future(self.session.close())
 
 
 def setup(client):

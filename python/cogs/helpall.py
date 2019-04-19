@@ -13,8 +13,8 @@ in the permissions.json file can use the commands.
 from discord.ext import commands
 from discord.ext.commands import DefaultHelpCommand
 from os import path
-import json
 import itertools
+
 
 # Custom Help Command Class - mostly copied from ext/commands/help.py
 class myHelpCommand(DefaultHelpCommand):
@@ -128,14 +128,14 @@ class myHelpCommand(DefaultHelpCommand):
 
         await self.send_pages()
 
+
 # Help COG
 class Help(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.client.help_command = myHelpCommand()
         self.client.get_command('help').hidden = True
-        with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
-            self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
+        self.permitted_roles = self.client.permissions(path.dirname(__file__))['helpall']
 
     async def cog_check(self, ctx):
         try:
