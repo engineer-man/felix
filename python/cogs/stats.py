@@ -14,23 +14,16 @@ from discord.ext import commands
 from discord import Member
 from os import path
 from datetime import datetime, timedelta
-from aiohttp import ClientSession
-from asyncio import ensure_future
 import json
 import time
 import typing
-
-with open("../config.json", "r") as conffile:
-    config = json.load(conffile)
 
 
 class Stats(commands.Cog, name='Stats'):
     def __init__(self, client):
         self.client = client
         self.last_time = self.load_stats()
-        with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
-            self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
-        self.session = ClientSession()
+        self.permitted_roles = self.client.permissions(path.dirname(__file__))['stats']
 
     async def cog_check(self, ctx):
         try:
@@ -67,8 +60,8 @@ class Stats(commands.Cog, name='Stats'):
         url = ('https://www.googleapis.com/youtube/v3/channels'
                '?part=statistics'
                '&id=UCrUL8K81R4VBzm-KOYwrcxQ'
-               f'&key={config["yt_key"]}')
-        async with self.session.get(url) as response:
+               f'&key={self.client.config["yt_key"]}')
+        async with self.client.session.get(url) as response:
             r = await response.json()
         statistics = r['items'][0]['statistics']
         subs = int(statistics['subscriberCount'])
@@ -121,7 +114,7 @@ class Stats(commands.Cog, name='Stats'):
         }
 
         url = 'https://emkc.org/api/v1/stats/discord/messages'
-        async with self.session.get(url, params=params) as response:
+        async with self.client.session.get(url, params=params) as response:
             res = await response.json()
 
         padding = max([len(i['user']) for i in res])
@@ -153,7 +146,7 @@ class Stats(commands.Cog, name='Stats'):
             params['user'] = str(user)
 
         url = 'https://emkc.org/api/v1/stats/discord/channels'
-        async with self.session.get(url, params=params) as response:
+        async with self.client.session.get(url, params=params) as response:
             res = await response.json()
 
         padding = max([len(i['channel']) for i in res])
@@ -163,9 +156,6 @@ class Stats(commands.Cog, name='Stats'):
         ]
 
         await ctx.send('```css\n' + '\n'.join(formatted) + '```')
-
-    def cog_unload(self):
-        ensure_future(self.session.close())
 
 
 def setup(client):

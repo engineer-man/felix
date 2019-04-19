@@ -14,7 +14,6 @@ in the permissions.json file can use the commands.
 from discord.ext import commands
 from discord import Member, DMChannel, Embed
 from os import path
-import json
 import re
 import time
 import random
@@ -26,7 +25,8 @@ FORBIDDEN = [
 ]
 
 REPORT_CHANNEL = 483978527549554698
-REPORT_ROLE= 500710389131247636
+REPORT_ROLE = 500710389131247636
+
 
 class LinkBlocker(commands.Cog, name='Link Blocker'):
     def __init__(self, client):
@@ -34,8 +34,7 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         self.allowed_once = []
         self.naughty_list = {}
         self.NAUGHTY_LIST_TIME = 600
-        with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
-            self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
+        self.permitted_roles = self.client.permissions(path.dirname(__file__))['linkblocker']
 
     async def cog_check(self, ctx):
         try:

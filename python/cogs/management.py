@@ -16,20 +16,15 @@ Only users belonging to a role that is specified under the module's name
 in the permissions.json file can use the commands.
 """
 from discord.ext import commands
-from discord import Activity, Embed, Role
+from discord import Activity, Embed
 from os import path, listdir
-from aiohttp import ClientSession
-from asyncio import ensure_future
 import subprocess
-import json
 
 
 class Management(commands.Cog, name='Management'):
     def __init__(self, client):
         self.client = client
-        with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
-            self.permitted_roles = json.load(f)[__name__.split('.')[-1]]
-        self.session = ClientSession()
+        self.permitted_roles = self.client.permissions(path.dirname(__file__))['management']
 
     async def cog_check(self, ctx):
         try:
@@ -71,7 +66,7 @@ class Management(commands.Cog, name='Management'):
         repo_data = []
         repo_shas = []
         while last_commit not in repo_shas:
-            async with self.session.get(nxt) as response:
+            async with self.client.session.get(nxt) as response:
                 r = await response.json()
             repo_data += r
             repo_shas = [x['sha'] for x in repo_data]
@@ -97,7 +92,6 @@ class Management(commands.Cog, name='Management'):
                     dot_dir = dot_dir.replace('/', '.')
                     cogs.append(f'{dot_dir}.' + filename)
         return cogs
-
 
     # ----------------------------------------------
     # Function to disply the version
@@ -327,9 +321,6 @@ class Management(commands.Cog, name='Management'):
 
         for n, page in enumerate(pages):
             await ctx.send(f'{n+1}/{len(pages)}\n```' + '\n'.join(page) + '```')
-
-    def cog_unload(self):
-        ensure_future(self.session.close())
 
 
 def setup(client):

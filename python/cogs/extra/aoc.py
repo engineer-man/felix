@@ -12,39 +12,34 @@ or by calling it with the path and the name of this python file
 """
 
 from discord.ext import commands
-from aiohttp import ClientSession
 from datetime import datetime, timedelta
-import json
 import asyncio
 
-with open("../config.json", "r") as conffile:
-    config = json.load(conffile)
 
 API_URL = 'https://adventofcode.com/2018/leaderboard/private/view/208847.json'
 EM_SERVER = 473161189120147456
 AOC_CHANNEL = 514527842399420427
 INTERVAL = 180
-cookie = {'session': config['aoc_session']}
 
 
 class AdventOfCode(commands.Cog, name='Advent of Code'):
     def __init__(self, client):
         self.client = client
+        self.cookie = {'session': self.client.config['aoc_session']}
         self.task = self.client.loop.create_task(self.aoc_monitor())
         self.members = {}
-        self.session = ClientSession()
 
     async def aoc_monitor(self):
         await self.client.wait_until_ready()
         await asyncio.sleep(5)
         channel = self.client.get_guild(EM_SERVER).get_channel(AOC_CHANNEL)
-        async with self.session.get(API_URL, cookies=cookie) as response:
+        async with self.client.session.get(API_URL, cookies=self.cookie) as response:
             r = await response.json()
         self.members = r['members']
         try:
             while not self.client.is_closed():
                 msg = []
-                async with self.session.get(API_URL, cookies=cookie) as response:
+                async with self.client.session.get(API_URL, cookies=self.cookie) as response:
                     r = await response.json()
                 current_members = r['members']
                 for member, data in current_members.items():
@@ -107,7 +102,7 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
             return
         if not ctx.channel.id == AOC_CHANNEL:
             return
-        async with self.session.get(API_URL, cookies=cookie) as response:
+        async with self.client.session.get(API_URL, cookies=self.cookie) as response:
             r = await response.json()
         members = r['members']
         parts = {'1': [], '2': []}
@@ -148,7 +143,6 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
 
     def cog_unload(self):
         self.task.cancel()
-        asyncio.ensure_future(self.session.close())
 
 
 def setup(client):
