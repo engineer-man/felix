@@ -94,10 +94,11 @@ class Graph(commands.Cog,
             plt.plot(xaxis, yaxis, label=templabel, marker='o', markersize=3)
         plt.legend()
         plt.ylabel('Messages')
+        label_time = (datetime.utcnow() - timedelta(days=days)).isoformat()
         plt.xlabel(
-            'Time since '
-            f'{(datetime.utcnow() - timedelta(days=days)).isoformat()[:10]}'
-            ' in days'
+            'Time in days since '
+            f'{label_time.split(".")[0].replace("T", " ")}'
+            ' UTC'
         )
         plt.savefig('last_graph.png', bbox_inches='tight')
         plt.cla()
