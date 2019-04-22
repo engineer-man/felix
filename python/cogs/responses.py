@@ -40,7 +40,7 @@ class Responses(commands.Cog, name='General'):
         return ' '.join(ret)
 
     def get_year_string(self):
-        now = dt.now()
+        now = dt.utcnow()
         year_end = dt(now.year+1, 1, 1)
         year_start = dt(now.year, 1, 1)
         year_percent = (now - year_start) / (year_end - year_start) * 100

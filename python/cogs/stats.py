@@ -108,7 +108,7 @@ class Stats(commands.Cog, name='Stats'):
     async def users(self, ctx, n: typing.Optional[int] = 30):
         await ctx.trigger_typing()
         params = {
-            'start': (datetime.now() - timedelta(days=n)).isoformat(),
+            'start': (datetime.utcnow() - timedelta(days=n)).isoformat(),
             'limit': 25,
         }
 
@@ -137,7 +137,7 @@ class Stats(commands.Cog, name='Stats'):
     ):
         await ctx.trigger_typing()
         params = {
-            'start': (datetime.now() - timedelta(days=n)).isoformat(),
+            'start': (datetime.utcnow() - timedelta(days=n)).isoformat(),
             'limit': 25,
         }
 
