@@ -15,7 +15,6 @@ in the permissions.json file can use the commands.
 from discord.ext import commands
 from discord import Member, File
 from datetime import datetime, timedelta
-from multidict import CIMultiDict
 import matplotlib.pyplot as plt
 
 
@@ -33,67 +32,61 @@ class Graph(commands.Cog,
             return False
         return any(role in self.permitted_roles for role in user_roles)
 
-    async def create_graph_messages(self, n, limit=0, user=None):
-        url = "https://emkc.org/api/v1/stats/discord/messages"
-        if not user:
-
-            """gets the top people of n days and puts them in toplist"""
-
+    async def create_graph_messages(self, days, limit=0, users=None):
+        url = 'https://emkc.org/api/v1/stats/discord/messages'
+        if not users:
+            # gets the top people of days and puts them in user_names
             params = {
-                'start': (datetime.now() - timedelta(days=n)).isoformat(),
+                'start': (datetime.utcnow() - timedelta(days=days)).isoformat(),
                 'limit': limit
             }
             async with self.client.session.get(url, params=params) as response:
-                top = await response.json()
-            toplist = []
-            totalmsg = {}
-            [totalmsg.update({i['user']: i['messages']}) for i in top]
-            [toplist.append(i['user']) for i in top]
-            if not top:
+                api_data = await response.json()
+            if not api_data:
                 return False
+            user_names = [data['user'] for data in api_data]
+            num_messages = {data['user']: data['messages']
+                            for data in api_data}
         else:
-
-            """puts either the list of people or a signle person in toplist"""
-
-            if type(user) == list:
-                toplist = [i.replace('@', '') for i in user]
-            else:
-                toplist = [user.replace('@', '')]
+            # puts specific people in user_names
+            user_names = [str(user) for user in users]
             params = [
-                ('start', (datetime.now() - timedelta(days=n)).isoformat())]
-            params += [("user", i) for i in toplist]
+                ('start', (datetime.utcnow() - timedelta(days=days)).isoformat())]
+            params += [('user', username) for username in user_names]
             async with self.client.session.get(url, params=params) as response:
-                top = await response.json()
-            if not top:
+                api_data = await response.json()
+            if not api_data:
                 return False
-            totalmsg = {}
-            [totalmsg.update({i['user']: i['messages']}) for i in top]
-        temp = {}
-        for i in toplist:
-            temp[i] = []
-        for i in range(n):
-            date = datetime.now() - timedelta(days=n) + timedelta(days=i)
-            date2 = datetime.now() - timedelta(days=n) + timedelta(days=i+1)
-            params = [('start', (date).isoformat()),
-                      ('end', (date2).isoformat())]
-            params += [("user", i) for i in toplist]
+            num_messages = {data['user']: data['messages']
+                            for data in api_data}
+
+        graph_data = {name: [] for name in user_names}
+        for i in range(days):
+            startdate = datetime.utcnow() - timedelta(days=days - i)
+            enddate = datetime.utcnow() - timedelta(days=days - i - 1)
+            params = [('start', (startdate).isoformat()),
+                      ('end', (enddate).isoformat())]
+            params += [('user', username) for username in user_names]
             async with self.client.session.get(url, params=params) as response:
-                messagesdaily = await response.json()
-            for x in messagesdaily:
-                if x['user'] in temp:
-                    temp[x['user']].append([i+1, x['messages']])
-        if all([not x for x in temp.values()]):
+                api_data = await response.json()
+            for data in api_data:
+                if data['user'] in graph_data:
+                    graph_data[data['user']].append([i, data['messages']])
+        if all([not x for x in graph_data.values()]):
             return False
-        for x in temp:
-            xaxis = [i[0] for i in temp[x]]
-            yaxis = [i[1] for i in temp[x]]
-            templabel = '{} {}'.format(x[:-5], totalmsg[x])
+        for name, data in graph_data.items():
+            xaxis = [i[0] for i in data]
+            yaxis = [i[1] for i in data]
+            templabel = '{} {}'.format(name[:-5], num_messages[name])
             plt.plot(xaxis, yaxis, label=templabel, marker='o', markersize=3)
         plt.legend()
-        plt.ylabel("Messages")
+        plt.ylabel('Messages')
         plt.xlabel(
-            f"Time since {(datetime.now() - timedelta(days=n)).isoformat()[:10]} in days")
-        plt.savefig("last_graph.png", bbox_inches='tight')
+            'Time since '
+            f'{(datetime.utcnow() - timedelta(days=days)).isoformat()[:10]}'
+            ' in days'
+        )
+        plt.savefig('last_graph.png', bbox_inches='tight')
         plt.cla()
         return True
 
@@ -127,10 +120,11 @@ class Graph(commands.Cog,
         await ctx.trigger_typing()
         if days > 30:
             days = 30
+        if days < 1:
+            days = 1
+        days += 1
         if n > 10:
             n = 10
-            await ctx.send('Cut down to 10 people')
-            await ctx.trigger_typing()
         if not days or not n:
             return
         if await self.create_graph_messages(days, n):
@@ -156,12 +150,10 @@ class Graph(commands.Cog,
         await ctx.trigger_typing()
         if days > 30:
             days = 30
-        memberslist = [str(x) for x in members]
-        if len(memberslist) > 10:
-            memberslist = memberslist[:10]
-            await ctx.send('Cut down to 10 people')
-            await ctx.trigger_typing()
-
+        if days < 1:
+            days = 1
+        days += 1
+        memberslist = [str(x) for x in members][:10]
         if not days or not memberslist:
             return
         if await self.create_graph_messages(days, 0, memberslist):
