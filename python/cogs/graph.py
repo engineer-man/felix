@@ -64,7 +64,7 @@ class Graph(commands.Cog,
                 key=lambda x: num_messages[x],
                 reverse=True
             )
-        graph_data = {name: [] for name in user_names}
+        graph_data = {name: [[0, 0]] for name in user_names}
         for i in range(days):
             startdate = datetime.utcnow() - timedelta(days=days - i)
             enddate = datetime.utcnow() - timedelta(days=days - i - 1)
@@ -84,7 +84,7 @@ class Graph(commands.Cog,
                 else:
                     api_data = retrieved_users[username]
                     new_messages = current_msg + api_data['messages']
-                data.append([i, new_messages])
+                data.append([i+1, new_messages])
         if all([not x for x in graph_data.values()]):
             return False
         for name, data in graph_data.items():
@@ -136,7 +136,6 @@ class Graph(commands.Cog,
             days = 30
         if days < 1:
             days = 1
-        days += 1
         if n > 10:
             n = 10
         if not days or not n:
@@ -166,7 +165,6 @@ class Graph(commands.Cog,
             days = 30
         if days < 1:
             days = 1
-        days += 1
         memberslist = [str(x) for x in members][:10]
         if not days or not memberslist:
             return
