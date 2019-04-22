@@ -69,9 +69,18 @@ class Graph(commands.Cog,
             params += [('user', username) for username in user_names]
             async with self.client.session.get(url, params=params) as response:
                 api_data = await response.json()
-            for data in api_data:
-                if data['user'] in graph_data:
-                    graph_data[data['user']].append([i, data['messages']])
+            retrieved_users = {x['user']: x for x in api_data}
+            for username, data in graph_data.items():
+                if data:
+                    current_msg = data[-1][1]
+                else:
+                    current_msg = 0
+                if username not in retrieved_users:
+                    new_messages = current_msg
+                else:
+                    api_data = retrieved_users[username]
+                    new_messages = current_msg + api_data['messages']
+                data.append([i, new_messages])
         if all([not x for x in graph_data.values()]):
             return False
         for name, data in graph_data.items():
