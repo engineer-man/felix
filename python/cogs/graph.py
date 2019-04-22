@@ -59,7 +59,11 @@ class Graph(commands.Cog,
                 return False
             num_messages = {data['user']: data['messages']
                             for data in api_data}
-
+            user_names = sorted(
+                user_names,
+                key=lambda x: num_messages[x],
+                reverse=True
+            )
         graph_data = {name: [] for name in user_names}
         for i in range(days):
             startdate = datetime.utcnow() - timedelta(days=days - i)
