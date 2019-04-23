@@ -106,6 +106,8 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
 
     async def check_message(self, msg):
         """Check message - return True if message contains forbidden text"""
+        # ignore spoiler tags
+        msg.content = msg.content.replace('||', '')
         if self.is_dm(msg):
             return False
         if self.is_allowed(msg):
