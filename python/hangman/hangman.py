@@ -13,12 +13,6 @@ or by calling it with the path and the name of this python file
     example:    bot.load_extension('cogs.hangman')
 
 The commands can be used by everyone
-
-BUG: When sending an embed with
-            await ctx.send(embed=embed)
-     The bot will crash without any error message.
-     Crash can be avoided by also sending some text with the embed:
-            await ctx.send('.', embed=embed)
 """
 
 from discord.ext import commands
@@ -190,7 +184,7 @@ class Hangman(commands.Cog, name='Hangman Game'):
                       + " points for this word: %d" % (self.getPotPoints(
                           ctx.message.guild.id, ctx.message.channel.name)),
                       color=0x801680)
-        await ctx.send('.', embed=embed)
+        await ctx.send(embed=embed)
 
     @commands.command(name='letter',
                       brief='Guess a letter for the running game',
@@ -239,7 +233,7 @@ class Hangman(commands.Cog, name='Hangman Game'):
                       + "incorrect: " + guessesw + "\n"
                       + "correct: " + guessesr,
                       color=0x801680)
-        await ctx.send('.', embed=embed)
+        await ctx.send(embed=embed)
 
     @commands.command(name='highscores',
                       brief='Show hangman highscores',
@@ -271,7 +265,7 @@ class Hangman(commands.Cog, name='Hangman Game'):
 
         embed.add_field(name="score", value=scoresdata, inline=True)
         embed.add_field(name="users", value=namesdata, inline=True)
-        await ctx.send('.', embed=embed)
+        await ctx.send(embed=embed)
 
     @commands.command(name='myscore',
                       brief='Show your own hangman scores',
@@ -283,7 +277,7 @@ class Hangman(commands.Cog, name='Hangman Game'):
             "%d!" % (self.myscore(ctx.message.guild.id, ctx.message.author.id)),
             color=0x161680
         )
-        await ctx.send('.', embed=embed)
+        await ctx.send(embed=embed)
 
 
 def setup(client):
