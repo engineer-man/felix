@@ -18,6 +18,14 @@ from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 
 
+def clamp(value: int, low: int, high: int):
+    if value < low:
+        return low
+    if value > high:
+        return high
+    return value
+
+
 class Graph(commands.Cog,
             name='Graph',
             command_attrs=dict(hidden=False)):
@@ -132,14 +140,8 @@ class Graph(commands.Cog,
         days: int
     ):
         await ctx.trigger_typing()
-        if days > 30:
-            days = 30
-        if days < 1:
-            days = 1
-        if n > 10:
-            n = 10
-        if not days or not n:
-            return
+        days = clamp(days, 1, 30)
+        n = clamp(n, 1, 10)
         if await self.create_graph_messages(days, n):
             with open('last_graph.png', 'rb') as g:
                 file_to_send = File(g)
@@ -160,14 +162,11 @@ class Graph(commands.Cog,
         members: commands.Greedy[Member],
         days: int
     ):
-        await ctx.trigger_typing()
-        if days > 30:
-            days = 30
-        if days < 1:
-            days = 1
-        memberslist = [str(x) for x in members][:10]
-        if not days or not memberslist:
+        if not members:
             return
+        await ctx.trigger_typing()
+        days = clamp(days, 1, 30)
+        memberslist = [str(x) for x in members][:10]
         if await self.create_graph_messages(days, 0, memberslist):
             with open('last_graph.png', 'rb') as g:
                 file_to_send = File(g)
