@@ -175,31 +175,37 @@ class Jail(commands.Cog, name='Jail'):
     # ----------------------------------------------
     @commands.command(
         name='jail',
-        brief='Put a @user in jail',
-        description='Put a @user in jail',
+        brief='Put a list of @users in jail',
+        description='Put a list of @users in jail',
         aliases=['silence'],
         hidden=True,
     )
     @commands.guild_only()
-    async def jail(self, ctx, member: Member):
-        member_roles = [role.id for role in member.roles]
-        if any(role in self.permitted_roles for role in member_roles):
-            r = f'`Sorry {member} is my friend`'
-        else:
-            r = await self.send_to_jail(member)
-        await ctx.send(r)
+    async def jail(self, ctx, members: commands.Greedy[Member]):
+        results = []
+        for member in members:
+            member_roles = [role.id for role in member.roles]
+            if any(role in self.permitted_roles for role in member_roles):
+                results.append(f'`Sorry {member} is my friend`')
+            else:
+                r = await self.send_to_jail(member)
+                results.append(r)
+        await ctx.send('\n'.join(results))
 
     @commands.command(
         name='unjail',
-        brief='Release a @user from jail',
-        description='Release a @user from jail',
+        brief='Release a list of @users from jail',
+        description='Release a list of @users from jail',
         aliases=['release', 'unsilence'],
         hidden=True,
     )
     @commands.guild_only()
-    async def unjail(self, ctx, member: Member):
-        r = await self.release_from_jail(member)
-        await ctx.send(r)
+    async def unjail(self, ctx, members: commands.Greedy[Member]):
+        results = []
+        for member in members:
+            r = await self.release_from_jail(member)
+            results.append(r)
+        await ctx.send('\n'.join(results))
 
     # ----------------------------------------------
     # Cog Tasks
