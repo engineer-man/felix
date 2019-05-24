@@ -76,6 +76,9 @@ class Responses(commands.Cog, name='General'):
         if msg.author.bot:
             return
 
+        if self.client.user_is_ignored(msg.author):
+            return
+
         if re.search(r'(?i).*quack.*', msg.content):
             await msg.channel.send(self.get_quack_string())
 

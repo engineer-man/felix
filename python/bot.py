@@ -35,6 +35,12 @@ class Felix(Bot):
         await self.session.close()
         await super().close()
 
+    def user_is_ignored(self, author):
+        user_roles = [role.id for role in author.roles]
+        if 581535776697876491 in user_roles:
+            return True
+        return False
+
 
 client = Felix(
     command_prefix=('felix ', '~ '),
@@ -66,6 +72,8 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    if client.user_is_ignored(message.author):
+        return
     await client.process_commands(message)
 
 
