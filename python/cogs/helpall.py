@@ -134,14 +134,9 @@ class Help(commands.Cog):
         self.client = client
         self.client.help_command = myHelpCommand()
         self.client.get_command('help').hidden = True
-        self.permitted_roles = self.client.permissions['helpall']
 
     async def cog_check(self, ctx):
-        try:
-            user_roles = [role.id for role in ctx.message.author.roles]
-        except AttributeError:
-            return False
-        return any(role in self.permitted_roles for role in user_roles)
+        return self.client.user_has_permission(ctx.author, 'helpall')
 
     def cog_unload(self):
         self.client.help_command = DefaultHelpCommand()

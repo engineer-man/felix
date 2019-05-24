@@ -35,6 +35,14 @@ class Felix(Bot):
         await self.session.close()
         await super().close()
 
+    def user_has_permission(self, author, module_name):
+        try:
+            user_roles = [role.id for role in author.roles]
+        except AttributeError:
+            return False
+        permitted_roles = self.permissions[module_name]
+        return any(role in permitted_roles for role in user_roles)
+
     def user_is_ignored(self, author):
         user_roles = [role.id for role in author.roles]
         if 581535776697876491 in user_roles:

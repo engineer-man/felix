@@ -27,14 +27,9 @@ class Management(commands.Cog, name='Management'):
         self.client = client
         self.reload_config()
         self.reload_permissions()
-        self.permitted_roles = self.client.permissions['management']
 
     async def cog_check(self, ctx):
-        try:
-            user_roles = [role.id for role in ctx.message.author.roles]
-        except AttributeError:
-            return False
-        return any(role in self.permitted_roles for role in user_roles)
+        return self.client.user_has_permission(ctx.author, 'management')
 
     @commands.Cog.listener()
     async def on_ready(self):

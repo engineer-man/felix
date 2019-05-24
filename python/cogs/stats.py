@@ -22,14 +22,9 @@ class Stats(commands.Cog, name='Stats'):
     def __init__(self, client):
         self.client = client
         self.last_time = self.load_stats()
-        self.permitted_roles = self.client.permissions['stats']
 
     async def cog_check(self, ctx):
-        try:
-            user_roles = [role.id for role in ctx.message.author.roles]
-        except AttributeError:
-            return False
-        return any(role in self.permitted_roles for role in user_roles)
+        return self.client.user_has_permission(ctx.author, 'stats')
 
     def load_state(self):
         with open("../state.json", "r") as statefile:

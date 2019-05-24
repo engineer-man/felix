@@ -32,7 +32,6 @@ SPAM_NAUGHTY_CHECK_INTERVAL = 300  # Seconds
 class Jail(commands.Cog, name='Jail'):
     def __init__(self, client):
         self.client = client
-        self.permitted_roles = self.client.permissions['jail']
         # Roles to give/remove when people enter/leave jail
         self.jail_roles = [486621918821351436,
                            484183734686318613,
@@ -46,11 +45,7 @@ class Jail(commands.Cog, name='Jail'):
         self.my_task = self.client.loop.create_task(self.clear_naughty_list())
 
     async def cog_check(self, ctx):
-        try:
-            user_roles = [role.id for role in ctx.message.author.roles]
-        except AttributeError:
-            return False
-        return any(role in self.permitted_roles for role in user_roles)
+        return self.client.user_has_permission(ctx.author, 'jail')
 
     # ----------------------------------------------
     # Helper Functions
@@ -84,7 +79,7 @@ class Jail(commands.Cog, name='Jail'):
         Returns:
             str -- Status message
         """
-        status = '`Success`'
+        status = 'Success'
         get_role = member.guild.get_role
         jail_roles = [get_role(x) for x in self.jail_roles if get_role(x)]
         await member.add_roles(*jail_roles, reason=reason)
@@ -94,7 +89,7 @@ class Jail(commands.Cog, name='Jail'):
                 perma_jail.append(member.id)
                 self.save_perma_jail(perma_jail)
             else:
-                status = f'`{member} is already jailed`'
+                status = f'{member} is already jailed'
         return status
 
     async def release_from_jail(self, member):
@@ -106,7 +101,7 @@ class Jail(commands.Cog, name='Jail'):
         Returns:
             str -- Status message
         """
-        status = '`Success`'
+        status = 'Success'
         perma_jail = self.load_perma_jail()
         get_role = member.guild.get_role
         jail_roles = [get_role(x) for x in self.jail_roles if get_role(x)]
@@ -115,7 +110,7 @@ class Jail(commands.Cog, name='Jail'):
             perma_jail.remove(member.id)
             self.save_perma_jail(perma_jail)
         else:
-            status = f'`{member} is not in jail`'
+            status = f'{member} is not in jail'
         return status
 
     # ----------------------------------------------
@@ -184,13 +179,12 @@ class Jail(commands.Cog, name='Jail'):
     async def jail(self, ctx, members: commands.Greedy[Member]):
         results = []
         for member in members:
-            member_roles = [role.id for role in member.roles]
-            if any(role in self.permitted_roles for role in member_roles):
-                results.append(f'`Sorry {member} is my friend`')
+            if self.client.user_has_permission(member, 'jail'):
+                results.append(f'Sorry {member} is my friend')
             else:
                 r = await self.send_to_jail(member)
                 results.append(r)
-        await ctx.send('\n'.join(results))
+        await ctx.send('```\n'+'\n'.join(results)+'```')
 
     @commands.command(
         name='unjail',
@@ -205,7 +199,7 @@ class Jail(commands.Cog, name='Jail'):
         for member in members:
             r = await self.release_from_jail(member)
             results.append(r)
-        await ctx.send('\n'.join(results))
+        await ctx.send('```\n'+'\n'.join(results)+'```')
 
     # ----------------------------------------------
     # Cog Tasks

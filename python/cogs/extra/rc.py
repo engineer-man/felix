@@ -17,18 +17,13 @@ from discord import TextChannel
 class RemoteControl(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, client):
         self.client = client
-        self.permitted_roles = self.client.permissions['rc']
         self.rc_channel = None
         self.rc_user = None
         self.rc_target_channel = None
         self.rc_active = False
 
     async def cog_check(self, ctx):
-        try:
-            user_roles = [role.id for role in ctx.message.author.roles]
-        except AttributeError:
-            return False
-        return any(role in self.permitted_roles for role in user_roles)
+        return self.client.user_has_permission(ctx.author, 'rc')
 
     # ----------------------------------------------
     # Cog Event listeners

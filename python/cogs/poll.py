@@ -62,14 +62,9 @@ class Poll(commands.Cog, name='Poll'):
             "y": "🇾",
             "z": "🇿"
         }
-        self.permitted_roles = self.client.permissions['poll']
 
     async def cog_check(self, ctx):
-        try:
-            user_roles = [role.id for role in ctx.message.author.roles]
-        except AttributeError:
-            return False
-        return any(role in self.permitted_roles for role in user_roles)
+        return self.client.user_has_permission(ctx.author, 'poll')
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):

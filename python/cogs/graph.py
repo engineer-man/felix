@@ -31,14 +31,9 @@ class Graph(commands.Cog,
             command_attrs=dict(hidden=False)):
     def __init__(self, client):
         self.client = client
-        self.permitted_roles = self.client.permissions['graph']
 
     async def cog_check(self, ctx):
-        try:
-            user_roles = [role.id for role in ctx.message.author.roles]
-        except AttributeError:
-            return False
-        return any(role in self.permitted_roles for role in user_roles)
+        return self.client.user_has_permission(ctx.author, 'graph')
 
     async def create_graph_messages(self, days, limit=0, users=None):
         url = 'https://emkc.org/api/v1/stats/discord/messages'

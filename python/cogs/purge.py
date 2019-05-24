@@ -27,14 +27,9 @@ import asyncio
 class Purge(commands.Cog, name='Purge'):
     def __init__(self, client):
         self.client = client
-        self.permitted_roles = self.client.permissions['purge']
 
     async def cog_check(self, ctx):
-        try:
-            user_roles = [role.id for role in ctx.message.author.roles]
-        except AttributeError:
-            return False
-        return any(role in self.permitted_roles for role in user_roles)
+        return self.client.user_has_permission(ctx.author, 'purge')
 
     # ----------------------------------------------
     # Function Group to clear channel of messages
@@ -90,7 +85,7 @@ class Purge(commands.Cog, name='Purge'):
     @commands.guild_only()
     async def purge_all(self, ctx):
         channel = ctx.message.channel
-        caller = ctx.message.author
+        caller = ctx.author
 
         def check(m):
             return m.author.id == caller.id and m.channel.id == channel.id

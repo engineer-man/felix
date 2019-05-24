@@ -19,13 +19,14 @@ class COG_CLASS_NAME(
         """This check will automatically be applied to each command contained
         in this cog.
         Use it to decide who can use the commands in this cog.
-        If this returns False, the user calling the command (ctx.message.author)
+        If this returns False, the user calling the command (ctx.author)
         can not use the command and will not see the command in the bot help.
         In the current state, the check will only return True if the bot owner
         executed a command
         """
         if await ctx.bot.is_owner(ctx.author):
             return True
+        return self.client.user_has_permission(ctx.author, 'cog_name')
         # Put checks here
 
     # ----------------------------------------------
@@ -99,4 +100,3 @@ class COG_CLASS_NAME(
 def setup(client):
     """This is called when the cog is loaded via load_extension"""
     client.add_cog(COG_CLASS_NAME(client))
-

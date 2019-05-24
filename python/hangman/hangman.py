@@ -24,7 +24,7 @@ import json
 
 class Hangman(commands.Cog, name='Hangman Game'):
     def __init__(self, client):
-        self.bot = client
+        self.client = client
         with open(__file__.replace('hangman.py', 'dict.txt')) as f:
             self.words = f.read().split()
         self.hangmanval = {}
@@ -197,7 +197,7 @@ class Hangman(commands.Cog, name='Hangman Game'):
             await ctx.send("quaaaack quack?")
             return
         err = self.play(ctx.message.guild.id, ctx.message.channel.name, letter,
-                        ctx.message.author.id)
+                        ctx.author.id)
         if err < 0:
             if err == self.LOSTGAME:
                 await ctx.send("You've lost, the word was " + self.getWord(ctx.message.guild.id,
@@ -274,7 +274,7 @@ class Hangman(commands.Cog, name='Hangman Game'):
         embed = Embed(
             title="Duckie hangman",
             description="your score is... " +
-            "%d!" % (self.myscore(ctx.message.guild.id, ctx.message.author.id)),
+            "%d!" % (self.myscore(ctx.message.guild.id, ctx.author.id)),
             color=0x161680
         )
         await ctx.send(embed=embed)

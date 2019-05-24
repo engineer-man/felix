@@ -33,14 +33,9 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         self.allowed_once = []
         self.naughty_list = {}
         self.NAUGHTY_LIST_TIME = 600
-        self.permitted_roles = self.client.permissions['linkblocker']
 
     async def cog_check(self, ctx):
-        try:
-            user_roles = [role.id for role in ctx.message.author.roles]
-        except AttributeError:
-            return False
-        return any(role in self.permitted_roles for role in user_roles)
+        return self.client.user_has_permission(ctx.author, 'linkblocker')
 
     # ----------------------------------------------
     # Message checks
@@ -53,10 +48,8 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         """return True if user is permitted to post links"""
         if msg.author == self.client.user:
             return True
-        author_roles = [role.id for role in msg.author.roles]
-        if not self.client.user == msg.author:
-            if any(role in self.permitted_roles for role in author_roles):
-                return True
+        if self.client.user_has_permission(msg.author, 'linkblocker'):
+            return True
         return False
 
     async def has_discord_link(self, msg):
