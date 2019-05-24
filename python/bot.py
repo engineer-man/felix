@@ -11,6 +11,7 @@ This bot requires discord.py
     pip install -U discord.py
 """
 from discord.ext.commands import Bot, CommandOnCooldown, MissingRequiredArgument
+from discord.ext.commands import CheckFailure
 from aiohttp import ClientSession
 from os import path, listdir
 import json
@@ -99,6 +100,12 @@ async def on_command_error(ctx, exception):
             f'Missing parameter: `{missing}{missing_type}`' +
             f'\nIf you are not sure how to use the command, try running ' +
             f'`felix help {ctx.command.name}`'
+        )
+        return
+
+    if type(exception) == CheckFailure:
+        print(
+            f'MISSING PERMISSION | USER: {ctx.author} | COMMAND: {ctx.command}'
         )
         return
 
