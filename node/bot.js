@@ -18,10 +18,6 @@ return bot
         var content = message.content;
         var channel = message.channel;
 
-        if (content.match(/^felix video/gi)) {
-            return handlers.video(message);
-        }
-
         // mod only stuff here
         var roles = message.member && message.member.roles.map(r => r.name) || [];
 
