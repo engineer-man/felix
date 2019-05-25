@@ -115,15 +115,6 @@ class Responses(commands.Cog, name='General'):
         )
 
     @commands.command(
-        name='run',
-        brief='Run some code',
-        description='Run some code - type "felix run" for instructions',
-        hidden=False,
-    )
-    async def run(self, ctx, *code):
-        await ctx.trigger_typing()
-
-    @commands.command(
         name='source',
         brief='Show links to source code',
         description='Show links to engineer-man github repositories',

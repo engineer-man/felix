@@ -71,141 +71,6 @@ var handlers = {
 
             message.reply(msg)
         }
-    },
-
-    code(message) {
-        const content = message.content;
-        const channel = message.channel;
-
-        var input_language = content.split('```', 1)[0].split(' ', 3)[2] || null;
-        // everything between the first felix run and ```
-
-        if (input_language) {
-            // allow uppercase characters and extra whitespace
-            input_language = input_language.trim().to_lower_case();
-        }
-
-        var highlighting_language = (/```(.+)\s/g.exec(content) || [, null])[1];
-        // everything between the first ``` and the next whitespace character
-
-
-
-        // if you add any languages please make sure to change 'highlighting_languages' as well
-        const input_languages = {
-            python: 'python3',
-            python3: 'python3',
-            python2: 'python2',
-            js: 'javascript',
-            javascript: 'javascript',
-            node: 'javascript',
-            go: 'go',
-            ruby: 'ruby',
-            c: 'c',
-            cpp: 'cpp',
-            'c++': 'cpp',
-            cs: 'csharp',
-            csharp: 'csharp',
-            'c#': 'csharp',
-            php: 'php',
-            r: 'r',
-            nasm: 'nasm',
-            asm: 'nasm',
-            java: 'java',
-            swift: 'swift',
-            brainfuck: 'brainfuck',
-            bf: 'brainfuck',
-        };
-
-        // sources:
-        // https://sourceforge.net/p/discord/wiki/markdown_syntax/#md_ex_code
-        // => http://pygments.org/docs/lexers/
-
-        // I wrote a small script that generates this list from the 'input_languages'
-        // feel free to message me @soruh#8824 on discord if you need it
-        const highlighting_languages = {
-            python: 'python3',
-            py: 'python3',
-            sage: 'python3',
-            python3: 'python3',
-            py3: 'python3',
-            js: 'javascript',
-            javascript: 'javascript',
-            go: 'go',
-            rb: 'ruby',
-            ruby: 'ruby',
-            duby: 'ruby',
-            c: 'c',
-            cpp: 'cpp',
-            'c++': 'cpp',
-            csharp: 'csharp',
-            'c#': 'csharp',
-            php: 'php',
-            php3: 'php',
-            php4: 'php',
-            php5: 'php',
-            nasm: 'nasm',
-            java: 'java',
-            swift: 'swift',
-            brainfuck: 'brainfuck',
-            bf: 'brainfuck'
-        };
-        
-
-        const code_message = content.replace(/```.+\s/gi, '```');
-
-        const matches = /```((.|\n)+)```/gi.exec(code_message);
-
-        if (!matches) {
-            channel.send('no code present')
-            return;
-        }
-
-        const source = matches[1].trim();
-
-
-
-        var language = null;
-
-        if (input_languages.hasOwnProperty(input_language)) {
-            language = input_languages[input_language];
-        } else if(highlighting_languages.hasOwnProperty(highlighting_language)) {
-            language = highlighting_languages[highlighting_language];
-        } else {
-            const invalid_language = input_language || highlighting_language;
-            if (invalid_language) {
-                channel.send("'" + invalid_language + "' is not supported");
-            } else {
-                channel.send('please specify a language');
-            }
-            return;
-        }
-
-
-
-        return request
-            ({
-                method: 'post',
-                url: 'https://emkc.org/api/internal/piston/execute',
-                headers: {
-                    Authorization: config.emkc_key
-                },
-                body: {
-                    language,
-                    source
-                },
-                json: true
-            })
-            .then(res => {
-                if (!res || res.status !== 'ok' || res.payload.output === undefined) throw null;
-
-                channel.send(
-                    'Here is your output <@' + message.author.id + '>\n' +
-                    '```\n' + res.payload.output.split('\n').slice(0, 30).join('\n') + '```'
-                );
-            })
-            .catch(err => {
-                channel.send('sorry, execution problem')
-            });
     }
 };
 
@@ -228,24 +93,6 @@ return bot
             return handlers.video(message);
         }
 
-        if (content.match(/^felix run/gi)) {
-            if (content === "felix run") {
-                channel.send(
-                    'i can run code!\n\n' +
-                    '**here are my supported languages:**'+
-                    '\npython2\npython3\njavascript\nruby\ngo\nc\nc++/cpp\ncs/csharp/c#\nr\nasm/nasm\nphp\njava\nswift\nbrainfuck/bf\n\n' +
-                    '**you can run code by telling me things like:**\n' +
-                    'felix run js\n' +
-                    '\\`\\`\\`\nyour code\n\\`\\`\\`\n' +
-                    '**or:**\n' +
-                    'felix run\n' +
-                    '\\`\\`\\`js\nyour code\n\\`\\`\\`'
-                );
-            } else {
-                return handlers.code(message);
-            }
-        }
-
         if (content.match(/^(hi|what's up|yo|hey|hello) felix/gi)) {
             message.reply('hello!');
             return;
@@ -253,14 +100,14 @@ return bot
 
         // felix' coin toss -> "felix should I call my mother today?"
         if (content.match(/^felix should i/gi)) {
-            if (Math.random()>=0.5) { 
+            if (Math.random()>=0.5) {
                 message.reply('the answer I am getting from my entropy is: Yes.');
             }
             else {
                 message.reply('the answer I am getting from my entropy is: No.');
             }
         }
-    
+
         // easter eggs
         switch (content) {
             case 'html is a programming language':
