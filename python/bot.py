@@ -51,7 +51,7 @@ class Felix(Bot):
 
 
 client = Felix(
-    command_prefix=when_mentioned_or('felix ', 'Felix ', '~ '),
+    command_prefix=when_mentioned_or('felix ', 'Felix '),
     description='Hi I am Felix!',
     max_messages=15000
 )
