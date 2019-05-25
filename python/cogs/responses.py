@@ -223,6 +223,28 @@ class Responses(commands.Cog, name='General'):
                   color=0x2ECC71)
         await ctx.send(embed=e)
 
+    @how_to.command(
+        name='run',
+        brief='How to properly run code with Felix',
+        description='Instructions on how to properly run code with Felix',
+    )
+    async def run(self, ctx):
+        run_instructions = (
+            '**Here are my supported languages:**'
+            '\npython2\npython3\njavascript\nruby\ngo\nc\nc++/cpp\n'
+            'cs/csharp/c#\nr\nasm/nasm\nphp\njava\nswift\nbrainfuck/bf\n\n'
+            '**You can run code by telling me things like:**\n'
+            'felix run python\n'
+            '\\`\\`\\`python\nyour code\n\\`\\`\\`\n'
+            '**Example**:\n'
+            'felix run python\n```python\nprint("test")\n```'
+        )
+
+        e = Embed(title='I can run code',
+                  description=run_instructions,
+                  color=0x2ECC71)
+        await ctx.send(embed=e)
+
 
 def setup(client):
     client.add_cog(Responses(client))
