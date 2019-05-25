@@ -74,6 +74,7 @@ for extension in reversed(STARTUP_EXTENSIONS):
 @client.event
 async def on_ready():
     client.session = ClientSession()
+    client.em_guild = client.get_guild(473161189120147456) or client.guilds[0]
     print('Felix-Python started successfully')
     return True
 

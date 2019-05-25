@@ -75,16 +75,6 @@ var handlers = {
 };
 
 return bot
-    .on('guildMemberAdd', member => {
-        const channel = member.guild.channels.find(ch => ch.name === 'welcome');
-
-        channel.send(
-            'Welcome to the Engineer Man Community Discord Server, ' + member + '. ' +
-            'I\'m Felix, the server smart assistant. You can learn more about what I can do by saying `felix help`. ' +
-            'You can view the server rules @ <#484103976296644608>. Please be kind and decent to one another. ' +
-            'Glad you\'re here!'
-        );
-    })
     .on('message', async message => {
         var content = message.content;
         var channel = message.channel;
