@@ -138,7 +138,6 @@ class Responses(commands.Cog, name='General'):
         ):
             await msg.channel.send('arrays do not start at 1, they start at 0')
 
-
     @commands.Cog.listener()
     async def on_member_join(self, member):
         await self.client.em_guild.system_channel.send(
@@ -184,7 +183,7 @@ class Responses(commands.Cog, name='General'):
     @commands.command(
         name='gif',
         brief='Post a gif',
-        description='Dispalys a random gif for the specified search term',
+        description='Displays a random gif for the specified search term',
         hidden=False
     )
     async def gif_embed(self, ctx, *, gif_name):
@@ -201,6 +200,58 @@ class Responses(commands.Cog, name='General'):
 
             await ctx.send(embed=e)
             # await ctx.message.add_reaction('✅')
+
+    @commands.command(
+        name='video',
+        brief='Search Youtube for EM videos',
+        description='Search Youtube for EM videos',
+        hidden=False
+    )
+    async def video(self, ctx, *, term):
+        video_list = []
+        page_token = ''
+
+        while True:
+            url = 'https://www.googleapis.com/youtube/v3/search' +\
+                '?key=' + self.client.config['yt_key'] +\
+                '&channelId=UCrUL8K81R4VBzm-KOYwrcxQ' +\
+                '&part=snippet,id' +\
+                '&order=date' +\
+                '&maxResults=50'
+
+            if page_token:
+                url += '&pageToken=' + page_token
+
+            async with self.client.session.get(url) as response:
+                videos = await response.json()
+
+            for video in videos['items']:
+                if 'youtube#video' not in video['id']['kind']:
+                    continue
+                video_list.append({
+                    'id': video['id']['videoId'],
+                    'title': video['snippet']['title']
+                })
+
+            if 'nextPageToken' not in videos:
+                break
+
+            page_token = videos['nextPageToken']
+
+        to_send = [v for v in video_list if term.lower() in v['title'].lower()]
+
+        if not to_send:
+            response = 'Sorry, no videos found for: ' + term
+        elif len(to_send) == 1:
+            response = 'I found a good video: https://www.youtube.com/watch?v='\
+                + to_send[0]['id']
+        else:
+            to_send = to_send[:5]
+            response = ['I found several videos:'] +\
+                ['https://www.youtube.com/watch?v=' + v['id'] for v in to_send]
+            response = '\n'.join(response)
+
+        await ctx.send(response)
 
     @commands.group(
         invoke_without_command=True,
