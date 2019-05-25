@@ -11,7 +11,7 @@ This bot requires discord.py
     pip install -U discord.py
 """
 from discord.ext.commands import Bot, CommandOnCooldown, MissingRequiredArgument
-from discord.ext.commands import CheckFailure
+from discord.ext.commands import CheckFailure, when_mentioned_or
 from aiohttp import ClientSession
 from os import path, listdir
 import json
@@ -51,7 +51,7 @@ class Felix(Bot):
 
 
 client = Felix(
-    command_prefix=('felix ', 'Felix ', '~ '),
+    command_prefix=when_mentioned_or('felix ', 'Felix ', '~ '),
     description='Hi I am Felix!',
     max_messages=15000
 )
