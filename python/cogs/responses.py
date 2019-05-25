@@ -98,6 +98,47 @@ class Responses(commands.Cog, name='General'):
         ):
             await msg.channel.send('😏 *sensible chuckle*')
 
+        if re.search(
+            r'(?i)^(hi|what\'s up|yo|hey|hello) felix',
+            msg.content
+        ):
+            await msg.channel.send('hello')
+
+        if re.search(
+            r'(?i)^felix should i',
+            msg.content
+        ):
+            if random.random() >= 0.5:
+                response = 'the answer I am getting from my entropy is: Yes.'
+            else:
+                response = 'the answer I am getting from my entropy is: No.'
+            await msg.channel.send(response)
+
+        if re.search(
+            r'(?i)^html is a programming language',
+            msg.content
+        ):
+            await msg.channel.send('no it\'s not, don\'t be silly')
+
+        if re.search(
+            r'(?i)^you wanna fight, felix?',
+            msg.content
+        ):
+            await msg.channel.send('bring it on pal (╯°□°）╯︵ ┻━┻')
+
+        if re.search(
+            r'(?i)^arrays start at 0',
+            msg.content
+        ):
+            await msg.channel.send('arrays definitely start at 0')
+
+        if re.search(
+            r'(?i)^arrays start at 1',
+            msg.content
+        ):
+            await msg.channel.send('arrays do not start at 1, they start at 0')
+
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         await self.client.em_guild.system_channel.send(

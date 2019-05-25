@@ -83,37 +83,6 @@ return bot
             return handlers.video(message);
         }
 
-        if (content.match(/^(hi|what's up|yo|hey|hello) felix/gi)) {
-            message.reply('hello!');
-            return;
-        }
-
-        // felix' coin toss -> "felix should I call my mother today?"
-        if (content.match(/^felix should i/gi)) {
-            if (Math.random()>=0.5) {
-                message.reply('the answer I am getting from my entropy is: Yes.');
-            }
-            else {
-                message.reply('the answer I am getting from my entropy is: No.');
-            }
-        }
-
-        // easter eggs
-        switch (content) {
-            case 'html is a programming language':
-                message.reply('no it\'s not, don\'t be silly');
-                break;
-            case 'you wanna fight, felix?':
-                message.reply('bring it on pal (╯°□°）╯︵ ┻━┻');
-                break;
-            case 'arrays start at 0':
-                message.reply('arrays definitely start at 0');
-                break;
-            case 'arrays start at 1':
-                message.reply('arrays do not start at 1, they start at 0 instead');
-                break;
-        }
-
         // mod only stuff here
         var roles = message.member && message.member.roles.map(r => r.name) || [];
 
