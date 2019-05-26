@@ -121,7 +121,7 @@ class Responses(commands.Cog, name='General'):
             await msg.channel.send('no it\'s not, don\'t be silly')
 
         if re.search(
-            r'(?i)^you wanna fight, felix?',
+            r'(?i)^you wanna fight, felix\?',
             msg.content
         ):
             await msg.channel.send('bring it on pal (╯°□°）╯︵ ┻━┻')
