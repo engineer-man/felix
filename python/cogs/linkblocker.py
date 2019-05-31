@@ -88,10 +88,9 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
     async def post_report(self, msg):
         """Post report of deletion to target channel"""
         target = self.client.get_channel(REPORT_CHANNEL)
-        await target.send(f'<@&{REPORT_ROLE}> I deleted a message')
         e = Embed(description=msg.content,
                   color=random.randint(0, 0xFFFFFF))
-        await target.send(
+        await target.send(f'<@&{REPORT_ROLE}> I deleted a message\n'
             f'Message sent by {msg.author.mention} in {msg.channel.mention}',
             embed=e
         )
