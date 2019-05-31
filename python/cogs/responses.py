@@ -326,7 +326,7 @@ class Responses(commands.Cog, name='General'):
         run_instructions = (
             '**Here are my supported languages:**'
             '\npython2\npython3\njavascript\nruby\ngo\nc\nc++/cpp\n'
-            'cs/csharp/c#\nr\nasm/nasm\nphp\njava\nswift\nbrainfuck/bf\n\nrust\n\n'
+            'cs/csharp/c#\nr\nasm/nasm\nphp\njava\nswift\nbrainfuck/bf\nrust\n\n'
             '**You can run code by telling me things like:**\n'
             'felix run python\n'
             '\\`\\`\\`python\nyour code\n\\`\\`\\`\n'
