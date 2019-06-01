@@ -291,7 +291,6 @@ class Management(commands.Cog, name='Management'):
     )
     @commands.guild_only()
     async def _list(self, ctx):
-        # await ctx.send('I can list stuff. Type `felix help list` to see what.')
         await self.client.help_command.command_callback(ctx, command='list')
         return True
 

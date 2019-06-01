@@ -129,7 +129,7 @@ async def on_command_error(ctx, exception):
     print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
     traceback.print_exception(
         type(exception), exception, exception.__traceback__, file=sys.stderr
-        )
+    )
 
 client.run()
 print('Felix-Python has exited')

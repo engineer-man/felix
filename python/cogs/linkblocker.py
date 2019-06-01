@@ -90,7 +90,8 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         target = self.client.get_channel(REPORT_CHANNEL)
         e = Embed(description=msg.content,
                   color=random.randint(0, 0xFFFFFF))
-        await target.send(f'<@&{REPORT_ROLE}> I deleted a message\n'
+        await target.send(
+            f'<@&{REPORT_ROLE}> I deleted a message\n'
             f'Message sent by {msg.author.mention} in {msg.channel.mention}',
             embed=e
         )

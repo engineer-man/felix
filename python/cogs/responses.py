@@ -271,10 +271,10 @@ class Responses(commands.Cog, name='General'):
     )
     async def codeblocks(self, ctx):
         code_instructions = (
-            "Discord has an awesome feature called **Text Markdown** "
-            "which supports code with full syntax highlighting using codeblocks."
-            "To use codeblocks all you need to do is properly place the backtick "
-            "characters *(not single quotes)* and specify your "
+            "Discord has an awesome feature called **Text Markdown** which "
+            "supports code with full syntax highlighting using codeblocks."
+            "To use codeblocks all you need to do is properly place the "
+            "backtick characters *(not single quotes)* and specify your "
             "language *(optional, but preferred)*.\n\n"
             "**This is what your message should look like:**\n"
             "*\\`\\`\\`[programming language]\nYour code here\n\\`\\`\\`*\n\n"
@@ -304,12 +304,12 @@ class Responses(commands.Cog, name='General'):
     async def ask(self, ctx):
         ask_instructions = (
             "From time to time you'll stumble upon a question like this:\n"
-            "*Is anyone good at [this] or [that]?* / *Does anyone know [topic]?*\n"
+            "*Is anyone good at [this]?* / *Does anyone know [topic]?*\n"
             "Please **just ask** your question.\n\n"
             "• Make sure your question is easy to understand.\n"
             "• Use the appropriate channel to ask your question.\n"
             "• Always search before you ask (the internet is a big place).\n"
-            "• Be patient (someone will eventually try to answer your question)."
+            "• Be patient (someone will eventually try to help you)."
         )
 
         e = Embed(title='Just ask',
@@ -325,8 +325,8 @@ class Responses(commands.Cog, name='General'):
     async def run(self, ctx):
         run_instructions = (
             '**Here are my supported languages:**'
-            '\npython2\npython3\njavascript\nruby\ngo\nc\nc++/cpp\n'
-            'cs/csharp/c#\nr\nasm/nasm\nphp\njava\nswift\nbrainfuck/bf\nrust\n\n'
+            '\npython2\npython3\njavascript\nruby\ngo\nc\ncs/csharp/c#\n'
+            'c++/cpp\nr\nasm/nasm\nphp\njava\nswift\nbrainfuck/bf\nrust\n\n'
             '**You can run code by telling me things like:**\n'
             'felix run python\n'
             '\\`\\`\\`python\nyour code\n\\`\\`\\`\n'

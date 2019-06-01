@@ -53,8 +53,10 @@ class Graph(commands.Cog,
         else:
             # puts specific people in user_names
             user_names = [str(user) for user in users]
-            params = [
-                ('start', (datetime.utcnow() - timedelta(days=days)).isoformat())]
+            params = [(
+                'start',
+                (datetime.utcnow() - timedelta(days=days)).isoformat()
+            )]
             params += [('user', username) for username in user_names]
             async with self.client.session.get(url, params=params) as response:
                 api_data = await response.json()

@@ -39,16 +39,22 @@ class myHelpCommand(DefaultHelpCommand):
             cog = command.cog
             return cog.qualified_name + ':' if cog is not None else no_category
 
-        filtered = await self.filter_commands(bot.commands, sort=True, key=get_category)
+        filtered = await self.filter_commands(
+            bot.commands,
+            sort=True,
+            key=get_category
+        )
         max_size = self.get_max_size(filtered)
         to_iterate = itertools.groupby(filtered, key=get_category)
 
         # Now we can add the commands to the page.
         for category, commands in to_iterate:
             commands = sorted(
-                commands, key=lambda c: c.name) if self.sort_commands else list(commands)
+                commands, key=lambda c: c.name
+            ) if self.sort_commands else list(commands)
             self.add_indented_commands(
-                commands, heading=category, max_size=max_size)
+                commands, heading=category, max_size=max_size
+            )
 
         # Node Commands
         try:
@@ -102,7 +108,10 @@ class myHelpCommand(DefaultHelpCommand):
     async def send_group_help(self, group):
         self.add_command_formatting(group)
 
-        filtered = await self.filter_commands(group.commands, sort=self.sort_commands)
+        filtered = await self.filter_commands(
+            group.commands,
+            sort=self.sort_commands
+        )
         self.add_indented_commands(filtered, heading=self.commands_heading)
 
         # if filtered:
@@ -117,7 +126,10 @@ class myHelpCommand(DefaultHelpCommand):
         if cog.description:
             self.paginator.add_line(cog.description, empty=True)
 
-        filtered = await self.filter_commands(cog.get_commands(), sort=self.sort_commands)
+        filtered = await self.filter_commands(
+            cog.get_commands(),
+            sort=self.sort_commands
+        )
         self.add_indented_commands(filtered, heading=self.commands_heading)
 
         # note = self.get_ending_note()
