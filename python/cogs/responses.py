@@ -253,6 +253,22 @@ class Responses(commands.Cog, name='General'):
 
         await ctx.send(response)
 
+    @commands.command(
+        name='question',
+        brief='Ask Felix a question',
+        description='Ask Felix a question',
+        aliases=['q'],
+        hidden=False,
+    )
+    async def question(self, ctx, *, question):
+        url = 'https://api.wolframalpha.com/v1/result?i=' + \
+            f'{quote(question)}&appid={self.client.config["wolfram_key"]}'
+        async with self.client.session.get(url) as response:
+            answer = await response.text()
+        if 'did not understand' in answer:
+            answer = 'Sorry, I did not understand that'
+        await ctx.send(answer)
+
     @commands.group(
         invoke_without_command=True,
         name='how-to',
