@@ -18,7 +18,7 @@ import time
 
 # SETTINGS:
 # Users will receive a warning if they send more than
-SPAM_NUM_MSG = 10  # Messages
+SPAM_NUM_MSG = 5  # Messages
 # Within
 SPAM_TIME = 10  # Seconds
 # If a user receives a second Warning within
