@@ -166,19 +166,28 @@ class Responses(commands.Cog, name='General'):
         )
 
     @commands.command(
-        name='source',
-        brief='Show links to source code',
-        description='Show links to engineer-man github repositories',
-        aliases=['code', 'sauce', 'repo', 'repos'],
+        name='links',
+        brief='Show links to all things EngineerMan',
+        description='this command will display a list of all EngineerMan related links',
+        aliases=['urls', 'sauce'],
         hidden=False,
     )
-    async def source(self, ctx):
-        await ctx.send(
-            'Youtube : <https://github.com/engineer-man/youtube-code>' +
-            '\nEMKC: <https://github.com/engineer-man/emkc>' +
-            '\nFelix: <https://github.com/engineer-man/felix>' +
-            '\nPiston / Felix run: <https://github.com/engineer-man/piston>'
+    async def links(self, ctx):
+        links = (
+            '• Youtube : <https://www.youtube.com/engineerman>' +
+            '\n• Discord : <https://engineerman.org/discord>' +
+            '\n• Youtube code : <https://github.com/engineer-man/youtube-code>' +
+            '\n• EngineerMan Knowledge Centre a.k.a EMKC: <https://github.com/engineer-man/emkc>' +
+            '\n• Felix: <https://github.com/engineer-man/felix>' +
+            '\n• Piston a.k.a. Felix Run: <https://github.com/engineer-man/piston>' +
+            '\n• Reddit: <https://www.reddit.com/r/engineerman/>' +
+            '\n• Twitter: <https://twitter.com/_EngineerMan>'
         )
+
+        e = Embed(title='Links',
+                  description=links,
+                  color=0x2ECC71)
+        await ctx.send(embed=e)
 
     @commands.command(
         name='gif',
