@@ -177,7 +177,7 @@ class Responses(commands.Cog, name='General'):
             '• Youtube : <https://www.youtube.com/engineerman>' +
             '\n• Discord : <https://engineerman.org/discord>' +
             '\n• Youtube code : <https://github.com/engineer-man/youtube-code>' +
-            '\n• EngineerMan Knowledge Centre a.k.a EMKC: <https://github.com/engineer-man/emkc>' +
+            '\n• EMKC: <https://github.com/engineer-man/emkc>' +
             '\n• Felix: <https://github.com/engineer-man/felix>' +
             '\n• Piston a.k.a. Felix Run: <https://github.com/engineer-man/piston>' +
             '\n• Reddit: <https://www.reddit.com/r/engineerman/>' +
