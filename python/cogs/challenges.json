@@ -1,0 +1,1020 @@
+{
+    "date": "2019-05-12",
+    "challenges": [
+        {
+            "number": 1,
+            "description": "Download Manager",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 2,
+            "description": "Make an elastic producer/consumer task queue.",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 3,
+            "description": "IRC Client",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 4,
+            "description": "Markov Chain Sentence Generator",
+            "extra": "(Include Shitposting Capabilities)",
+            "difficulty": "Easy",
+            "category": "Practical"
+        },
+        {
+            "number": 5,
+            "description": "English Sentence Parser that Points to the Context of a Sentence",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 6,
+            "description": "MIDI Player + Editor",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 7,
+            "description": "Stock Market Simulator Using Yahoo Spreadsheet Data",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 8,
+            "description": "Parametric/Graphic Equalizer for .wav files",
+            "extra": "(Make it real-time)",
+            "difficulty": "Hard",
+            "category": "Practical"
+        },
+        {
+            "number": 9,
+            "description": "Graphing Calculator",
+            "extra": "BONUS: Graph the Function's Derivatives)",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 10,
+            "description": "To-Do List Application",
+            "extra": "(Web app or CLI)",
+            "difficulty": "Easy",
+            "category": "Practical"
+        },
+        {
+            "number": 11,
+            "description": "Verlet Integration",
+            "extra": "(Verlet Cloth)",
+            "difficulty": "Hard",
+            "category": "Practical"
+        },
+        {
+            "number": 12,
+            "description": "TCP/UDP Chat Server + Client",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 13,
+            "description": "Music Streaming",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Practical"
+        },
+        {
+            "number": 14,
+            "description": "Shazam",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 15,
+            "description": "Chatbot",
+            "extra": "(with conversation retention)",
+            "difficulty": "Easy",
+            "category": "Practical"
+        },
+        {
+            "number": 16,
+            "description": "Curses Text Editor",
+            "extra": "(with Emacs/Vim Keybindings)",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 17,
+            "description": "Paint Clone",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 18,
+            "description": "Image to ASCll Art",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Practical"
+        },
+        {
+            "number": 19,
+            "description": "Booru (Image Board) Image Downloader",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 20,
+            "description": "Image Converter",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 21,
+            "description": "ID3 Reader",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 22,
+            "description": "Sound Synthesis (Sine, square, sawtooth, etc...)",
+            "extra": "(\"Difficult\" mode: Realtime MIDI Playback with Custom instruments)",
+            "difficulty": "Hard",
+            "category": "Practical"
+        },
+        {
+            "number": 23,
+            "description": "C++ IDE Plugin for Sublime/Atom",
+            "extra": "(Auto-Complete, Go-To Symbol Declaration and Definition using Clang's AST)",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 24,
+            "description": "Simple Version Control",
+            "extra": "supporting checkout, commit (with commit message), unlocking, and per-file configuration of number of revisions kept",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 25,
+            "description": "Imageboard (Imagine vichan)",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Practical"
+        },
+        {
+            "number": 26,
+            "description": "Password Manager",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 27,
+            "description": "Create a Torrent Client (CLI or GUI)",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Practical"
+        },
+        {
+            "number": 28,
+            "description": "Booru Client",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Practical"
+        },
+        {
+            "number": 29,
+            "description": "Key Press Bot",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 30,
+            "description": "IP/URL Obsucrification",
+            "extra": "(http://www.pc-help.org/obscure.htm)",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 31,
+            "description": "Radix Base Converter (Given a radix base, convert it to decimal)",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 32,
+            "description": "Chan aggregator (Let's user view various boards from different 'chans')",
+            "extra": "(Bonus: Add 4ChanX and Archiving Functionality)",
+            "difficulty": "Hard",
+            "category": "Practical"
+        },
+        {
+            "number": 33,
+            "description": "Encrypt a File, and Upload It online",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 34,
+            "description": "Make a Text Editor that autosaves and includes the date in the filename",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Practical"
+        },
+        {
+            "number": 35,
+            "description": "Create an HSV Color Representation",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Practical"
+        },
+        {
+            "number": 36,
+            "description": "Window Manager",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 37,
+            "description": "Basic Relational Database Software",
+            "extra": "(SQL Support, Handle Relationships, Focus on Efficiency)",
+            "difficulty": "Difficult",
+            "category": "Practical"
+        },
+        {
+            "number": 38,
+            "description": "Pixel Editor",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 39,
+            "description": "Trivial File Transfer Protocol (TFTP):",
+            "extra": "Allow client to put a file onto remote host",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 40,
+            "description": "Markdown (HTML/XML) Editor",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 41,
+            "description": "IP Tracking Visualization",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 42,
+            "description": "Port Scanner",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Practical"
+        },
+        {
+            "number": 43,
+            "description": "Old School Demo Effect",
+            "extra": "(Plasma, Tunnel, Scrollers, Zoomers, etc...)",
+            "difficulty": "Easy",
+            "category": "Practical"
+        },
+        {
+            "number": 44,
+            "description": "Fizzbuzz",
+            "extra": "(BONUS: In Assembly)",
+            "difficulty": "Easy",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 45,
+            "description": "RPN Calculator",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 46,
+            "description": "Counts occurrences of characters in a Given String",
+            "extra": "(include support for unicode characters)",
+            "difficulty": "Easy",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 47,
+            "description": "Towers of Hanoi",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 48,
+            "description": "Music Visualizer",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 49,
+            "description": "Unicode Converter",
+            "extra": "(Support for UTF-8, 16LE, 32LE, and 32BE)",
+            "difficulty": "Medium",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 50,
+            "description": "Calculate the first (n) digits of pi",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 51,
+            "description": "Least Squares Fitting Algorithm",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 52,
+            "description": "Given an Array of Stocks's values over time",
+            "extra": "find the period of time where the stocks could have made the most money",
+            "difficulty": "Easy",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 53,
+            "description": "Highest Prime Factor Calculator",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 54,
+            "description": "Hide and Extract Data in images (Basic Steganography)",
+            "extra": "(Bonus: Include gif support)",
+            "difficulty": "Medium",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 55,
+            "description": "Web Page Crawler",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 56,
+            "description": "Password Generator",
+            "extra": "(Let User Choose Options)",
+            "difficulty": "Easy",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 57,
+            "description": "Vign\u00e9re cipher encryption/decryption",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 58,
+            "description": "Game Of Life",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 59,
+            "description": "Caesar Cipher Cracker",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 60,
+            "description": "Dijkstra's Algorithm",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 61,
+            "description": "ROT 13",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 62,
+            "description": "Program that displays MBR Contents",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 63,
+            "description": "Random Name Picker",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 64,
+            "description": "Encrypt/Decrypt Text: Implement at least one from",
+            "extra": "http://rumkin.com/tools/cipher/",
+            "difficulty": "Easy",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 65,
+            "description": "Youtube To MP3",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 66,
+            "description": "Text to Hexadecimal/Binary",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 67,
+            "description": "Calculate the first 1,000 digits of pi iteratively",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 68,
+            "description": "Sierpinski Triangle",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 69,
+            "description": "Mandlebrot Set",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 70,
+            "description": "OpenAI Gym Project",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Aritificial Intelligence"
+        },
+        {
+            "number": 71,
+            "description": "AI for Roguelikes",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Aritificial Intelligence"
+        },
+        {
+            "number": 72,
+            "description": "Sudoku/n-Puzzle Solver using A* algorithm",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Aritificial Intelligence"
+        },
+        {
+            "number": 73,
+            "description": "Connect-4 Al Player using Alpha-Beta Pruning",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Aritificial Intelligence"
+        },
+        {
+            "number": 74,
+            "description": "Basic Neural Network",
+            "extra": "Simulate individual neurons and their connections",
+            "difficulty": "Easy",
+            "category": "Aritificial Intelligence"
+        },
+        {
+            "number": 75,
+            "description": "Real Neural Network",
+            "extra": "Implement a basic feed-forward neural network using matrices for entire layers along with matrix operations for computations.",
+            "difficulty": "Medium",
+            "category": "Aritificial Intelligence"
+        },
+        {
+            "number": 76,
+            "description": "Convolutional Neural Network: Implement a convolutional N.N.",
+            "extra": "for a handwritten digit recognition, test on MNIST dataset\n(Use TensorFlow, Theano, etc...)",
+            "difficulty": "Medium",
+            "category": "Aritificial Intelligence"
+        },
+        {
+            "number": 77,
+            "description": "Convolutional Neural Network: Implement your own convolutional neural network",
+            "extra": "for handwritten digit recognition, test on MNIST Dataset\n(Without TensorFlow, Theano, etc...)",
+            "difficulty": "Hard",
+            "category": "Aritificial Intelligence"
+        },
+        {
+            "number": 78,
+            "description": "Virtual Machine with a Script that Writes \"Hello, World\"",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Compiler/Interpreter/Debugger"
+        },
+        {
+            "number": 79,
+            "description": "Basic Bootloader",
+            "extra": "(with extended file system)",
+            "difficulty": "Difficult",
+            "category": "Compiler/Interpreter/Debugger"
+        },
+        {
+            "number": 80,
+            "description": "Terminal Shell (Executable Binaries, Pipe System, Redirection, and History)",
+            "extra": "(BONUS: Make it a GUI)",
+            "difficulty": "Medium",
+            "category": "Compiler/Interpreter/Debugger"
+        },
+        {
+            "number": 81,
+            "description": "HTML + JavaScript Debugger",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Compiler/Interpreter/Debugger"
+        },
+        {
+            "number": 82,
+            "description": "Write an Interpreted LISP-like Programming Language",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Compiler/Interpreter/Debugger"
+        },
+        {
+            "number": 83,
+            "description": "Make an application that is capable of mounting filesystems",
+            "extra": "from other OSes using the FUSE model",
+            "difficulty": "Hard",
+            "category": "Compiler/Interpreter/Debugger"
+        },
+        {
+            "number": 84,
+            "description": "Universal Asynchronous Receiver/Transmitter (UART) Game",
+            "extra": "(In assembly)",
+            "difficulty": "Medium",
+            "category": "Compiler/Interpreter/Debugger"
+        },
+        {
+            "number": 85,
+            "description": "Pong Game as a UEFI file in color",
+            "extra": "(Hint: http://www.rodsbooks.com/efi-programming/index.html)",
+            "difficulty": "Hard",
+            "category": "Compiler/Interpreter/Debugger"
+        },
+        {
+            "number": 86,
+            "description": "Design an Esoteric Language",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Compiler/Interpreter/Debugger"
+        },
+        {
+            "number": 87,
+            "description": "C Compiler",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Compiler/Interpreter/Debugger"
+        },
+        {
+            "number": 88,
+            "description": "Turing Machine Simulator",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Compiler/Interpreter/Debugger"
+        },
+        {
+            "number": 89,
+            "description": "Read, Evaluate, Print Loop using a compiled language",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Compiler/Interpreter/Debugger"
+        },
+        {
+            "number": 90,
+            "description": "Static Website Generator",
+            "extra": "(Scriptable Templates + Content -> HTML and CSS)",
+            "difficulty": "Medium",
+            "category": "Compiler/Interpreter/Debugger"
+        },
+        {
+            "number": 91,
+            "description": "Chip - 8 Emulator",
+            "extra": "Hard Mode: Cached Interpreter. Difficult: (Dynamic Recompiler, use dynarec/jit library)",
+            "difficulty": "Medium",
+            "category": "Emulation/Modelling"
+        },
+        {
+            "number": 92,
+            "description": "Double Pendulum Simulation",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Emulation/Modelling"
+        },
+        {
+            "number": 93,
+            "description": "Constructive Solid Geometry",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Emulation/Modelling"
+        },
+        {
+            "number": 94,
+            "description": "Ray Tracer",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Emulation/Modelling"
+        },
+        {
+            "number": 95,
+            "description": "Real-Time Fast Fourier Transform Spectrum Visualizer",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Emulation/Modelling"
+        },
+        {
+            "number": 96,
+            "description": "Generate a Complimentary Color from any input color",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Emulation/Modelling"
+        },
+        {
+            "number": 97,
+            "description": "Generate a 5-Color Scheme from the most dominant tones in any image",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Emulation/Modelling"
+        },
+        {
+            "number": 98,
+            "description": "General Lambert's-Problem Solver",
+            "extra": "(At least it's not rocket science... Oh wait, it actually is)",
+            "difficulty": "Difficult",
+            "category": "Emulation/Modelling"
+        },
+        {
+            "number": 99,
+            "description": "TI-86 Emulator",
+            "extra": "(Bonus: Include the Option to Create Programs)",
+            "difficulty": "Hard",
+            "category": "Emulation/Modelling"
+        },
+        {
+            "number": 100,
+            "description": "N-Body Simulator, with particles having a certain mass and radius depending on the mass that merge if they collide",
+            "extra": "Bonus: Include a GUI where you can place particles)",
+            "difficulty": "Medium",
+            "category": "Emulation/Modelling"
+        },
+        {
+            "number": 101,
+            "description": "Eulerian Path",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Emulation/Modelling"
+        },
+        {
+            "number": 102,
+            "description": "Draw a spinning 3D Cube",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Emulation/Modelling"
+        },
+        {
+            "number": 103,
+            "description": "Cellular Textures",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Emulation/Modelling"
+        },
+        {
+            "number": 104,
+            "description": "Knight's Tour",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Games"
+        },
+        {
+            "number": 105,
+            "description": "Monster Raising/Breeding Simulator",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Games"
+        },
+        {
+            "number": 106,
+            "description": "Tetris",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Games"
+        },
+        {
+            "number": 107,
+            "description": "Snake",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Games"
+        },
+        {
+            "number": 108,
+            "description": "Pipe Dreams",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Games"
+        },
+        {
+            "number": 109,
+            "description": "Pac Man, With Different Behaviors for each ghost",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Games"
+        },
+        {
+            "number": 110,
+            "description": "Dragon Quest/Basic RPG Engine",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Games"
+        },
+        {
+            "number": 111,
+            "description": "Rock Paper Scissors",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Games"
+        },
+        {
+            "number": 112,
+            "description": "First-Person Engine in OpenGL (Walking, Looking Around, Jumping on Obstacles)",
+            "extra": "BONUS: VR Compatibility)",
+            "difficulty": "Hard",
+            "category": "Games"
+        },
+        {
+            "number": 113,
+            "description": "Shuffle a Deck of Cards",
+            "extra": "(Include a Visualization)",
+            "difficulty": "Medium",
+            "category": "Games"
+        },
+        {
+            "number": 114,
+            "description": "Simulate a game of Tag using a multi-agent system",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Games"
+        },
+        {
+            "number": 115,
+            "description": "Wolfenstein Clone (FPS, two-dimensional map that appears to be 3-D)",
+            "extra": "(If you need a starting point, search for bisquit's video about DOOM-Hike Engines)",
+            "difficulty": "Hard",
+            "category": "Games"
+        },
+        {
+            "number": 116,
+            "description": "Scorched Earth Clone",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Games"
+        },
+        {
+            "number": 117,
+            "description": "Minesweeper",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Games"
+        },
+        {
+            "number": 118,
+            "description": "An Audio/Visual 64KB Demonstration",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Games"
+        },
+        {
+            "number": 119,
+            "description": "Sudoku",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Games"
+        },
+        {
+            "number": 120,
+            "description": "Danmaku (Bullet Hell) Engine",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Games"
+        },
+        {
+            "number": 121,
+            "description": "Roguelike Engine/Dungeon Generator",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Games"
+        },
+        {
+            "number": 122,
+            "description": "Design a Game Engine in Unity",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Games"
+        },
+        {
+            "number": 123,
+            "description": "Yahtzee",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Games"
+        },
+        {
+            "number": 124,
+            "description": "Oil Panic",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Games"
+        },
+        {
+            "number": 125,
+            "description": "Chess",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Games"
+        },
+        {
+            "number": 126,
+            "description": "Go (No AI Necessary)",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Games"
+        },
+        {
+            "number": 127,
+            "description": "Connect Four",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Games"
+        },
+        {
+            "number": 128,
+            "description": "Mastermind",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Games"
+        },
+        {
+            "number": 129,
+            "description": "Missile Command Game",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Games"
+        },
+        {
+            "number": 130,
+            "description": "Tron",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Games"
+        },
+        {
+            "number": 131,
+            "description": "Breakout",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Games"
+        },
+        {
+            "number": 132,
+            "description": "Simon",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Games"
+        },
+        {
+            "number": 133,
+            "description": "LISP Interpreter",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Compiler/Interpreter/Debugger"
+        },
+        {
+            "number": 134,
+            "description": "Ulam Spiral",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Algorithmic"
+        },
+        {
+            "number": 135,
+            "description": "Bellman-Ford Simulation with at least Five Vertices",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 136,
+            "description": "Matrix Arithmetic",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 137,
+            "description": "File Compression Utility (Make it GUI)",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 138,
+            "description": "PDF Tagger",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Practical"
+        },
+        {
+            "number": 139,
+            "description": "Nonogram Generator and Solver",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Practical"
+        },
+        {
+            "number": 140,
+            "description": "Calculate Dot and Cross Product of Two Vectors",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 141,
+            "description": "Bismuth Fractal",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 142,
+            "description": "Seam Carving",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 143,
+            "description": "Bayesian Filter",
+            "extra": "",
+            "difficulty": "Medium",
+            "category": "Practical"
+        },
+        {
+            "number": 144,
+            "description": "WMS viewer that isn't web based",
+            "extra": "",
+            "difficulty": "Hard",
+            "category": "Practical"
+        },
+        {
+            "number": 145,
+            "description": "ASCII Digital Clock",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Emulation/Modelling"
+        }
+    ]
+}
