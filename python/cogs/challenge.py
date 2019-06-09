@@ -1,17 +1,13 @@
 """This is a cog for a discord.py bot.
-it prints out either a random or specified challenge
+it prints out either a random or specified challenge,
+the guide to those challenges and some additional resources.
 
 Commands:
     challenge
-    ├ random     print a random challenge
-    └ num        print a specific challenge
-
-Load the cog by calling client.load_extension with the name of this python file
-as an argument (without .py)
-    example:    bot.load_extension('example')
-or by calling it with the path and the name of this python file
-    example:    bot.load_extension('folder.example')
-
+    ├ random         print a random challenge
+    ├ num            print a specific challenge
+    ├ guide          print the challenge guide
+    └ guide_extra    print the additional resources from the challenge guide
 """
 
 # TODO: load users and save challenge against name
@@ -21,88 +17,94 @@ or by calling it with the path and the name of this python file
 #      no, send challenge to user, update file, save it
 # no, send challenge to user, update file, save it
 
-
 from discord.ext import commands
 from discord import Embed
 from random import choice
 from os import path
 import json
 
-def my_sort(iterable, key_name, itemget=False):
-    if itemget == False:
-        return sorted(iterable, key=lambda k: k[key_name])
-    else:
-        from operator import itemgetter
-        return sorted(iterable, key=itemgetter(key_name)) 
+# custom exceptions
+class ChallengesNotFoundError(IOError):
+    """Exception raised when Challenges are not loaded"""
+    pass
 
-def obj_dict(obj):
-    return obj.__dict__
+class ChallengeNumberNotIntError(TypeError):
+    """Exception raised when an int is not provided for a challenge number"""
+    pass
+
+class ChallengeNumberNotWithinRangeError(IndexError):
+    """Exception raised when challenge number not within range"""
+    pass
 
 class Challenge(commands.Cog, name='Challenge'):
     def __init__(self, client):
         self.client = client
-        self.reload_challenges()
+        self.load_challenges_file()
         if len(self.challenges) == 0:
-            raise Exception(f"Challenges have not been loaded!")
-        print(len(self.challenges), flush=True)
+            raise ChallengesNotFoundError("Challenges are not loaded!")
 
-    def reload_challenges(self):
+    def load_challenges_file(self):
         challenges_file = f'challenges.json'
-        with open(path.join(path.dirname(__file__), challenges_file), encoding='utf8') as f:
+        file_path = path.join(path.dirname(__file__), challenges_file)
+        with open(file_path, encoding='utf8') as f:
             data = json.load(f)
-            self.challenges = my_sort(data["challenges"], "number", True)
-
-    def print_challenges(self):
-        if len(self.challenges) == 0:
-            raise Exception(f"Challenges have not been loaded!")
-        for challenge in self.challenges:
-            print(challenge, flush=True)
+            self.challenges =  sorted(data["challenges"], key=lambda k: k["number"])
+            self.guide = "\n".join(data["guide"])
+            self.guide_extra = "\n".join(data["additional_resources"])
 
     def pick_random_challenge(self):
         if len(self.challenges) == 0:
-            raise Exception(f"Challenges have not been loaded!")
+            raise ChallengesNotFoundError("Challenges are not loaded!")
         return choice(self.challenges)
 
     def pick_exact_challenge(self, num):
+        if len(self.challenges) == 0:
+            raise ChallengesNotFoundError("Challenges are not loaded!")
         try:
             num = int(num)
-        except:
-            raise Exception(f"Please specify a number e.g. `1`")
+        except ValueError:
+            raise ChallengeNumberNotIntError("Please specify a number e.g. `1`")
         if num <= 0:
-            raise Exception(f"Input cannot be less than {1}. The input was: {num}")
-        print(num, len(self.challenges), flush=True)
+            exc_txt = f"Input cannot be less than `1`. The input was: {num}"
+            raise ChallengeNumberNotWithinRangeError(exc_txt)
         if num > len(self.challenges):
-            raise Exception(f"Input should not exceed {len(self.challenges)}. The input was: {num}")
-        if len(self.challenges) == 0:
-            raise Exception(f"Challenges have not been loaded!")
+            max = len(self.challenges)
+            exc_txt = f"Input should not exceed {max}. The input was: {num}"
+            raise ChallengeNumberNotWithinRangeError(exc_txt)
         return self.challenges[num-1]
 
     def format_challenge(self, challenge):
+        n = challenge["number"]
+        de = challenge["description"]
+        e = challenge["extra"]
+        di = challenge["difficulty"]
+        c = challenge["category"]
         formatted_challenge = (
-            f'• Number: {challenge["number"]}' +
-            f'\n• Description: {challenge["description"]}' +
-            (f'\n• Extra: {challenge["extra"]}' if challenge["extra"] else '') +
-            f'\n• Difficulty: {challenge["difficulty"]}' +
-            f'\n• Category: {challenge["category"]}'
+            f'• Number: {n}' +
+            f'\n• Description: {de}' +
+            (f'\n• Extra: {e}' if e else '') +
+            f'\n• Difficulty: {di}' +
+            f'\n• Category: {c}'
         )
         return formatted_challenge
 
     @commands.group(
         invoke_without_command=True,
         name='challenge',
-        brief='Pick a challenge',
-        description='Prints details of a random or specific challenge',
+        brief='Show awesome challenges',
+        description='Prints all sorts of programming challenges and a guide',
         hidden=False,
         aliases=['chal', 'task', 'project']
     )
     @commands.guild_only()
     async def challenge(self, ctx):
-        await self.client.help_command.command_callback(ctx, command='challenge')
+        await self.client.help_command.command_callback(ctx, \
+                command='challenge')
 
     @challenge.command(
         name='random',
         brief='random challenge',
-        description='this command will randomly choose a challenge for you',
+        description='this will randomly choose a challenge for you',
         aliases=['r', 'shuf'],
         hidden=False
     )
@@ -112,7 +114,7 @@ class Challenge(commands.Cog, name='Challenge'):
         try:
             chal = self.pick_random_challenge()
             desc = self.format_challenge(chal)
-        except Exception as exc:
+        except ChallengesNotFoundError as exc:
             desc = str(exc)
         e = Embed(title='Challenge',
                   description=desc,
@@ -122,7 +124,7 @@ class Challenge(commands.Cog, name='Challenge'):
     @challenge.command(
         name='num',
         brief='specific challenge',
-        description='this command will show you a specific challenge',
+        description='this will show you a specific challenge',
         aliases=['n'],
         hidden=False
     )
@@ -135,27 +137,42 @@ class Challenge(commands.Cog, name='Challenge'):
         try:
             chal = self.pick_exact_challenge(n)
             desc = self.format_challenge(chal)
-        except Exception as exc:
+        except (ChallengesNotFoundError,
+            ChallengeNumberNotIntError,
+            ChallengeNumberNotWithinRangeError) as exc:
             desc = str(exc)
-        print(desc, flush=True)
         e = Embed(title='Challenge',
                   description=desc,
                   color=0x2ECC71)
         await ctx.send(embed=e)
 
     @challenge.command(
-        name='reload',
-        brief='reload challenges',
-        description='this command will reload all challenges',
-        hidden=True
+        name='guide',
+        brief='challenge guide',
+        description='this will show you the guide for these challenges',
+        hidden=False
     )
     @commands.guild_only()
-    async def reload(
-        self, ctx
-    ):
+    async def guide(self, ctx):
         await ctx.trigger_typing()
-        self.reload_challenges()
-        await ctx.send("challenges reloaded")
+        e = Embed(title='Guide',
+                  description=self.guide,
+                  color=0x2ECC71)
+        await ctx.send(embed=e)
+
+    @challenge.command(
+        name='guide_extra',
+        brief='challenge guide - additional resources',
+        description='this will show you some additional resources',
+        hidden=False
+    )
+    @commands.guild_only()
+    async def guide_extra(self, ctx):
+        await ctx.trigger_typing()
+        e = Embed(title='Guide - additional resources',
+                  description=self.guide_extra,
+                  color=0x2ECC71)
+        await ctx.send(embed=e)
 
 def setup(client):
     """This is called when the cog is loaded via load_extension"""
