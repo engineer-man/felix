@@ -70,6 +70,7 @@ class Challenge(commands.Cog, name='Challenge'):
             raise Exception(f"Please specify a number e.g. `1`")
         if num <= 0:
             raise Exception(f"Input cannot be less than {1}. The input was: {num}")
+        print(num, len(self.challenges), flush=True)
         if num > len(self.challenges):
             raise Exception(f"Input should not exceed {len(self.challenges)}. The input was: {num}")
         if len(self.challenges) == 0:
@@ -109,9 +110,10 @@ class Challenge(commands.Cog, name='Challenge'):
     async def random(self, ctx):
         await ctx.trigger_typing()
         try:
-            desc = self.format_challenge(self.pick_random_challenge())            
+            chal = self.pick_random_challenge()
+            desc = self.format_challenge(chal)
         except Exception as exc:
-            desc = exc
+            desc = str(exc)
         e = Embed(title='Challenge',
                   description=desc,
                   color=0x2ECC71)
@@ -131,9 +133,11 @@ class Challenge(commands.Cog, name='Challenge'):
     ):
         await ctx.trigger_typing()
         try:
-            desc = self.format_challenge(self.pick_exact_challenge(n))            
+            chal = self.pick_exact_challenge(n)
+            desc = self.format_challenge(chal)
         except Exception as exc:
-            desc = exc
+            desc = str(exc)
+        print(desc, flush=True)
         e = Embed(title='Challenge',
                   description=desc,
                   color=0x2ECC71)
