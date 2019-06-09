@@ -56,12 +56,25 @@
         "Below is a small list of websites that contain additional challenges",
         "www.hackerrank.com",
         "www.codechef.com",
-        "www.codefights.com",
+        "www.codesignal.com",
         "www.projecteuler.com",
         "www.rosettacode.org",
         "www.codeabbey.com",
         "www.codingbat.com",
-        "www.programmingpraxis.com"
+        "www.programmingpraxis.com",
+        "www.codingame.com",
+        "www.codewars.com",
+        "www.coderbyte.com",
+        "www.hackerearth.com/challenges",
+        "www.hackerearth.com/practice/codemonk",
+        "app.codility.com/programmers/challenges",
+        "www.fightcodegame.com",
+        "www.codeforces.com/problemset",
+        "www.exercism.io",
+        "www.rosalind.info/problems/topics,",
+        "www.spoj.com/problems/classical",
+        "www.adventofcode.com",
+        "www.reddit.com/r/dailyprogrammer"
     ],
     "challenges": [
         {
