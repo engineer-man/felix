@@ -65,8 +65,13 @@ class Challenge(commands.Cog, name='Challenge'):
         except ValueError:
             raise ChallengeNumberNotIntError("Please specify a number e.g. `1`")
         if num <= 0:
+<<<<<<< HEAD
             exc_txt = f"Input cannot be less than `1`. The input was: {num}"
             raise ChallengeNumberNotWithinRangeError(exc_txt)
+=======
+            raise Exception(f"Input cannot be less than {1}. The input was: {num}")
+        print(num, len(self.challenges), flush=True)
+>>>>>>> 0c17697ef3d4b726030439bc94d655005254c6e7
         if num > len(self.challenges):
             max = len(self.challenges)
             exc_txt = f"Input should not exceed {max}. The input was: {num}"
