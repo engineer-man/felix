@@ -76,6 +76,12 @@
         "www.adventofcode.com",
         "www.reddit.com/r/dailyprogrammer"
     ],
+    "difficulties": [
+	"Easy",
+	"Medium",
+	"Hard",
+	"Difficult"
+    ],
     "challenges": [
         {
             "number": 1,
