@@ -250,7 +250,7 @@ class Management(commands.Cog, name='Management'):
         name='activity',
         brief='Set Bot activity',
         description='Set Bot activity.\n\n'
-        + 'Available activites:\n'
+        + 'Available activities:\n'
         + '  playing, streaming, listening, watching.\n\n'
         + 'Example activities:\n'
         + '    playing [game],\n'
