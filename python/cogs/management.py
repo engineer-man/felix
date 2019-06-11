@@ -26,6 +26,7 @@ class Management(commands.Cog, name='Management'):
     def __init__(self, client):
         self.client = client
         self.reload_config()
+        self.reload_settings()
         self.reload_permissions()
 
     async def cog_check(self, ctx):
@@ -41,6 +42,10 @@ class Management(commands.Cog, name='Management'):
     def reload_config(self):
         with open("../config.json") as conffile:
             self.client.config = json.load(conffile)
+
+    def reload_settings(self):
+        with open("../settings.json") as conffile:
+            self.client.settings = json.load(conffile)
 
     def reload_permissions(self):
         with open(path.join(path.dirname(__file__), 'permissions.json')) as f:

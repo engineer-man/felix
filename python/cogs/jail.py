@@ -33,9 +33,7 @@ class Jail(commands.Cog, name='Jail'):
     def __init__(self, client):
         self.client = client
         # Roles to give/remove when people enter/leave jail
-        self.jail_roles = [486621918821351436,
-                           484183734686318613,
-                           484016038992674827]
+        self.jail_roles = self.client.settings["jailed_roles"]
         # Dict to store offenders
         self.naughty = {}
         # Dict to store the timestamps of each users last 10 messages

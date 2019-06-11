@@ -169,7 +169,7 @@ class Responses(commands.Cog, name='General'):
         name='links',
         brief='Show links to all things EngineerMan',
         description='this command will display a list of all EngineerMan related links',
-        aliases=['urls', 'sauce'],
+        aliases=['urls', 'sauce', 'source', 'src'],
         hidden=False,
     )
     async def links(self, ctx):
