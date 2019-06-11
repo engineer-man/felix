@@ -45,6 +45,7 @@ class Run(commands.Cog, name='Run'):
             'rust': 'rust',
             'sage': 'python3',
             'swift': 'swift',
+            'bash': 'bash',
         }
 
     @commands.command(
