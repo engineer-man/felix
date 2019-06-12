@@ -1,6 +1,7 @@
 {
     "date": "2019-05-12",
-    "guide": ["**HOW-TO Guide**",
+    "guide": [
+        "**HOW-TO Guide**",
         "",
         "**0) Use git and an external website to push on**",
         "Learn to use git and commit early and often (such as GitHub).",
@@ -78,10 +79,10 @@
         "www.reddit.com/r/dailyprogrammer"
     ],
     "difficulties": [
-	"Easy",
-	"Medium",
-	"Hard",
-	"Difficult"
+        "Easy",
+        "Medium",
+        "Hard",
+        "Difficult"
     ],
     "challenges": [
         {
