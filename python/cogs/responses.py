@@ -350,7 +350,7 @@ class Responses(commands.Cog, name='General'):
     async def run(self, ctx):
         run_instructions = (
             '**Here are my supported languages:**'
-            '\npython2\npython3\njavascript\nruby\ngo\nc\ncs/csharp/c#\n'
+            '\nbash\npython2\npython3\njavascript\nruby\ngo\nc\ncs/csharp/c#\n'
             'c++/cpp\nr\nasm/nasm\nphp\njava\nswift\nbrainfuck/bf\nrust\n\n'
             '**You can run code by telling me things like:**\n'
             'felix run python\n'
