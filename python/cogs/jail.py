@@ -17,25 +17,23 @@ import json
 import time
 
 # SETTINGS:
+# TODO: Ideally these settings sould also come from the config.json file
 # Users will receive a warning if they send more than
 SPAM_NUM_MSG = 5  # Messages
 # Within
 SPAM_TIME = 10  # Seconds
-# If a user receives a second Warning within
+# If a user receives a second warning within
 SPAM_NAUGHTY_DURATION = 900  # Seconds
 # he will be permanently jailed
 # The task that clears the history and removes users from the "watchlist" if
 # they have been on it for more than SPAM_NAUGHTY_DURATION will run every
-SPAM_NAUGHTY_CHECK_INTERVAL = 300  # Seconds
+SPAM_NAUGHTY_CHECK_INTERVAL = 300  # seconds
 
 
 class Jail(commands.Cog, name='Jail'):
     def __init__(self, client):
         self.client = client
-        # Roles to give/remove when people enter/leave jail
-        self.jail_roles = [486621918821351436,
-                           484183734686318613,
-                           484016038992674827]
+        self.jail_roles = self.client.config['jail_roles']
         # Dict to store offenders
         self.naughty = {}
         # Dict to store the timestamps of each users last 10 messages

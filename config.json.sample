@@ -2,5 +2,9 @@
     "bot_key": "",
     "giphy_key": "",
     "yt_key": "",
-    "emkc_key": ""
+    "emkc_key" : "",
+    "wolfram_key" : "",
+    "jail_roles": [
+        123123123123123
+    ]
 }
