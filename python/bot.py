@@ -28,8 +28,9 @@ class Felix(Bot):
         with open('./cogs/permissions.json') as permfile:
             self.permissions = json.load(permfile)
 
-    def run(self, *args, **kwargs):
-        super().run(self.config["bot_key"], *args, **kwargs)
+    async def start(self, *args, **kwargs):
+        self.session = ClientSession()
+        await super().start(self.config["bot_key"], *args, **kwargs)
 
     async def close(self):
         await self.session.close()
@@ -73,7 +74,6 @@ for extension in reversed(STARTUP_EXTENSIONS):
 
 @client.event
 async def on_ready():
-    client.session = ClientSession()
     client.em_guild = client.get_guild(473161189120147456) or client.guilds[0]
     print('Felix-Python started successfully')
     return True
