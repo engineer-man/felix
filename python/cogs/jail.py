@@ -175,6 +175,8 @@ class Jail(commands.Cog, name='Jail'):
     )
     @commands.guild_only()
     async def jail(self, ctx, members: commands.Greedy[Member]):
+        if not members:
+            return
         results = []
         for member in members:
             if self.client.user_has_permission(member, 'jail'):
@@ -193,6 +195,8 @@ class Jail(commands.Cog, name='Jail'):
     )
     @commands.guild_only()
     async def unjail(self, ctx, members: commands.Greedy[Member]):
+        if not members:
+            return
         results = []
         for member in members:
             r = await self.release_from_jail(member)
