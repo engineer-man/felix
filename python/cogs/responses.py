@@ -278,6 +278,32 @@ class Responses(commands.Cog, name='General'):
             answer = 'Sorry, I did not understand that'
         await ctx.send(answer)
 
+    @commands.command(
+        name='urbandictionary',
+        brief='Get the definition of a word from Urbandictionary',
+        description='Get the definition of a word from Urbandictionary',
+        aliases=['ud', 'urban', 'urbandict'],
+        hidden=False,
+    )
+    async def question(self, ctx, *, term):
+        url = f'http://api.urbandictionary.com/v0/define?term={quote(term)}'
+        async with self.client.session.get(url) as response:
+            answer = await response.json()
+        if not answer['list']:
+            await ctx.send('Sorry, I did not understand that')
+        response = (
+            '\n**Definition:**\n'
+            f'{answer["list"][0]["definition"]}\n'
+            '\n**Example:**\n'
+            f'{answer["list"][0]["example"]}'
+        )
+        embed = Embed(
+            title=f'"**{term}**" according to urbandictionary.com',
+            url=f'https://urbandictionary.com/define.php?term={quote(term)}',
+            description=response.replace('[', '').replace(']', ''),
+            color=random.randint(0, 0xFFFFFF))
+        await ctx.send(embed=embed)
+
     @commands.group(
         invoke_without_command=True,
         name='how-to',
