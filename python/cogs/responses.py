@@ -284,8 +284,9 @@ class Responses(commands.Cog, name='General'):
         brief='Get the definition of a word from Urbandictionary',
         description='Get the definition of a word from Urbandictionary',
         aliases=['ud', 'urban', 'urbandict'],
-        hidden=False,
+        hidden=True,
     )
+    @commands.has_role(498576446147788824)
     async def urbandictionary(self, ctx, *, term):
         url = f'http://api.urbandictionary.com/v0/define?term={quote(term)}'
         async with self.client.session.get(url) as response:
