@@ -271,6 +271,37 @@ class Responses(commands.Cog, name='General'):
             answer = 'Sorry, I did not understand that'
         await ctx.send(answer)
 
+
+    @commands.command(
+        name='random quote',
+        brief='Get the definition of a word from Urbandictionary',
+        description='Get the definition of a word from Urbandictionary',
+        aliases=['famousquote', 'randomquote', 'quote'],
+        hidden=True,
+    )
+    async def rquote(self, ctx):
+        url = "https://quota.glitch.me/random"
+        async with self.client.session.get(url) as response:
+            answer = await response.json()
+        if not answer['quoteText']:
+            await ctx.send('Sorry, I did not understand that')
+        response = (
+            '\n**Quote:**\n'
+            f'{answer["quoteText"]}\n'
+            '\n**Author:**\n'
+            f'{answer["quoteAuthor"]}'
+        )
+        embed = Embed(
+            title="A random quote",
+            description=response,
+            color=random.randint(0, 0xFFFFFF)
+        )
+        embed.set_footer(
+            text=ctx.author.display_name,
+            icon_url=ctx.author.avatar_url
+        )
+        await ctx.send(embed=embed)
+
     @commands.command(
         name='urbandictionary',
         brief='Get the definition of a word from Urbandictionary',
@@ -278,6 +309,7 @@ class Responses(commands.Cog, name='General'):
         aliases=['ud', 'urban', 'urbandict'],
         hidden=True,
     )
+
     # @commands.has_role(498576446147788824)
     async def urbandictionary(self, ctx, *, term):
         url = f'http://api.urbandictionary.com/v0/define?term={quote(term)}'
