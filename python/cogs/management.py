@@ -33,9 +33,19 @@ class Management(commands.Cog, name='Management'):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        felix_version = self.get_version_info()[0][:7]
+        loaded = self.client.extensions
+        unloaded = [x for x in self.crawl_cogs() if x not in loaded]
+        # Cogs without extra in their name should be loaded at startup so if
+        # any cog without "extra" in it's name is unloaded here -> Error in cog
+        if any('extra' not in cog_name for cog_name in unloaded):
+            activity_name = 'ERROR in cog'
+            activity_type = 3
+        else:
+            felix_version = self.get_version_info()[0][:7]
+            activity_name = f'on {felix_version}'
+            activity_type = 0
         await self.client.change_presence(
-            activity=Activity(name=f'on {felix_version}', type=0)
+            activity=Activity(name=activity_name, type=activity_type)
         )
 
     def reload_config(self):
