@@ -48,6 +48,17 @@ class Management(commands.Cog, name='Management'):
             activity=Activity(name=activity_name, type=activity_type)
         )
 
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        await self.client.em_guild.system_channel.send(
+            f'Welcome to the Engineer Man Discord Server, {member.mention}\n'
+            'I\'m Felix, the server smart assistant. You can learn more about '
+            'what I can do by saying `felix help`. '
+            'You can view the server rules in <#484103976296644608>. '
+            'Please be kind and decent to one another. '
+            'Glad you\'re here!'
+        )
+
     def reload_config(self):
         with open("../config.json") as conffile:
             self.client.config = json.load(conffile)
