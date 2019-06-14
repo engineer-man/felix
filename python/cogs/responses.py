@@ -285,7 +285,7 @@ class Responses(commands.Cog, name='General'):
         aliases=['ud', 'urban', 'urbandict'],
         hidden=False,
     )
-    async def question(self, ctx, *, term):
+    async def urbandictionary(self, ctx, *, term):
         url = f'http://api.urbandictionary.com/v0/define?term={quote(term)}'
         async with self.client.session.get(url) as response:
             answer = await response.json()
