@@ -184,10 +184,11 @@ class Responses(commands.Cog, name='General'):
             '\n• Twitter: <https://twitter.com/_EngineerMan>' +
             '\n• Facebook: <https://www.facebook.com/engineermanyt>'
         )
-
-        e = Embed(title='Links',
-                  description=links,
-                  color=0x2ECC71)
+        e = Embed(
+            title='Links',
+            description=links,
+            color=0x2ECC71
+        )
         await ctx.send(embed=e)
 
     @commands.command(
@@ -205,8 +206,10 @@ class Responses(commands.Cog, name='General'):
         else:
             e = Embed(color=0x000000)
             e.set_image(url=gif_url)
-            e.set_footer(text=ctx.author.display_name,
-                         icon_url=ctx.author.avatar_url)
+            e.set_footer(
+                text=ctx.author.display_name,
+                icon_url=ctx.author.avatar_url
+            )
 
             await ctx.send(embed=e)
             # await ctx.message.add_reaction('✅')
@@ -286,7 +289,7 @@ class Responses(commands.Cog, name='General'):
         aliases=['ud', 'urban', 'urbandict'],
         hidden=True,
     )
-    @commands.has_role(498576446147788824)
+    # @commands.has_role(498576446147788824)
     async def urbandictionary(self, ctx, *, term):
         url = f'http://api.urbandictionary.com/v0/define?term={quote(term)}'
         async with self.client.session.get(url) as response:
@@ -303,7 +306,12 @@ class Responses(commands.Cog, name='General'):
             title=f'"**{term}**" according to urbandictionary.com',
             url=f'https://urbandictionary.com/define.php?term={quote(term)}',
             description=response.replace('[', '').replace(']', ''),
-            color=random.randint(0, 0xFFFFFF))
+            color=random.randint(0, 0xFFFFFF)
+        )
+        embed.set_footer(
+            text=ctx.author.display_name,
+            icon_url=ctx.author.avatar_url
+        )
         await ctx.send(embed=embed)
 
     @commands.group(
