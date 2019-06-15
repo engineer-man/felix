@@ -44,7 +44,7 @@ class ChallengeDifficultyNotFoundError(KeyError):
     pass
 
 
-class Challenges(commands.Cog, name='Challenge'):
+class Challenges(commands.Cog, name='Challenges'):
     def __init__(self, client):
         self.client = client
         self.load_challenges_file()
