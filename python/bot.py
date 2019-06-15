@@ -52,7 +52,6 @@ class Felix(Bot):
 
     def is_superuser(self, author):
         superusers = self.config['superusers']
-        print('su', author.id in superusers)
         return author.id in superusers
 
 
