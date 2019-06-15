@@ -394,7 +394,7 @@ class Management(commands.Cog, name='Management'):
                 ['git', 'pull', '-r']).decode()
             await ctx.send('```git\n' + output + '\n```')
         except Exception as e:
-            raise commands.CommandError(str(e))
+            await ctx.send(str(e))
 
 def setup(client):
     client.add_cog(Management(client))
