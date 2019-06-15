@@ -48,13 +48,10 @@ class Run(commands.Cog, name='Run'):
             'bash': 'bash',
         }
 
-    @commands.command(
-        name='run',
-        brief='Run some code',
-        description='Run some code - type "felix howto run" for instructions',
-        hidden=False,
-    )
+    @commands.command()
     async def run(self, ctx, language: typing.Optional[str] = None):
+        """Run some code
+        Type "felix run" for instructions"""
         await ctx.trigger_typing()
         if not language:
             await self.client.get_command('howto run').invoke(ctx)

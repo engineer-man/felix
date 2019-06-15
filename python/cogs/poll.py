@@ -89,16 +89,19 @@ class Poll(commands.Cog, name='Poll'):
     # ----------------------------------------------
     @commands.command(
         name='poll',
-        brief='Create a Poll',
-        description='Example use:' +
-        '\npoll\nQuestion' +
-        '\n0. Possibility0' +
-        '\n1: Possibility1' +
-        '\na. Possibility2' +
-        '\nb) Possibility3',
         hidden=True,
     )
     async def make_poll(self, ctx, *, poll_string):
+        """Create a Poll
+        Example use:
+        ```
+        felix poll
+        Question
+        0. Possibility0
+        1: Possibility1
+        a. Possibility2
+        b) Possibility3
+        ```"""
         re_find = re.findall(
             r'^([0-9a-zA-Z])(?:\.|\:|\))\s', poll_string, flags=re.M
         )

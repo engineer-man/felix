@@ -307,12 +307,11 @@ class Management(commands.Cog, name='Management'):
     @commands.group(
         invoke_without_command=True,
         name='list',
-        brief='List stuff',
-        description='Make Felix compute a list',
         hidden=True
     )
     @commands.guild_only()
     async def _list(self, ctx):
+        """List stuff"""
         await ctx.send_help('list')
         return True
 

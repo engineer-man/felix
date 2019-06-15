@@ -34,18 +34,8 @@ class Purge(commands.Cog, name='Purge'):
     # ----------------------------------------------
     # Function Group to clear channel of messages
     # ----------------------------------------------
-    @commands.group(
-        invoke_without_command=True,
+    @commands.command(
         name='purge',
-        brief='Clear messages from current channel',
-        description='Clear messages from current channel'
-        + '\nExamples:'
-        + '\n*  purge 10'
-        + '\n*  purge @user'
-        + '\n*  purge 10 @user  -  (number of messages first, then user)'
-        + '\n*  purge @user 10  -  (user first, then number of messages)'
-        + '\n*  purge @user1 @user2'
-        + '\n*  purge all       -  (delete all messages in current channel)',
         hidden=True,
     )
     @commands.guild_only()
@@ -56,6 +46,15 @@ class Purge(commands.Cog, name='Purge'):
         n2: typing.Optional[int] = 0,
         # This allows the command to be used with either order of [num] [user]
     ):
+        """Clear messages from current channel
+        ```
+        Examples:
+        *  purge 10
+        *  purge @user
+        *  purge 10 @user
+        *  purge @user 10
+        *  purge @user1 @user2
+        ```"""
         if not users and not n:
             param = Parameter('number_of_messages', Parameter.POSITIONAL_ONLY)
             raise commands.MissingRequiredArgument(param)
@@ -77,13 +76,14 @@ class Purge(commands.Cog, name='Purge'):
             await channel.purge(limit=msg_limit, check=check, before=None)
         return True
 
-    @purge.command(
-        name='all',
-        brief='Clear all messages in current channel',
-        description='Clear all messages in current channel\n' +
-        'A security question will be asked before proceeding')
+    @commands.command(
+        name='purge_all',
+        hidden=True
+    )
     @commands.guild_only()
     async def purge_all(self, ctx):
+        """Clear all messages in current channel
+        A security question will be asked before proceeding"""
         channel = ctx.message.channel
         caller = ctx.author
 

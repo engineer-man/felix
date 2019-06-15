@@ -168,13 +168,12 @@ class Jail(commands.Cog, name='Jail'):
     # ----------------------------------------------
     @commands.command(
         name='jail',
-        brief='Put a list of @users in jail',
-        description='Put a list of @users in jail',
         aliases=['silence'],
         hidden=True,
     )
     @commands.guild_only()
     async def jail(self, ctx, members: commands.Greedy[Member]):
+        """Put a list of @users in jail"""
         if not members:
             return
         results = []
@@ -188,13 +187,12 @@ class Jail(commands.Cog, name='Jail'):
 
     @commands.command(
         name='unjail',
-        brief='Release a list of @users from jail',
-        description='Release a list of @users from jail',
         aliases=['release', 'unsilence'],
         hidden=True,
     )
     @commands.guild_only()
     async def unjail(self, ctx, members: commands.Greedy[Member]):
+        """Release a list of @users from jail"""
         if not members:
             return
         results = []

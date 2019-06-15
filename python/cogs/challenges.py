@@ -115,24 +115,22 @@ class Challenges(commands.Cog, name='Challenges'):
     @commands.group(
         invoke_without_command=True,
         name='challenge',
-        brief='Show awesome challenges',
-        description='Prints all sorts of programming challenges and a guide',
         hidden=False,
         aliases=['chal', 'task', 'project']
     )
     @commands.guild_only()
     async def challenge(self, ctx):
+        """'Show awesome challenges'"""
         await ctx.send_help('challenge')
 
     @challenge.command(
         name='random',
-        brief='random challenge',
-        description='this will randomly choose a challenge for you',
         aliases=['r', 'shuf'],
         hidden=False
     )
     @commands.guild_only()
     async def random(self, ctx):
+        """Randomly choose a challenge"""
         await ctx.trigger_typing()
         try:
             chal = self.pick_random_challenge()
@@ -146,8 +144,6 @@ class Challenges(commands.Cog, name='Challenges'):
 
     @challenge.command(
         name='num',
-        brief='specific challenge',
-        description='this will show you a specific challenge',
         aliases=['n'],
         hidden=False
     )
@@ -156,6 +152,7 @@ class Challenges(commands.Cog, name='Challenges'):
         self, ctx,
         n: int
     ):
+        """Choose a specific challenge"""
         await ctx.trigger_typing()
         try:
             chal = self.pick_exact_challenge(n)
@@ -171,12 +168,11 @@ class Challenges(commands.Cog, name='Challenges'):
 
     @challenge.command(
         name='guide',
-        brief='challenge guide',
-        description='this will show you the guide for these challenges',
         hidden=False
     )
     @commands.guild_only()
     async def guide(self, ctx):
+        """Print the guide"""
         await ctx.trigger_typing()
         e = Embed(title='Guide',
                   description=self.guide,
@@ -185,12 +181,11 @@ class Challenges(commands.Cog, name='Challenges'):
 
     @challenge.command(
         name='guide_extra',
-        brief='challenge guide - additional resources',
-        description='this will show you some additional resources',
         hidden=False
     )
     @commands.guild_only()
     async def guide_extra(self, ctx):
+        """Print the additional resources"""
         await ctx.trigger_typing()
         e = Embed(title='Guide - additional resources',
                   description=self.guide_extra,
@@ -199,14 +194,12 @@ class Challenges(commands.Cog, name='Challenges'):
 
     @challenge.command(
         name='difficulty',
-        brief='choose by difficulty',
-        description='this will show you a random challenge of a specific' +
-        'difficulty',
         aliases=['dif', 'd'],
         hidden=False
     )
     @commands.guild_only()
     async def difficulty(self, ctx, difficulty: str):
+        """Choose by difficulty"""
         await ctx.trigger_typing()
         try:
             chal = self.pick_difficulty_challenge(difficulty)

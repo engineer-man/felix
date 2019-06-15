@@ -142,26 +142,20 @@ class Responses(commands.Cog, name='General'):
     # Cog Commands
     # ----------------------------------------------
     @commands.command(
-        name='google',
-        brief='Post a google search link',
-        description='Post a google search link',
-        aliases=['lmgtfy'],
-        hidden=False,
+        aliases=['lmgtfy']
     )
     async def google(self, ctx, *, search_text):
+        """Post a google search link"""
         await ctx.trigger_typing()
         await ctx.send(
             f'here you go! <https://google.com/search?q={quote(search_text)}>'
         )
 
     @commands.command(
-        name='links',
-        brief='Show links to all things EngineerMan',
-        description='this command will display a list of all EngineerMan related links',
         aliases=['urls', 'sauce', 'source'],
-        hidden=False,
     )
     async def links(self, ctx):
+        """Show links to all things EngineerMan"""
         links = (
             '• Youtube : <https://www.youtube.com/engineerman>' +
             '\n• Discord : <https://engineerman.org/discord>' +
@@ -181,12 +175,11 @@ class Responses(commands.Cog, name='General'):
         await ctx.send(embed=e)
 
     @commands.command(
-        name='gif',
-        brief='Post a gif',
-        description='Displays a random gif for the specified search term',
-        hidden=False
+        name='gif'
     )
     async def gif_embed(self, ctx, *, gif_name):
+        """Post a gif
+        Displays a random gif for the specified search term"""
         await ctx.trigger_typing()
         gif_url = await self.gif_url(gif_name)
         if gif_url is None:
@@ -203,13 +196,9 @@ class Responses(commands.Cog, name='General'):
             await ctx.send(embed=e)
             # await ctx.message.add_reaction('✅')
 
-    @commands.command(
-        name='video',
-        brief='Search Youtube for EM videos',
-        description='Search Youtube for EM videos',
-        hidden=False
-    )
+    @commands.command()
     async def video(self, ctx, *, term):
+        """Search Youtube for EM videos"""
         video_list = []
         page_token = ''
 
@@ -256,13 +245,10 @@ class Responses(commands.Cog, name='General'):
         await ctx.send(response)
 
     @commands.command(
-        name='question',
-        brief='Ask Felix a question',
-        description='Ask Felix a question',
-        aliases=['q'],
-        hidden=False,
+        aliases=['q']
     )
     async def question(self, ctx, *, question):
+        """Ask Felix a question"""
         url = 'https://api.wolframalpha.com/v1/result?i=' + \
             f'{quote(question)}&appid={self.client.config["wolfram_key"]}'
         async with self.client.session.get(url) as response:
@@ -272,14 +258,13 @@ class Responses(commands.Cog, name='General'):
         await ctx.send(answer)
 
     @commands.command(
-        name='urbandictionary',
-        brief='Get the definition of a word from Urbandictionary',
-        description='Get the definition of a word from Urbandictionary',
         aliases=['ud', 'urban', 'urbandict'],
         hidden=True,
     )
     # @commands.has_role(498576446147788824)
     async def urbandictionary(self, ctx, *, term):
+        """Ask urbandictionary
+        Get the definition of a word from Urbandictionary"""
         url = f'http://api.urbandictionary.com/v0/define?term={quote(term)}'
         async with self.client.session.get(url) as response:
             answer = await response.json()
@@ -305,21 +290,17 @@ class Responses(commands.Cog, name='General'):
 
     @commands.group(
         invoke_without_command=True,
-        name='how-to',
-        brief='Show useful information for newcomers',
-        description='A group of commands that help newcomers',
         aliases=['howto', 'info', 'faq']
     )
     async def how_to(self, ctx):
+        """Show useful information for newcomers"""
         await ctx.send_help('how-to')
 
     @how_to.command(
-        name='codeblocks',
-        brief='How to use code blocks to paste code',
-        description='Instructions on how to properly paste code',
         aliases=['codeblock', 'code-blocks', 'code-block', 'code']
     )
     async def codeblocks(self, ctx):
+        """Instructions on how to properly paste code"""
         code_instructions = (
             "Discord has an awesome feature called **Text Markdown** which "
             "supports code with full syntax highlighting using codeblocks."
@@ -346,12 +327,10 @@ class Responses(commands.Cog, name='General'):
         await ctx.send(embed=e)
 
     @how_to.command(
-        name='ask',
-        brief='How to properly ask a question',
-        description='Instructions on how to properly ask a question',
         aliases=['questions', 'question']
     )
     async def ask(self, ctx):
+        """How to properly ask a question"""
         ask_instructions = (
             "From time to time you'll stumble upon a question like this:\n"
             "*Is anyone good at [this]?* / *Does anyone know [topic]?*\n"
@@ -367,12 +346,9 @@ class Responses(commands.Cog, name='General'):
                   color=0x2ECC71)
         await ctx.send(embed=e)
 
-    @how_to.command(
-        name='run',
-        brief='How to properly run code with Felix',
-        description='Instructions on how to properly run code with Felix',
-    )
+    @how_to.command()
     async def run(self, ctx):
+        """How to properly run code with Felix"""
         run_instructions = (
             '**Here are my supported languages:**'
             '\nbash\npython2\npython3\njavascript\nruby\ngo\nc\ncs/csharp/c#\n'

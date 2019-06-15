@@ -115,20 +115,14 @@ class Graph(commands.Cog,
     @commands.group(
         invoke_without_command=True,
         name='graph',
-        brief='Print Graphs',
-        description='Print Graphs',
         hidden=True,
     )
     @commands.guild_only()
     async def graph(self, ctx):
+        """Print Graphs"""
         await ctx.send_help('graph')
 
-    @graph.command(
-        name='top',
-        brief='Print Message Graph',
-        description=('Print Message Graph of the top n ' +
-                     'users over the specified number of days'),
-    )
+    @graph.command()
     @commands.guild_only()
     async def top(
         self,
@@ -136,6 +130,9 @@ class Graph(commands.Cog,
         n: int,
         days: int
     ):
+        """Print graph of top n users
+        measured by the number of messages in the last [days] days
+        """
         await ctx.trigger_typing()
         days = clamp(days, 1, 30)
         n = clamp(n, 1, 10)
@@ -159,6 +156,9 @@ class Graph(commands.Cog,
         members: commands.Greedy[Member],
         days: int
     ):
+        """Print graph of specific users
+        measure over the last [days] days
+        """
         if not members:
             return
         await ctx.trigger_typing()

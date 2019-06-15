@@ -42,14 +42,12 @@ class Stats(commands.Cog, name='Stats'):
 
     @commands.group(
         invoke_without_command=True,
-        name='stats',
-        brief='Print member numbers',
-        description='Print the number of YouTube subs and Discord members',
         hidden=True,
     )
     @commands.guild_only()
     # @commands.cooldown(1, 300, commands.BucketType.user)
     async def stats(self, ctx):
+        """Print member numbers"""
         await ctx.trigger_typing()
         url = ('https://www.googleapis.com/youtube/v3/channels'
                '?part=statistics'
@@ -94,13 +92,10 @@ class Stats(commands.Cog, name='Stats'):
         ]
         await ctx.send(''.join(response))
 
-    @stats.command(
-        name='users',
-        brief='User message stats',
-        description='Show top users by messages for past n days'
-    )
+    @stats.command()
     @commands.guild_only()
     async def users(self, ctx, n: typing.Optional[int] = 30):
+        """Show top users by messages for past n days"""
         await ctx.trigger_typing()
         params = {
             'start': (datetime.utcnow() - timedelta(days=n)).isoformat(),
@@ -119,17 +114,14 @@ class Stats(commands.Cog, name='Stats'):
 
         await ctx.send('```css\n' + '\n'.join(formatted) + '```')
 
-    @stats.command(
-        name='channels',
-        brief='Channel message stats',
-        description='Show top channels by messages for past n days'
-    )
+    @stats.command()
     @commands.guild_only()
     async def channels(
         self, ctx,
         n: typing.Optional[int] = 30,
         user: Member = None
     ):
+        """Show top channels by messages for past n days"""
         await ctx.trigger_typing()
         params = {
             'start': (datetime.utcnow() - timedelta(days=n)).isoformat(),

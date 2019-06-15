@@ -92,7 +92,6 @@ class myHelpCommand(HelpCommand):
     async def send_command_help(self, command):
         signature = self.get_command_signature(command)
         helptext = command.help or command.description or 'No help Text'
-        description = command.description or command.short_doc
         self.paginator.append(
             (signature,  helptext)
         )
@@ -118,11 +117,11 @@ class Help(commands.Cog):
 
     @commands.command(
         name='helpall',
-        brief='Show this message',
         hidden=True
     )
     @commands.guild_only()
     async def helpall(self, ctx, *, text=None):
+        """Print bot help including all hidden commands"""
         self.client.help_command = myHelpCommand(show_hidden=True)
         if text:
             await ctx.send_help(text)

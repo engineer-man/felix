@@ -131,12 +131,11 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
     # ----------------------------------------------
     @commands.command(
         name='allow',
-        brief='Allow a single discord.gg link.',
-        description='Allow a single discord.gg link.',
         hidden=True,
     )
     @commands.guild_only()
     async def allow(self, ctx, member: Member):
+        """Allow a single discord.gg link by @user"""
         await ctx.send(f'Hey {member.mention}, you can post 1 discord.gg link!')
         self.allowed_once.append(member.id)
 
