@@ -313,7 +313,7 @@ class Management(commands.Cog, name='Management'):
     )
     @commands.guild_only()
     async def _list(self, ctx):
-        await self.client.help_command.command_callback(ctx, command='list')
+        await ctx.send_help('list')
         return True
 
     @_list.command(

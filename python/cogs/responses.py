@@ -311,7 +311,7 @@ class Responses(commands.Cog, name='General'):
         aliases=['howto', 'info', 'faq']
     )
     async def how_to(self, ctx):
-        await self.client.help_command.command_callback(ctx, command='how-to')
+        await ctx.send_help('how-to')
 
     @how_to.command(
         name='codeblocks',

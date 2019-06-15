@@ -121,7 +121,7 @@ class Graph(commands.Cog,
     )
     @commands.guild_only()
     async def graph(self, ctx):
-        await self.client.help_command.command_callback(ctx, command='graph')
+        await ctx.send_help('graph')
 
     @graph.command(
         name='top',

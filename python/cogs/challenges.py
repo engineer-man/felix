@@ -122,8 +122,7 @@ class Challenges(commands.Cog, name='Challenge'):
     )
     @commands.guild_only()
     async def challenge(self, ctx):
-        await self.client.help_command.command_callback(ctx,
-                                                        command='challenge')
+        await ctx.send_help('challenge')
 
     @challenge.command(
         name='random',
