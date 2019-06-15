@@ -376,6 +376,23 @@ class Management(commands.Cog, name='Management'):
             )
         await ctx.send('```css\n' + '\n'.join(result) + '\n```')
 
+    # ----------------------------------------------
+    # Function to pull the latest changes from github
+    # ----------------------------------------------
+    @commands.command(
+        name='pull',
+        hidden=True,
+    )
+    async def pull(self, ctx):
+        """Pull the latest changes from github"""
+        if not self.client.is_superuser(ctx.author):
+            raise commands.CheckFailure(f'{ctx.author} is not a superuser')
+        try:
+            output = subprocess.check_output(
+                ['git', 'pull', '-r']).decode()
+            await ctx.send('```git\n' + output + '\n```')
+        except Exception as e:
+            raise commands.CommandError(str(e))
 
 def setup(client):
     client.add_cog(Management(client))
