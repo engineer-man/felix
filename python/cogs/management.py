@@ -15,11 +15,12 @@ Commands:
 Only users belonging to a role that is specified under the module's name
 in the permissions.json file can use the commands.
 """
-from discord.ext import commands
-from discord import Activity, Embed
-from os import path, listdir
 import subprocess
 import json
+from datetime import datetime
+from discord import Activity, Embed, Member
+from os import path, listdir
+from discord.ext import commands
 
 
 class Management(commands.Cog, name='Management'):
@@ -349,6 +350,31 @@ class Management(commands.Cog, name='Management'):
 
         for n, page in enumerate(pages):
             await ctx.send(f'{n+1}/{len(pages)}\n```' + '\n'.join(page) + '```')
+
+    # ----------------------------------------------
+    # Function to get the date a member joined
+    # ----------------------------------------------
+    @commands.command(
+        name='joined',
+        hidden=True,
+    )
+    async def joined(self, ctx, members: commands.Greedy[Member]):
+        """Print the date a member joined"""
+        await ctx.trigger_typing()
+        result = []
+        now = datetime.utcnow()
+        for member in members:
+            join = member.joined_at
+            if not join:
+                result.append(f'No join date found for {member.name}')
+                continue
+            difference = now - join
+            result.append(
+                f'{member.name} joined [{join.isoformat().split(".")[0]}] - '
+                f'[{difference.days}] days and '
+                f'[{difference.seconds / 3600:.1f}] hours ago'
+            )
+        await ctx.send('```css\n' + '\n'.join(result) + '\n```')
 
 
 def setup(client):
