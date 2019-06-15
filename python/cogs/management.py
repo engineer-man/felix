@@ -374,6 +374,8 @@ class Management(commands.Cog, name='Management'):
                 f'[{difference.days}] days and '
                 f'[{difference.seconds / 3600:.1f}] hours ago'
             )
+        if not result:
+            return
         await ctx.send('```css\n' + '\n'.join(result) + '\n```')
 
     # ----------------------------------------------
