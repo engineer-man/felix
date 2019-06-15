@@ -76,40 +76,6 @@ class Purge(commands.Cog, name='Purge'):
             await channel.purge(limit=msg_limit, check=check, before=None)
         return True
 
-    @commands.command(
-        name='purge_all',
-        hidden=True
-    )
-    @commands.guild_only()
-    async def purge_all(self, ctx):
-        """Clear all messages in current channel
-        A security question will be asked before proceeding"""
-        channel = ctx.message.channel
-        caller = ctx.author
-
-        def check(m):
-            return m.author.id == caller.id and m.channel.id == channel.id
-
-        confirmation_q = await channel.send(
-            'Are you sure you want to delete all messages in this channel?' +
-            '\nThis might take a very long time.' +
-            '\nIf you are sure please enter the channel name.'
-        )
-        try:
-            confirmation_a = await self.client.wait_for('message',
-                                                        check=check,
-                                                        timeout=30)
-        except asyncio.TimeoutError:
-            await channel.send(f'TIMEOUT - waited more than 30 sec')
-            return
-        if confirmation_a.content == channel.name:
-            await channel.purge(limit=100000, check=None, before=None)
-        else:
-            await ctx.message.delete()
-            await confirmation_q.delete()
-            await confirmation_a.delete()
-        return True
-
 
 def setup(client):
     client.add_cog(Purge(client))
