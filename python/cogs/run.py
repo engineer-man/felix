@@ -58,13 +58,11 @@ class Run(commands.Cog, name='Run'):
             return
         language = language.replace('```', '')
         if language not in self.languages:
-            await ctx.send(f'Error: unsupported language: {language}')
-            return
+            raise commands.BadArgument(f'Unsupported language: {language}')
         language = self.languages[language]
         message = ctx.message.content.split('```')
         if len(message) < 3:
-            await ctx.send('Error: no code or invalid code present')
-            return
+            raise commands.BadArgument('No code or invalid code present')
         source = message[1]
         source = source[source.find('\n'):].strip()
 
@@ -81,7 +79,7 @@ class Run(commands.Cog, name='Run'):
         if not r or 'status' not in r:
             await ctx.send('Sorry, invalid response from Piston server')
             return
-        if r['status'] not in 'ok' or r['payload']['output'] == None:
+        if r['status'] not in 'ok' or r['payload']['output'] is None:
             await ctx.send('Sorry, execution problem')
             return
         await ctx.send(

@@ -10,13 +10,10 @@ The extension "management" provides the commands to load/unload other extensions
 This bot requires discord.py
     pip install -U discord.py
 """
-from discord.ext.commands import Bot, CommandOnCooldown, MissingRequiredArgument
-from discord.ext.commands import CheckFailure, when_mentioned_or
+from discord.ext.commands import Bot, when_mentioned_or
 from aiohttp import ClientSession
 from os import path, listdir
 import json
-import sys
-import traceback
 
 
 class Felix(Bot):
@@ -92,51 +89,6 @@ async def on_message(message):
         return
     await client.process_commands(message)
 
-
-@client.event
-async def on_command_error(ctx, exception):
-    if client.extra_events.get('on_command_error', None):
-        return
-
-    if hasattr(ctx.command, 'on_error'):
-        return
-
-    cog = ctx.cog
-    if cog:
-        attr = f'_{cog.__class__.__name__}__error'
-        if hasattr(cog, attr):
-            return
-
-    if type(exception) == CommandOnCooldown:
-        await ctx.author.send(exception)
-        await ctx.message.delete()
-        print(f'{ctx.command} on cooldown for {ctx.author}', file=sys.stderr)
-        return
-
-    if type(exception) == MissingRequiredArgument:
-        par = str(exception.param)
-        missing = par.split(": ")[0]
-        if ':' in par:
-            missing_type = ' (' + str(par).split(": ")[1] + ')'
-        else:
-            missing_type = ''
-        await ctx.send(
-            f'Missing parameter: `{missing}{missing_type}`' +
-            f'\nIf you are not sure how to use the command, try running ' +
-            f'`felix help {ctx.command.name}`'
-        )
-        return
-
-    if type(exception) == CheckFailure:
-        print(
-            f'MISSING PERMISSION | USER: {ctx.author} | COMMAND: {ctx.command}'
-        )
-        return
-
-    print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
-    traceback.print_exception(
-        type(exception), exception, exception.__traceback__, file=sys.stderr
-    )
 
 client.run()
 print('Felix-Python has exited')

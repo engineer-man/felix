@@ -17,6 +17,7 @@ in the permissions.json file can use the commands.
 """
 import subprocess
 import json
+import traceback
 from datetime import datetime
 from discord import Activity, Embed, Member
 from os import path, listdir
@@ -58,6 +59,49 @@ class Management(commands.Cog, name='Management'):
             'You can view the server rules in <#484103976296644608>. '
             'Please be kind and decent to one another. '
             'Glad you\'re here!'
+        )
+
+    # ----------------------------------------------
+    # Error handler
+    # ----------------------------------------------
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.author.send(error)
+            await ctx.message.delete()
+            print(f'{ctx.command} on cooldown for {ctx.author}')
+            return
+        if isinstance(error, commands.MissingRequiredArgument):
+            par = str(error.param)
+            missing = par.split(": ")[0]
+            if ':' in par:
+                missing_type = ' (' + str(par).split(": ")[1] + ')'
+            else:
+                missing_type = ''
+            await ctx.send(
+                f'Missing parameter: `{missing}{missing_type}`' +
+                f'\nIf you are not sure how to use the command, try running ' +
+                f'`felix help {ctx.command.name}`'
+            )
+            return
+        if isinstance(error, commands.BadArgument):
+            # It's in an embed to prevent mentions from working
+            embed = Embed(
+                title='Error',
+                description=str(error),
+                color=0x2ECC71
+            )
+            await ctx.send(embed=embed)
+            return
+        if isinstance(error, commands.CheckFailure):
+            print(
+                f'MISSING PERMISSION | USER: {ctx.author} ' +
+                f'| COMMAND: {ctx.command}'
+            )
+            return
+        print(f'Ignoring exception in command {ctx.command}:')
+        traceback.print_exception(
+            type(error), error, error.__traceback__
         )
 
     def reload_config(self):
@@ -395,6 +439,7 @@ class Management(commands.Cog, name='Management'):
             await ctx.send('```git\n' + output + '\n```')
         except Exception as e:
             await ctx.send(str(e))
+
 
 def setup(client):
     client.add_cog(Management(client))
