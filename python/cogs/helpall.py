@@ -25,6 +25,7 @@ class myHelpCommand(HelpCommand):
     async def send_pages(self, header=False, footer=False):
         destination = self.get_destination()
         embed = Embed(
+            color=0x2ECC71
         )
         if header:
             embed.set_author(

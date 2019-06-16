@@ -289,6 +289,7 @@ class Responses(commands.Cog, name='General'):
         await ctx.send(embed=embed)
 
     @commands.group(
+        name="how-to",
         invoke_without_command=True,
         aliases=['howto', 'info', 'faq']
     )
