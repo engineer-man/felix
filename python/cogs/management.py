@@ -391,7 +391,7 @@ class Management(commands.Cog, name='Management'):
             raise commands.CheckFailure(f'{ctx.author} is not a superuser')
         try:
             output = subprocess.check_output(
-                ['git', 'pull', '-r']).decode()
+                ['git', 'pull']).decode()
             await ctx.send('```git\n' + output + '\n```')
         except Exception as e:
             await ctx.send(str(e))
