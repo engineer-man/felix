@@ -1,5 +1,5 @@
 """This is a cog for a discord.py bot.
-It will add some responses to a bot
+It will add general commands and responses to a bot
 
 Commands:
     google          make the bot post a google link
@@ -19,7 +19,7 @@ import random
 import re
 
 
-class Responses(commands.Cog, name='General'):
+class General(commands.Cog, name='General'):
     def __init__(self, client):
         self.client = client
 
@@ -368,4 +368,4 @@ class Responses(commands.Cog, name='General'):
 
 
 def setup(client):
-    client.add_cog(Responses(client))
+    client.add_cog(General(client))
