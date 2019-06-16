@@ -25,7 +25,6 @@ class Newcomer(commands.Cog, name='Newcomer'):
     async def on_member_join(self, member):
         if not member.guild.id == self.client.main_guild.id:
             return
-        print('adding newcomer role', member.name)
         await member.add_roles(member.guild.get_role(NEWCOMER_ROLE))
 
     # ----------------------------------------------

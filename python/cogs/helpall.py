@@ -20,6 +20,7 @@ class myHelpCommand(HelpCommand):
     def __init__(self, **options):
         super().__init__(**options)
         self.paginator = None
+        self.spacer = "\u1160 "  # Invisible Unicode Character to indent lines
 
     async def send_pages(self, header=False, footer=False):
         destination = self.get_destination()
@@ -60,9 +61,10 @@ class myHelpCommand(HelpCommand):
             cmds = sorted(command_grouper, key=lambda c: c.name)
             category = f'► {cog_name}'
             if len(cmds) == 1:
-                entries = f'{cmds[0].name} → {cmds[0].short_doc}'
+                entries = f'{self.spacer}{cmds[0].name} → {cmds[0].short_doc}'
             else:
                 entries = ' | '.join([command.name for command in cmds])
+                entries = self.spacer + entries
             self.paginator.append((category, entries))
         await self.send_pages(header=True, footer=True)
 
@@ -75,10 +77,10 @@ class myHelpCommand(HelpCommand):
             return
         category = f'▼ {cog.qualified_name}'
         entries = '\n'.join(
+            self.spacer +
             f'**{command.name}** → {command.short_doc or command.description}'
             for command in filtered
         )
-        print(entries)
         self.paginator.append((category, entries))
         await self.send_pages(footer=True)
 
@@ -86,7 +88,8 @@ class myHelpCommand(HelpCommand):
         filtered = await self.filter_commands(group.commands, sort=True)
         category = f'**{group.name}** - {group.description or group.short_doc}'
         entries = '\n'.join(
-            f'**{command.name}** → {command.short_doc}' for command in filtered
+            self.spacer + f'**{command.name}** → {command.short_doc}'
+            for command in filtered
         )
         self.paginator.append((category, entries))
         await self.send_pages(footer=True)
