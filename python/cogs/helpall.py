@@ -21,23 +21,25 @@ class myHelpCommand(HelpCommand):
         super().__init__(**options)
         self.paginator = None
 
-    async def send_pages(self):
+    async def send_pages(self, header=False, footer=False):
         destination = self.get_destination()
         embed = Embed(
         )
-        embed.set_author(
-            name=self.context.bot.description,
-            icon_url=self.context.bot.user.avatar_url
-        )
+        if header:
+            embed.set_author(
+                name=self.context.bot.description,
+                icon_url=self.context.bot.user.avatar_url
+            )
         for category, entries in self.paginator:
             embed.add_field(
                 name=category,
                 value=entries,
                 inline=False
             )
-        embed.set_footer(
-            text='Use felix help <command/category> for more information.'
-        )
+        if footer:
+            embed.set_footer(
+                text='Use felix help <command/category> for more information.'
+            )
         await destination.send(embed=embed)
 
     async def send_bot_help(self, mapping):
@@ -46,7 +48,7 @@ class myHelpCommand(HelpCommand):
 
         def get_category(command):
             cog = command.cog
-            return cog.qualified_name + ':' if cog is not None else 'Default:'
+            return cog.qualified_name + ':' if cog is not None else 'Help:'
 
         filtered = await self.filter_commands(
             bot.commands,
@@ -57,12 +59,12 @@ class myHelpCommand(HelpCommand):
         for cog_name, command_grouper in to_iterate:
             cmds = sorted(command_grouper, key=lambda c: c.name)
             category = f'► {cog_name}'
-            if len(cmds) == 1 and cmds[0].name.lower() in category.lower():
+            if len(cmds) == 1:
                 entries = f'{cmds[0].name} → {cmds[0].short_doc}'
             else:
                 entries = ' | '.join([command.name for command in cmds])
             self.paginator.append((category, entries))
-        await self.send_pages()
+        await self.send_pages(header=True, footer=True)
 
     async def send_cog_help(self, cog):
         filtered = await self.filter_commands(cog.get_commands(), sort=True)
@@ -78,7 +80,7 @@ class myHelpCommand(HelpCommand):
         )
         print(entries)
         self.paginator.append((category, entries))
-        await self.send_pages()
+        await self.send_pages(footer=True)
 
     async def send_group_help(self, group):
         filtered = await self.filter_commands(group.commands, sort=True)
@@ -87,7 +89,7 @@ class myHelpCommand(HelpCommand):
             f'**{command.name}** → {command.short_doc}' for command in filtered
         )
         self.paginator.append((category, entries))
-        await self.send_pages()
+        await self.send_pages(footer=True)
 
     async def send_command_help(self, command):
         signature = self.get_command_signature(command)
@@ -105,8 +107,12 @@ class myHelpCommand(HelpCommand):
 class Help(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.client.help_command = myHelpCommand()
-        self.client.get_command('help').hidden = True
+        self.client.help_command = myHelpCommand(
+            command_attrs={
+                'aliases': ['halp'],
+                'help': 'Shows help about the bot, a command, or a category'
+            }
+        )
 
     async def cog_check(self, ctx):
         return self.client.user_has_permission(ctx.author, 'helpall')
@@ -116,7 +122,7 @@ class Help(commands.Cog):
         self.client.help_command = DefaultHelpCommand()
 
     @commands.command(
-        name='helpall',
+        aliases=['halpall'],
         hidden=True
     )
     @commands.guild_only()
