@@ -12,6 +12,7 @@ Commands:
     question        ask a question which the bot will answer using wolframalpha
     urbandictionary look up a word on urbandictionary.com
     video           make the bot post links to EM Videos on youtube
+    weather         get the weather for a specific location
 """
 
 from discord.ext import commands
@@ -382,6 +383,49 @@ class General(commands.Cog, name='General'):
 
         await ctx.send(response)
     # ------------------------------------------------------------------------
+
+    @commands.command(
+        name='weather'
+    )
+    async def weather(
+        self, ctx,
+        location: str,
+        days: int = 0,
+        units: str = 'm',
+    ):
+        """Get the current weather/forecast in a location
+
+        Probably difficult to view on mobile
+
+        Options:
+          \u1160**location** examples:
+            \u1160\u1160berlin
+            \u1160\u1160~Eiffel+tower
+            \u1160\u1160Москва
+            \u1160\u1160muc
+            \u1160\u1160@stackoverflow.com
+            \u1160\u116094107
+            \u1160\u1160-78.46,106.79
+          \u1160**days** (0-3):  The amount of forecast days
+          \u1160**units** (m/u/mM/uM): m = Metric - u = US - M = wind in M/s
+
+          API used: https://en.wttr.in/:help"""
+        ctx.trigger_typing()
+        url = (
+            'https://wttr.in/'
+            f'{location}?{units}{days}{"" if days else "q"}nTAF'
+        )
+        async with self.client.session.get(url) as response:
+            weather = await response.text()
+            weather = weather.split('\n')
+        if days:
+            weather = [weather[0]]+weather[7:]
+            if len(weather[-1]) == 0:
+                weather = weather[:-1]
+            if weather[-1].startswith('Location'):
+                weather = weather[:-1]
+        weather_codeblock = '```\n' + '\n'.join(weather) + '```'
+        await ctx.send(weather_codeblock)
 
 
 def setup(client):
