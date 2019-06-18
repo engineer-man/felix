@@ -430,6 +430,8 @@ class General(commands.Cog, name='General'):
             if weather[-1].startswith('Location'):
                 weather = weather[:-1]
         weather_codeblock = '```\n' + '\n'.join(weather) + '```'
+        if len(weather_codeblock) > 2000:
+            weather_codeblock = 'Sorry - response longer than 2000 characters'
         await ctx.send(weather_codeblock)
 
 
