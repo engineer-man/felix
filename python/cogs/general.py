@@ -16,7 +16,7 @@ Commands:
 """
 
 from discord.ext import commands
-from discord import Embed
+from discord import Embed, DMChannel
 from datetime import datetime as dt
 from urllib.parse import quote
 import random
@@ -78,6 +78,10 @@ class General(commands.Cog, name='General'):
     async def on_message(self, msg):
         # Ignore messages sent by bots
         if msg.author.bot:
+            return
+
+        # Ignore DM
+        if isinstance(msg.channel, DMChannel):
             return
 
         if self.client.user_is_ignored(msg.author):

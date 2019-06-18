@@ -11,6 +11,7 @@ This bot requires discord.py
     pip install -U discord.py
 """
 from discord.ext.commands import Bot, when_mentioned_or
+from discord import DMChannel
 from aiohttp import ClientSession
 from os import path, listdir
 import json
@@ -85,6 +86,8 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    if isinstance(message.channel, DMChannel):
+        return
     if client.user_is_ignored(message.author):
         return
     await client.process_commands(message)
