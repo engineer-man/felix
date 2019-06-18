@@ -411,10 +411,9 @@ class General(commands.Cog, name='General'):
             \u1160\u116094107
             \u1160\u1160-78.46,106.79
           \u1160**days** (0-3):  The amount of forecast days
-          \u1160**units** (m/u/mM/uM): m = Metric - u = US - M = wind in M/s
+          \u1160**units** (m/u/mM/uM): m = Metric | u = US | M = wind in M/s
 
           API used: https://en.wttr.in/:help"""
-        ctx.trigger_typing()
         url = (
             'https://wttr.in/'
             f'{location}?{units}{days}{"" if days else "q"}nTAF'
@@ -422,6 +421,8 @@ class General(commands.Cog, name='General'):
         async with self.client.session.get(url) as response:
             weather = await response.text()
             weather = weather.split('\n')
+        if 'Sorry' in weather[0] or weather[1]:
+            return
         if days:
             weather = [weather[0]]+weather[7:]
             if len(weather[-1]) == 0:
