@@ -2,13 +2,16 @@
 It will add general commands and responses to a bot
 
 Commands:
+    gif             make the bot post a random gif for a given search term
     google          make the bot post a google link
-    source          make the bot post links to the engineerman github pages
-    run             dummy function (is implemented in node.js part)
-    gif             make felix post a random gif for a given search term
-    how-to          make felix post tutorials
+    howto           make the bot post tutorials
      ├ codeblocks       how to send discord markdown codeblocks
-     └ ask              how to ask question on the server
+     ├ ask              how to ask question on the server
+     └ run              how to use felix run
+    links           make the bot post links to the engineerman github pages
+    question        ask a question which the bot will answer using wolframalpha
+    urbandictionary look up a word on urbandictionary.com
+    video           make the bot post links to EM Videos on youtube
 """
 
 from discord.ext import commands
@@ -142,6 +145,29 @@ class General(commands.Cog, name='General'):
     # Cog Commands
     # ----------------------------------------------
     @commands.command(
+        name='gif'
+    )
+    async def gif_embed(self, ctx, *, gif_name):
+        """Post a gif
+        Displays a random gif for the specified search term"""
+        await ctx.trigger_typing()
+        gif_url = await self.gif_url(gif_name)
+        if gif_url is None:
+            await ctx.send(f'Sorry {ctx.author.mention}, no gif found 😔')
+            # await ctx.message.add_reaction('❌')
+        else:
+            e = Embed(color=0x000000)
+            e.set_image(url=gif_url)
+            e.set_footer(
+                text=ctx.author.display_name,
+                icon_url=ctx.author.avatar_url
+            )
+
+            await ctx.send(embed=e)
+    # ------------------------------------------------------------------------
+
+    @commands.command(
+        name='google',
         aliases=['lmgtfy']
     )
     async def google(self, ctx, *, search_text):
@@ -150,8 +176,92 @@ class General(commands.Cog, name='General'):
         await ctx.send(
             f'here you go! <https://google.com/search?q={quote(search_text)}>'
         )
+    # ------------------------------------------------------------------------
+
+    @commands.group(
+        name="howto",
+        invoke_without_command=True,
+        aliases=['how-to', 'info', 'faq']
+    )
+    async def howto(self, ctx):
+        """Show useful information for newcomers"""
+        await ctx.send_help('how-to')
+
+    @howto.command(
+        name='codeblocks',
+        aliases=['codeblock', 'code-blocks', 'code-block', 'code']
+    )
+    async def codeblocks(self, ctx):
+        """Instructions on how to properly paste code"""
+        code_instructions = (
+            "Discord has an awesome feature called **Text Markdown** which "
+            "supports code with full syntax highlighting using codeblocks."
+            "To use codeblocks all you need to do is properly place the "
+            "backtick characters *(not single quotes)* and specify your "
+            "language *(optional, but preferred)*.\n\n"
+            "**This is what your message should look like:**\n"
+            "*\\`\\`\\`[programming language]\nYour code here\n\\`\\`\\`*\n\n"
+            "**Here's an example:**\n"
+            "*\\`\\`\\`python\nprint('Hello world!')\n\\`\\`\\`*\n\n"
+            "**This will result in the following:**\n"
+            "```python\nprint('Hello world!')\n```\n"
+            "**NOTE:** Codeblocks are also used to run code via `felix run`."
+        )
+        link = (
+            'https://support.discordapp.com/hc/en-us/articles/'
+            '210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline-'
+        )
+
+        e = Embed(title='Text markdown',
+                  url=link,
+                  description=code_instructions,
+                  color=0x2ECC71)
+        await ctx.send(embed=e)
+
+    @howto.command(
+        name='ask',
+        aliases=['questions', 'question']
+    )
+    async def ask(self, ctx):
+        """How to properly ask a question"""
+        ask_instructions = (
+            "From time to time you'll stumble upon a question like this:\n"
+            "*Is anyone good at [this]?* / *Does anyone know [topic]?*\n"
+            "Please **just ask** your question.\n\n"
+            "• Make sure your question is easy to understand.\n"
+            "• Use the appropriate channel to ask your question.\n"
+            "• Always search before you ask (the internet is a big place).\n"
+            "• Be patient (someone will eventually try to help you)."
+        )
+
+        e = Embed(title='Just ask',
+                  description=ask_instructions,
+                  color=0x2ECC71)
+        await ctx.send(embed=e)
+
+    @howto.command(
+        name='run'
+    )
+    async def run(self, ctx):
+        """How to properly run code with Felix"""
+        run_instructions = (
+            '**Here are my supported languages:**'
+            '\nbash\npython2\npython3\njavascript\nruby\ngo\nc\ncs/csharp/c#\n'
+            'c++/cpp\nr\nasm/nasm\nphp\njava\nswift\nbrainfuck/bf\nrust\n\n'
+            '**You can run code by telling me things like:**\n'
+            'felix run python\n'
+            '\\`\\`\\`python\nyour code\n\\`\\`\\`\n'
+            '**Example**:\n'
+            'felix run python\n```python\nprint("test")\n```'
+        )
+
+        e = Embed(title='I can run code',
+                  description=run_instructions,
+                  color=0x2ECC71)
+        await ctx.send(embed=e)
 
     @commands.command(
+        name='links',
         aliases=['urls', 'sauce', 'source'],
     )
     async def links(self, ctx):
@@ -173,30 +283,58 @@ class General(commands.Cog, name='General'):
             color=0x2ECC71
         )
         await ctx.send(embed=e)
+    # ------------------------------------------------------------------------
 
     @commands.command(
-        name='gif'
+        name='question',
+        aliases=['q']
     )
-    async def gif_embed(self, ctx, *, gif_name):
-        """Post a gif
-        Displays a random gif for the specified search term"""
-        await ctx.trigger_typing()
-        gif_url = await self.gif_url(gif_name)
-        if gif_url is None:
-            await ctx.send(f'Sorry {ctx.author.mention}, no gif found 😔')
-            # await ctx.message.add_reaction('❌')
-        else:
-            e = Embed(color=0x000000)
-            e.set_image(url=gif_url)
-            e.set_footer(
-                text=ctx.author.display_name,
-                icon_url=ctx.author.avatar_url
-            )
+    async def question(self, ctx, *, question):
+        """Ask Felix a question"""
+        url = 'https://api.wolframalpha.com/v1/result?i=' + \
+            f'{quote(question)}&appid={self.client.config["wolfram_key"]}'
+        async with self.client.session.get(url) as response:
+            answer = await response.text()
+        if 'did not understand' in answer:
+            answer = 'Sorry, I did not understand that'
+        await ctx.send(answer)
+    # ------------------------------------------------------------------------
 
-            await ctx.send(embed=e)
-            # await ctx.message.add_reaction('✅')
+    @commands.command(
+        aliases=['ud', 'urban', 'urbandict'],
+        hidden=True,
+    )
+    # @commands.has_role(498576446147788824)
+    async def urbandictionary(self, ctx, *, term):
+        """Ask urbandictionary
+        Get the definition of a word from Urbandictionary"""
+        url = f'http://api.urbandictionary.com/v0/define?term={quote(term)}'
+        async with self.client.session.get(url) as response:
+            answer = await response.json()
+        if not answer['list']:
+            await ctx.send('Sorry, I did not understand that')
+        response = (
+            '\n**Definition:**\n'
+            f'{answer["list"][0]["definition"]}\n'
+            '\n**Example:**\n'
+            f'{answer["list"][0]["example"]}'
+        )
+        embed = Embed(
+            title=f'"**{term}**" according to urbandictionary.com',
+            url=f'https://urbandictionary.com/define.php?term={quote(term)}',
+            description=response.replace('[', '').replace(']', ''),
+            color=random.randint(0, 0xFFFFFF)
+        )
+        embed.set_footer(
+            text=ctx.author.display_name,
+            icon_url=ctx.author.avatar_url
+        )
+        await ctx.send(embed=embed)
+    # ------------------------------------------------------------------------
 
-    @commands.command()
+    @commands.command(
+        name='video'
+    )
     async def video(self, ctx, *, term):
         """Search Youtube for EM videos"""
         video_list = []
@@ -243,128 +381,7 @@ class General(commands.Cog, name='General'):
             response = '\n'.join(response)
 
         await ctx.send(response)
-
-    @commands.command(
-        aliases=['q']
-    )
-    async def question(self, ctx, *, question):
-        """Ask Felix a question"""
-        url = 'https://api.wolframalpha.com/v1/result?i=' + \
-            f'{quote(question)}&appid={self.client.config["wolfram_key"]}'
-        async with self.client.session.get(url) as response:
-            answer = await response.text()
-        if 'did not understand' in answer:
-            answer = 'Sorry, I did not understand that'
-        await ctx.send(answer)
-
-    @commands.command(
-        aliases=['ud', 'urban', 'urbandict'],
-        hidden=True,
-    )
-    # @commands.has_role(498576446147788824)
-    async def urbandictionary(self, ctx, *, term):
-        """Ask urbandictionary
-        Get the definition of a word from Urbandictionary"""
-        url = f'http://api.urbandictionary.com/v0/define?term={quote(term)}'
-        async with self.client.session.get(url) as response:
-            answer = await response.json()
-        if not answer['list']:
-            await ctx.send('Sorry, I did not understand that')
-        response = (
-            '\n**Definition:**\n'
-            f'{answer["list"][0]["definition"]}\n'
-            '\n**Example:**\n'
-            f'{answer["list"][0]["example"]}'
-        )
-        embed = Embed(
-            title=f'"**{term}**" according to urbandictionary.com',
-            url=f'https://urbandictionary.com/define.php?term={quote(term)}',
-            description=response.replace('[', '').replace(']', ''),
-            color=random.randint(0, 0xFFFFFF)
-        )
-        embed.set_footer(
-            text=ctx.author.display_name,
-            icon_url=ctx.author.avatar_url
-        )
-        await ctx.send(embed=embed)
-
-    @commands.group(
-        name="how-to",
-        invoke_without_command=True,
-        aliases=['howto', 'info', 'faq']
-    )
-    async def how_to(self, ctx):
-        """Show useful information for newcomers"""
-        await ctx.send_help('how-to')
-
-    @how_to.command(
-        aliases=['codeblock', 'code-blocks', 'code-block', 'code']
-    )
-    async def codeblocks(self, ctx):
-        """Instructions on how to properly paste code"""
-        code_instructions = (
-            "Discord has an awesome feature called **Text Markdown** which "
-            "supports code with full syntax highlighting using codeblocks."
-            "To use codeblocks all you need to do is properly place the "
-            "backtick characters *(not single quotes)* and specify your "
-            "language *(optional, but preferred)*.\n\n"
-            "**This is what your message should look like:**\n"
-            "*\\`\\`\\`[programming language]\nYour code here\n\\`\\`\\`*\n\n"
-            "**Here's an example:**\n"
-            "*\\`\\`\\`python\nprint('Hello world!')\n\\`\\`\\`*\n\n"
-            "**This will result in the following:**\n"
-            "```python\nprint('Hello world!')\n```\n"
-            "**NOTE:** Codeblocks are also used to run code via `felix run`."
-        )
-        link = (
-            'https://support.discordapp.com/hc/en-us/articles/'
-            '210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline-'
-        )
-
-        e = Embed(title='Text markdown',
-                  url=link,
-                  description=code_instructions,
-                  color=0x2ECC71)
-        await ctx.send(embed=e)
-
-    @how_to.command(
-        aliases=['questions', 'question']
-    )
-    async def ask(self, ctx):
-        """How to properly ask a question"""
-        ask_instructions = (
-            "From time to time you'll stumble upon a question like this:\n"
-            "*Is anyone good at [this]?* / *Does anyone know [topic]?*\n"
-            "Please **just ask** your question.\n\n"
-            "• Make sure your question is easy to understand.\n"
-            "• Use the appropriate channel to ask your question.\n"
-            "• Always search before you ask (the internet is a big place).\n"
-            "• Be patient (someone will eventually try to help you)."
-        )
-
-        e = Embed(title='Just ask',
-                  description=ask_instructions,
-                  color=0x2ECC71)
-        await ctx.send(embed=e)
-
-    @how_to.command()
-    async def run(self, ctx):
-        """How to properly run code with Felix"""
-        run_instructions = (
-            '**Here are my supported languages:**'
-            '\nbash\npython2\npython3\njavascript\nruby\ngo\nc\ncs/csharp/c#\n'
-            'c++/cpp\nr\nasm/nasm\nphp\njava\nswift\nbrainfuck/bf\nrust\n\n'
-            '**You can run code by telling me things like:**\n'
-            'felix run python\n'
-            '\\`\\`\\`python\nyour code\n\\`\\`\\`\n'
-            '**Example**:\n'
-            'felix run python\n```python\nprint("test")\n```'
-        )
-
-        e = Embed(title='I can run code',
-                  description=run_instructions,
-                  color=0x2ECC71)
-        await ctx.send(embed=e)
+    # ------------------------------------------------------------------------
 
 
 def setup(client):
