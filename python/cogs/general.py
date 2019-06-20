@@ -291,6 +291,46 @@ class General(commands.Cog, name='General'):
     # ------------------------------------------------------------------------
 
     @commands.command(
+        name='memberinfo',
+        aliases=['member']
+    )
+    async def memberinfo(self, ctx, member: Member):
+        """Provides information about the given member."""
+        url = 'https://emkc.org/api/v1/stats/discord/messages'
+        params = [('user', str(member))]
+        async with self.client.session.get(url, params=params) as r:
+            if r.status != 200:
+                raise commands.BadArgument('Bad response from EMKC API')
+            data = await r.json()
+        embed = Embed(color=member.color)
+        embed.set_thumbnail(url=member.avatar_url)
+        embed.set_footer(
+            text=ctx.author.display_name,
+            icon_url=ctx.author.avatar_url
+        )
+        # In this case a dict is used for readability, but this must be changed
+        # if "inline" needs to be specified for individual fields
+        fields = {
+            'Username:': str(member),
+            'Display name:': member.display_name,
+            'Account created at:': member.created_at.strftime("%Y/%m/%d"),
+            'Status:': str(member.status).title(),
+            'Joined at:': member.joined_at.strftime("%Y/%m/%d"),
+            'Top role:': member.top_role.mention
+            if str(member.top_role) != '@everyone' else '@everyone',
+            'Message count:': data[0]['messages'] if data else '... < 10',
+            'Current activities:': '\n'.join(i.name for i in member.activities)
+            if member.activities else 'No current activities'
+        }
+        for name, value in fields.items():
+            embed.add_field(
+                name=name,
+                value=value
+            )
+        await ctx.send(embed=embed)
+    # ------------------------------------------------------------------------
+
+    @commands.command(
         name='question',
         aliases=['q']
     )
@@ -433,46 +473,6 @@ class General(commands.Cog, name='General'):
         if len(weather_codeblock) > 2000:
             weather_codeblock = 'Sorry - response longer than 2000 characters'
         await ctx.send(weather_codeblock)
-    # ------------------------------------------------------------------------
-
-    @commands.command(
-        name='member',
-        aliases=['memberinfo']
-    )
-    async def member_info(self, ctx, member: Member):
-        """Provides information about the given member."""
-        url = 'https://emkc.org/api/v1/stats/discord/messages'
-        params = [('user', str(member))]
-        async with self.client.session.get(url, params=params) as r:
-            if r.status != 200:
-                raise commands.BadArgument('Bad response from EMKC API')
-            data = await r.json()
-        embed = Embed(color=member.color)
-        embed.set_thumbnail(url=member.avatar_url)
-        embed.set_footer(
-            text=ctx.author.display_name,
-            icon_url=ctx.author.avatar_url
-        )
-        # In this case a dict is used for readability, but this must be changed
-        # if "inline" needs to be specified for individual fields
-        fields = {
-            'Username:': str(member),
-            'Display name:': member.display_name,
-            'Account created at:': member.created_at.strftime("%Y/%m/%d"),
-            'Status:': str(member.status).title(),
-            'Joined at:': member.joined_at.strftime("%Y/%m/%d"),
-            'Top role:': member.top_role.mention
-            if str(member.top_role) != '@everyone' else '@everyone',
-            'Message count:': data[0]['messages'] if data else '... < 10',
-            'Current activities:': '\n'.join(i.name for i in member.activities)
-            if member.activities else 'No current activities'
-        }
-        for name, value in fields.items():
-            embed.add_field(
-                name=name,
-                value=value
-            )
-        await ctx.send(embed=embed)
 
 
 def setup(client):
