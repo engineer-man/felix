@@ -449,10 +449,6 @@ class General(commands.Cog, name='General'):
             data = await r.json()
         embed = Embed(color=member.color)
         embed.set_thumbnail(url=member.avatar_url)
-        embed.set_author(
-            name=ctx.guild.name,
-            icon_url=ctx.guild.icon_url
-        )
         embed.set_footer(
             text=ctx.author.display_name,
             icon_url=ctx.author.avatar_url
