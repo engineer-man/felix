@@ -2,7 +2,6 @@
 It will add some management commands to a bot.
 
 Commands:
-    embed           make the bot post an embed for you
     version         show the hash of the latest commit
     load            load an extension / cog
     unload          unload an extension / cog
@@ -11,6 +10,8 @@ Commands:
     activity        set the bot's status message
     list            make felix compute a list
      └duplicates        find duplicate usernames
+
+    pull            pull latest changes from github (superuser only)
 
 Only users belonging to a role that is specified under the module's name
 in the permissions.json file can use the commands.
@@ -193,28 +194,6 @@ class Management(commands.Cog, name='Management'):
             f'```css\nCurrent Version: [{version[:7]}].from [{date}]' +
             f'\n{status}``````diff\n{changelog}```'
         )
-
-    # ----------------------------------------------
-    # Function to disply an embed
-    # ----------------------------------------------
-    @commands.command(
-        name='embed',
-        brief='Create a text embed',
-        description='Create a text embed | usage: felix embed Title|Text',
-        hidden=True,
-    )
-    async def embed(self, ctx, *, embed_message):
-        title, text = embed_message.split('|')
-        embed = Embed(
-            title=title,
-            description=text
-        )
-        embed.set_footer(
-            text=ctx.author.display_name,
-            icon_url=ctx.author.avatar_url
-        )
-        await ctx.send(embed=embed)
-        await ctx.message.delete()
 
     # ----------------------------------------------
     # Function to load extensions
