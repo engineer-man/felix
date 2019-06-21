@@ -124,7 +124,7 @@ class Management(commands.Cog, name='Management'):
                     version = line.split(' ')[1]
                 elif line.startswith('Date'):
                     date = line[5:].strip()
-                    date = date.replace(' +', 'Z+').replace(' ', 'T')
+                    date = date.replace(' +', '+').replace(' ', 'T')
                 else:
                     pass
         except Exception as e:
