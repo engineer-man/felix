@@ -13,7 +13,6 @@ in the permissions.json file can use the commands.
 
 from discord.ext import commands
 from discord import Member, DMChannel, Embed, Message, Member, TextChannel
-from dataclasses import dataclass
 import re
 import time
 import random
