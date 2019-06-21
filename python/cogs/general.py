@@ -9,6 +9,7 @@ Commands:
      ├ ask              how to ask question on the server
      └ run              how to use felix run
     links           make the bot post links to the engineerman github pages
+    memberinfo      provide information about the given member
     question        ask a question which the bot will answer using wolframalpha
     urbandictionary look up a word on urbandictionary.com
     video           make the bot post links to EM Videos on youtube
@@ -308,6 +309,8 @@ class General(commands.Cog, name='General'):
             text=ctx.author.display_name,
             icon_url=ctx.author.avatar_url
         )
+        message_count = data[0]['messages'] if data else 0
+        guild_time = dt.utcnow() - member.joined_at
         # In this case a dict is used for readability, but this must be changed
         # if "inline" needs to be specified for individual fields
         fields = {
@@ -318,7 +321,11 @@ class General(commands.Cog, name='General'):
             'Joined at:': member.joined_at.strftime("%Y/%m/%d"),
             'Top role:': member.top_role.mention
             if str(member.top_role) != '@everyone' else '@everyone',
-            'Message count:': data[0]['messages'] if data else '... < 10',
+            'Message count:': message_count,
+            'Messages per day:': round(message_count / guild_time.days)
+            if guild_time.days > 0 else '0 days spent in server',
+            'Flagged:': 'True'
+            if 484183734686318613 in (i.id for i in member.roles) else 'False',
             'Current activities:': '\n'.join(i.name for i in member.activities)
             if member.activities else 'No current activities'
         }
