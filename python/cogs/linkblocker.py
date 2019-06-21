@@ -12,7 +12,8 @@ in the permissions.json file can use the commands.
 """
 
 from discord.ext import commands
-from discord import Member, DMChannel, Embed
+from discord import Member, DMChannel, Embed, Message, Member, TextChannel
+from dataclasses import dataclass
 import re
 import time
 import random
@@ -25,6 +26,14 @@ FORBIDDEN = [
 
 REPORT_CHANNEL = 483978527549554698
 REPORT_ROLE = 500710389131247636
+
+
+class MyMember():
+    # TODO: Make this a dataclass as soon as Felix run on py 3.7+
+    def __init__(self, content, author, channel):
+        self.content = content
+        self.author = author
+        self.channel = channel
 
 
 class LinkBlocker(commands.Cog, name='Link Blocker'):
@@ -99,15 +108,16 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
 
     async def check_message(self, msg):
         """Check message - return True if message contains forbidden text"""
+        my_msg = MyMember(msg.content, msg.author, msg.channel)
         # ignore spoiler tags
-        msg.content = msg.content.replace('||', '')
-        if self.is_dm(msg):
+        my_msg.content = my_msg.content.replace('||', '')
+        if self.is_dm(my_msg):
             return False
-        if self.is_allowed(msg):
+        if self.is_allowed(my_msg):
             return False
-        if await self.has_discord_link(msg):
+        if await self.has_discord_link(my_msg):
             return True
-        if await self.has_forbidden_text(msg):
+        if await self.has_forbidden_text(my_msg):
             return True
         return False
 
