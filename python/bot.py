@@ -13,8 +13,10 @@ This bot requires discord.py
 from discord.ext.commands import Bot, when_mentioned_or
 from discord import DMChannel
 from aiohttp import ClientSession
+from datetime import datetime
 from os import path, listdir
 import json
+
 
 
 class Felix(Bot):
@@ -68,6 +70,7 @@ for extension in reversed(STARTUP_EXTENSIONS):
     try:
         client.load_extension(f'{extension}')
     except Exception as e:
+        client.last_errors.append((e, datetime.utcnow(), None))
         exc = f'{type(e).__name__}: {e}'
         print(f'Failed to load extension {extension}\n{exc}')
 
