@@ -400,39 +400,6 @@ class Management(commands.Cog, name='Management'):
             return
         await ctx.send('```css\n' + '\n'.join(result) + '\n```')
 
-    # ----------------------------------------------
-    # Function to pull the latest changes from github
-    # ----------------------------------------------
-    @commands.command(
-        name='pull',
-        hidden=True,
-    )
-    async def pull(self, ctx):
-        """Pull the latest changes from github"""
-        await ctx.trigger_typing()
-        if not self.client.is_superuser(ctx.author):
-            raise commands.CheckFailure(f'{ctx.author} is not a superuser')
-        try:
-            output = subprocess.check_output(
-                ['git', 'pull']).decode()
-            await ctx.send('```git\n' + output + '\n```')
-        except Exception as e:
-            await ctx.send(str(e))
-
-    @commands.command(
-        name='id_map',
-        hidden=True,
-    )
-    async def id_map(self, ctx):
-        if not self.client.is_superuser(ctx.author):
-            raise commands.CheckFailure(f'{ctx.author} is not a superuser')
-        mapping = dict()
-        for member in self.client.main_guild.members:
-            mapping[str(member)] = member.id
-        with open('id_mapping.json', 'w') as f:
-            json.dump(mapping, f, indent=1)
-        await ctx.send(f'Created mapping for {len(mapping)} users')
-
 
 def setup(client):
     client.add_cog(Management(client))
