@@ -12,6 +12,7 @@ Only users that have an admin role can use the commands.
 
 from discord.ext import commands
 from discord import Member, DMChannel, Embed, Message, Member, TextChannel
+from dataclasses import dataclass
 import re
 import time
 import random
@@ -26,12 +27,11 @@ REPORT_CHANNEL = 483978527549554698
 REPORT_ROLE = 500710389131247636
 
 
-class MyMember():
-    # TODO: Make this a dataclass as soon as Felix run on py 3.7+
-    def __init__(self, content, author, channel):
-        self.content = content
-        self.author = author
-        self.channel = channel
+@dataclass
+class MinimalMessage:
+    content: str
+    author: Member
+    channel: TextChannel
 
 
 class LinkBlocker(commands.Cog, name='Link Blocker'):
@@ -47,10 +47,6 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
     # ----------------------------------------------
     # Message checks
     # ----------------------------------------------
-    def is_dm(self, msg):
-        """return True if message is a DM"""
-        return isinstance(msg.channel, DMChannel)
-
     def is_allowed(self, msg):
         """return True if user is permitted to post links"""
         if msg.author == self.client.user:
@@ -106,11 +102,9 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
 
     async def check_message(self, msg):
         """Check message - return True if message contains forbidden text"""
-        my_msg = MyMember(msg.content, msg.author, msg.channel)
+        my_msg = MinimalMessage(msg.content, msg.author, msg.channel)
         # ignore spoiler tags
         my_msg.content = my_msg.content.replace('||', '')
-        if self.is_dm(my_msg):
-            return False
         if self.is_allowed(my_msg):
             return False
         if await self.has_discord_link(my_msg):
