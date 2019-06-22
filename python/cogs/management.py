@@ -431,7 +431,7 @@ class Management(commands.Cog, name='Management'):
             mapping[str(member)] = member.id
         with open('id_mapping.json', 'w') as f:
             json.dump(mapping, f, indent=1)
-        await ctx.send('Done')
+        await ctx.send(f'Created mapping for {len(mapping)} users')
 
 
 def setup(client):
