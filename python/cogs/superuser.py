@@ -37,18 +37,6 @@ class Superuser(commands.Cog, name='Superuser'):
         except Exception as e:
             await ctx.send(str(e))
 
-    # Temporary Command until DB is ported to use user id's.
-    @commands.command(
-        name='id_map',
-        hidden=True,
-    )
-    async def id_map(self, ctx):
-        mapping = dict()
-        for member in self.client.main_guild.members:
-            mapping[str(member)] = member.id
-        with open('id_mapping.json', 'w') as f:
-            json.dump(mapping, f, indent=1)
-        await ctx.send(f'Created mapping for {len(mapping)} users')
 
 def setup(client):
     client.add_cog(Superuser(client))

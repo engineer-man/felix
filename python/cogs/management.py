@@ -414,8 +414,7 @@ class Management(commands.Cog, name='Management'):
         invoke_without_command=True,
         name='error',
         hidden=True,
-        aliases=['errors'],
-        description='Show a concise list of stored errors'
+        aliases=['errors']
     )
     async def error(self, ctx):
         """Show a concise list of stored errors"""
