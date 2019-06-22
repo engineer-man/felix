@@ -12,6 +12,7 @@ Commands:
      └duplicates        find duplicate usernames
 
     pull            pull latest changes from github (superuser only)
+    error           print the traceback of the last unhandled error to chat
 
 Only users belonging to a role that is specified under the module's name
 in the permissions.json file can use the commands.
@@ -68,10 +69,9 @@ class Management(commands.Cog, name='Management'):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
-            await ctx.author.send(error)
-            await ctx.message.delete()
-            print(f'{ctx.command} on cooldown for {ctx.author}')
+            await ctx.send(error)
             return
+
         if isinstance(error, commands.MissingRequiredArgument):
             par = str(error.param)
             missing = par.split(": ")[0]
@@ -85,6 +85,15 @@ class Management(commands.Cog, name='Management'):
                 f'`felix help {ctx.command.name}`'
             )
             return
+
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send('Sorry, you are not allowed to run this command.')
+            return
+
+        if isinstance(error, commands.CommandNotFound):
+            await ctx.send(f'Sorry, command `{ctx.invoked_with}` not found.')
+            return
+
         if isinstance(error, commands.BadArgument):
             # It's in an embed to prevent mentions from working
             embed = Embed(
@@ -94,12 +103,15 @@ class Management(commands.Cog, name='Management'):
             )
             await ctx.send(embed=embed)
             return
-        if isinstance(error, commands.CheckFailure):
-            print(
-                f'MISSING PERMISSION | USER: {ctx.author} ' +
-                f'| COMMAND: {ctx.command}'
-            )
-            return
+
+        # In case of an unhandled error -> Save the error + current datetime
+        # so it can be accessed later with the error command
+        await ctx.send('Sorry, something went wrong.')
+        self.client.last_error = (error, datetime.utcnow())
+        await self.client.change_presence(
+            activity=Activity(name='ERROR encountered', url=None, type=3)
+        )
+
         print(f'Ignoring exception in command {ctx.command}:')
         traceback.print_exception(
             type(error), error, error.__traceback__
@@ -128,7 +140,8 @@ class Management(commands.Cog, name='Management'):
                 else:
                     pass
         except Exception as e:
-            print(e)
+            self.client.last_error = (e,datetime.utcnow())
+            raise e
         return (version, date)
 
     async def get_remote_commits(self):
@@ -382,6 +395,8 @@ class Management(commands.Cog, name='Management'):
     )
     async def joined(self, ctx, members: commands.Greedy[Member]):
         """Print the date a member joined"""
+        if not members:
+            raise commands.BadArgument('Please specify at least 1 member')
         await ctx.trigger_typing()
         result = []
         now = datetime.utcnow()
@@ -399,6 +414,26 @@ class Management(commands.Cog, name='Management'):
         if not result:
             return
         await ctx.send('```css\n' + '\n'.join(result) + '\n```')
+
+    @commands.command(
+        name='error',
+        hidden=True,
+        aliases=['lasterror', 'showerror'],
+    )
+    async def error(self, ctx):
+        """Print the traceback of the last unhandled error to chat"""
+        if not self.client.last_error:
+            await ctx.send('No Error found')
+            return
+        exc, date = self.client.last_error
+        delta = (datetime.utcnow() - date).total_seconds()
+        hours = int(delta // 3600)
+        seconds = int(delta - (hours * 3600))
+        delta_str = f'{hours} hours and {seconds} seconds ago'
+        response = [f'Last error occured `{delta_str}`\n```python\n'] \
+            + traceback.format_exception(type(exc), exc, exc.__traceback__) \
+            + ['```']
+        await ctx.send(''.join(response))
 
 
 def setup(client):

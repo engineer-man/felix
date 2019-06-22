@@ -175,7 +175,7 @@ class Jail(commands.Cog, name='Jail'):
     async def jail(self, ctx, members: commands.Greedy[Member]):
         """Put a list of @users in jail"""
         if not members:
-            return
+            raise commands.BadArgument('Please specify at least 1 member')
         results = []
         for member in members:
             if self.client.user_has_permission(member, 'jail'):
@@ -194,7 +194,7 @@ class Jail(commands.Cog, name='Jail'):
     async def unjail(self, ctx, members: commands.Greedy[Member]):
         """Release a list of @users from jail"""
         if not members:
-            return
+            raise commands.BadArgument('Please specify at least 1 member')
         results = []
         for member in members:
             r = await self.release_from_jail(member)

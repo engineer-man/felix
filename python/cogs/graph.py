@@ -160,7 +160,7 @@ class Graph(commands.Cog,
         measure over the last [days] days
         """
         if not members:
-            return
+            raise commands.BadArgument('Please specify at least 1 member')
         await ctx.trigger_typing()
         days = clamp(days, 1, 30)
         memberslist = [str(x) for x in members][:10]

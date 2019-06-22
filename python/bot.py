@@ -25,6 +25,7 @@ class Felix(Bot):
             self.config = json.load(conffile)
         with open('./cogs/permissions.json') as permfile:
             self.permissions = json.load(permfile)
+        self.last_error = None
 
     async def start(self, *args, **kwargs):
         self.session = ClientSession()
