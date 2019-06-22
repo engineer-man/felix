@@ -80,7 +80,7 @@ class Management(commands.Cog, name='Management'):
             await ctx.send(
                 f'Missing parameter: `{missing}{missing_type}`' +
                 f'\nIf you are not sure how to use the command, try running ' +
-                f'`felix help {ctx.command.name}`'
+                f'`felix help {ctx.command.qualified_name}`'
             )
             return
 
