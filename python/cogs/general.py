@@ -310,7 +310,7 @@ class General(commands.Cog, name='General'):
             icon_url=ctx.author.avatar_url
         )
         message_count = data[0]['messages'] if data else 0
-        guild_time = dt.utcnow() - member.joined_at
+        guild_time = (dt.utcnow() - member.joined_at).total_seconds() / 86400
         # In this case a dict is used for readability, but this must be changed
         # if "inline" needs to be specified for individual fields
         fields = {
@@ -322,8 +322,8 @@ class General(commands.Cog, name='General'):
             'Top role:': member.top_role.mention
             if str(member.top_role) != '@everyone' else '@everyone',
             'Message count:': message_count,
-            'Messages per day:': round(message_count / guild_time.days)
-            if guild_time.days > 0 else '0 days spent in server',
+            'Messages per day:': round(message_count / guild_time, 1)
+            if guild_time >= 1 else message_count,
             'Flagged:': 'True'
             if 484183734686318613 in (i.id for i in member.roles) else 'False',
             'Current activities:': '\n'.join(i.name for i in member.activities)
