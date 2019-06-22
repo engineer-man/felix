@@ -18,8 +18,7 @@ class Superuser(commands.Cog, name='Superuser'):
         self.client = client
 
     async def cog_check(self, ctx):
-        superusers = self.client.config['superusers']
-        return ctx.author.id in superusers
+        return self.client.user_is_superuser(ctx.author)
 
     # ----------------------------------------------
     # Function to pull the latest changes from github
@@ -31,8 +30,6 @@ class Superuser(commands.Cog, name='Superuser'):
     async def pull(self, ctx):
         """Pull the latest changes from github"""
         await ctx.trigger_typing()
-        if not self.client.is_superuser(ctx.author):
-            raise commands.CheckFailure(f'{ctx.author} is not a superuser')
         try:
             output = subprocess.check_output(
                 ['git', 'pull']).decode()
@@ -40,14 +37,12 @@ class Superuser(commands.Cog, name='Superuser'):
         except Exception as e:
             await ctx.send(str(e))
 
-    # Temp Command until DB is ported.
+    # Temporary Command until DB is ported to use user id's.
     @commands.command(
         name='id_map',
         hidden=True,
     )
     async def id_map(self, ctx):
-        if not self.client.is_superuser(ctx.author):
-            raise commands.CheckFailure(f'{ctx.author} is not a superuser')
         mapping = dict()
         for member in self.client.main_guild.members:
             mapping[str(member)] = member.id

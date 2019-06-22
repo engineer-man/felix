@@ -23,7 +23,7 @@ class RemoteControl(commands.Cog, command_attrs=dict(hidden=True)):
         self.rc_active = False
 
     async def cog_check(self, ctx):
-        return self.client.user_has_permission(ctx.author, 'rc')
+        return self.client.user_is_admin(ctx.author)
 
     # ----------------------------------------------
     # Cog Event listeners

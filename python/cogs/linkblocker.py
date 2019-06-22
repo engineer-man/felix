@@ -7,8 +7,7 @@ Commands:
     allow           Specify a user. User is then allowed to post 1
                     discord.gg invite link
 
-Only users belonging to a role that is specified under the module's name
-in the permissions.json file can use the commands.
+Only users that have an admin role can use the commands.
 """
 
 from discord.ext import commands
@@ -43,7 +42,7 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         self.NAUGHTY_LIST_TIME = 600
 
     async def cog_check(self, ctx):
-        return self.client.user_has_permission(ctx.author, 'linkblocker')
+        return self.client.user_is_admin(ctx.author)
 
     # ----------------------------------------------
     # Message checks
@@ -56,7 +55,7 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         """return True if user is permitted to post links"""
         if msg.author == self.client.user:
             return True
-        if self.client.user_has_permission(msg.author, 'linkblocker'):
+        if self.client.user_is_admin(msg.author):
             return True
         return False
 

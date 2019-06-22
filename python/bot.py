@@ -23,8 +23,6 @@ class Felix(Bot):
         self.session = None
         with open('../config.json') as conffile:
             self.config = json.load(conffile)
-        with open('./cogs/permissions.json') as permfile:
-            self.permissions = json.load(permfile)
         self.last_error = None
 
     async def start(self, *args, **kwargs):
@@ -35,24 +33,23 @@ class Felix(Bot):
         await self.session.close()
         await super().close()
 
-    def user_has_permission(self, author, module_name):
+    def user_is_admin(self, user):
         try:
-            user_roles = [role.id for role in author.roles]
+            user_roles = [role.id for role in user.roles]
         except AttributeError:
             return False
-        permitted_roles = self.permissions[module_name]
+        permitted_roles = self.config['admin_roles']
         return any(role in permitted_roles for role in user_roles)
 
-    def user_is_ignored(self, author):
-        user_roles = [role.id for role in author.roles]
+    def user_is_superuser(self, user):
+        superusers = self.config['superusers']
+        return user.id in superusers
+
+    def user_is_ignored(self, user):
+        user_roles = [role.id for role in user.roles]
         if 581535776697876491 in user_roles:
             return True
         return False
-
-    def is_superuser(self, author):
-        superusers = self.config['superusers']
-        return author.id in superusers
-
 
 client = Felix(
     command_prefix=when_mentioned_or('felix ', 'Felix '),
@@ -78,10 +75,10 @@ for extension in reversed(STARTUP_EXTENSIONS):
 @client.event
 async def on_ready():
     client.main_guild = client.get_guild(473161189120147456) or client.guilds[0]
-    print('Felix-Python started successfully')
-    print('Active in these guilds/servers:')
+    print('\nActive in these guilds/servers:')
     [print(g.name) for g in client.guilds]
-    print('Main guild:', client.main_guild.name)
+    print('\nMain guild:', client.main_guild.name)
+    print('\nFelix-Python started successfully')
     return True
 
 

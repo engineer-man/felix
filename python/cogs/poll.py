@@ -12,8 +12,7 @@ NOTE that the bot can only check reactions on the last 15000 messages it saw.
 So after 15000 messages (max_messages setting) the poll monitoring breaks.
 It also breaks if the poll-cog is reloaded or the bot is restarted.
 
-Only users belonging to a role that is specified under the module's name
-in the permissions.json file can use the commands.
+Only users that have an admin role can use the commands.
 """
 
 from discord.ext import commands
@@ -64,7 +63,7 @@ class Poll(commands.Cog, name='Poll'):
         }
 
     async def cog_check(self, ctx):
-        return self.client.user_has_permission(ctx.author, 'poll')
+        return self.client.user_is_admin(ctx.author)
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):

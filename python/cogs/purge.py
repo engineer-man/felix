@@ -13,8 +13,7 @@ Commands:
     purge all       All messages in the channel will be deleted.
                     (might take a long time)
 
-Only users belonging to a role that is specified under the module's name
-in the permissions.json file can use the commands.
+Only users that have an admin role can use the commands.
 """
 
 from discord.ext import commands
@@ -29,7 +28,7 @@ class Purge(commands.Cog, name='Purge'):
         self.client = client
 
     async def cog_check(self, ctx):
-        return self.client.user_has_permission(ctx.author, 'purge')
+        return self.client.user_is_admin(ctx.author)
 
     # ----------------------------------------------
     # Function Group to clear channel of messages

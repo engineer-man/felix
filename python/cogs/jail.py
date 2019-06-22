@@ -6,8 +6,7 @@ Commands:
     jail                Jail a @user
     unjail              Release a @user from jail
 
-Only users belonging to a role that is specified under the module's name
-in the permissions.json file can use the commands.
+Only users that have an admin role can use the commands.
 """
 
 from discord.ext import commands
@@ -43,7 +42,7 @@ class Jail(commands.Cog, name='Jail'):
         self.my_task = self.client.loop.create_task(self.clear_naughty_list())
 
     async def cog_check(self, ctx):
-        return self.client.user_has_permission(ctx.author, 'jail')
+        return self.client.user_is_admin(ctx.author)
 
     # ----------------------------------------------
     # Helper Functions
@@ -178,7 +177,7 @@ class Jail(commands.Cog, name='Jail'):
             raise commands.BadArgument('Please specify at least 1 member')
         results = []
         for member in members:
-            if self.client.user_has_permission(member, 'jail'):
+            if self.client.user_is_admin(member):
                 results.append(f'Sorry {member} is my friend')
             else:
                 r = await self.send_to_jail(member)

@@ -14,8 +14,7 @@ Commands:
     pull            pull latest changes from github (superuser only)
     error           print the traceback of the last unhandled error to chat
 
-Only users belonging to a role that is specified under the module's name
-in the permissions.json file can use the commands.
+Only users that have an admin role can use the commands.
 """
 import subprocess
 import json
@@ -30,10 +29,9 @@ class Management(commands.Cog, name='Management'):
     def __init__(self, client):
         self.client = client
         self.reload_config()
-        self.reload_permissions()
 
     async def cog_check(self, ctx):
-        return self.client.user_has_permission(ctx.author, 'management')
+        return self.client.user_is_admin(ctx.author)
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -120,10 +118,6 @@ class Management(commands.Cog, name='Management'):
     def reload_config(self):
         with open("../config.json") as conffile:
             self.client.config = json.load(conffile)
-
-    def reload_permissions(self):
-        with open(path.join(path.dirname(__file__), 'permissions.json')) as f:
-            self.client.permissions = json.load(f)
 
     def get_version_info(self):
         version = 'unknown'

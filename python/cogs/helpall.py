@@ -6,8 +6,7 @@ It hides the help command and adds these commands:
     The commands will output to the current channel or to a dm channel
     according to the pm_help kwarg of the bot.
 
-Only users belonging to a role that is specified under the module's name
-in the permissions.json file can use the commands.
+Only users that have an admin role can use the commands.
 """
 
 import itertools
@@ -119,7 +118,7 @@ class Help(commands.Cog):
         )
 
     async def cog_check(self, ctx):
-        return self.client.user_has_permission(ctx.author, 'helpall')
+        return self.client.user_is_admin(ctx.author)
 
     def cog_unload(self):
         self.client.get_command('help').hidden = False

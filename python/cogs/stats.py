@@ -6,8 +6,7 @@ Commands:
      ├ users        print stats about discord members
      └ channels     print stats about discord channels
 
-Only users belonging to a role that is specified under the module's name
-in the permissions.json file can use the commands.
+Only users that have an admin role can use the commands.
 """
 
 from discord.ext import commands
@@ -24,7 +23,7 @@ class Stats(commands.Cog, name='Stats'):
         self.last_time = self.load_stats()
 
     async def cog_check(self, ctx):
-        return self.client.user_has_permission(ctx.author, 'stats')
+        return self.client.user_is_admin(ctx.author)
 
     def load_state(self):
         with open("../state.json", "r") as statefile:

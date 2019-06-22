@@ -9,8 +9,7 @@ Commands:
 This cog requires matplotlib:
     pip install -U matplotlib
 
-Only users belonging to a role that is specified under the module's name
-in the permissions.json file can use the commands.
+Only users that have an admin role can use the commands.
 """
 from discord.ext import commands
 from discord import Member, File
@@ -33,7 +32,7 @@ class Graph(commands.Cog,
         self.client = client
 
     async def cog_check(self, ctx):
-        return self.client.user_has_permission(ctx.author, 'graph')
+        return self.client.user_is_admin(ctx.author)
 
     async def create_graph_messages(self, days, limit=0, users=None):
         url = 'https://emkc.org/api/v1/stats/discord/messages'
