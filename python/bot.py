@@ -23,7 +23,7 @@ class Felix(Bot):
         self.session = None
         with open('../config.json') as conffile:
             self.config = json.load(conffile)
-        self.last_error = None
+        self.last_errors = []
 
     async def start(self, *args, **kwargs):
         self.session = ClientSession()

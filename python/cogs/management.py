@@ -105,7 +105,7 @@ class Management(commands.Cog, name='Management'):
         # In case of an unhandled error -> Save the error + current datetime
         # so it can be accessed later with the error command
         await ctx.send('Sorry, something went wrong.')
-        self.client.last_error = (error, datetime.utcnow())
+        self.client.last_errors.append((error, datetime.utcnow(), ctx))
         await self.client.change_presence(
             activity=Activity(name='ERROR encountered', url=None, type=3)
         )
@@ -134,7 +134,7 @@ class Management(commands.Cog, name='Management'):
                 else:
                     pass
         except Exception as e:
-            self.client.last_error = (e,datetime.utcnow())
+            self.client.last_errors.append((e, datetime.utcnow(), None))
             raise e
         return (version, date)
 
@@ -409,25 +409,91 @@ class Management(commands.Cog, name='Management'):
             return
         await ctx.send('```css\n' + '\n'.join(result) + '\n```')
 
-    @commands.command(
+    @commands.group(
+        invoke_without_command=True,
         name='error',
         hidden=True,
-        aliases=['lasterror', 'showerror'],
+        aliases=['errors'],
+        description='Show a concise list of stored errors'
     )
     async def error(self, ctx):
-        """Print the traceback of the last unhandled error to chat"""
-        if not self.client.last_error:
-            await ctx.send('No Error found')
+        """Show a concise list of stored errors"""
+        error_log = self.client.last_errors
+
+        if not error_log:
+            await ctx.send('Error log is empty')
             return
-        exc, date = self.client.last_error
+
+        response = [f'```css\nNumber of stored errors: {len(error_log)}']
+        for i, exc_tuple in enumerate(error_log):
+            exc, date, error_ctx = exc_tuple
+            call_info = (
+                f'CMD: {error_ctx.invoked_with}' if error_ctx else 'no command'
+            )
+            response.append(
+                f'{i}: ['
+                + date.isoformat().split('.')[0]
+                + '] - ['
+                + call_info
+                + f']\nException: {exc}'
+            )
+        response.append('```')
+
+        await ctx.send('\n'.join(response))
+
+    @error.command(
+        name='clear',
+        hidden=True
+    )
+    async def error_clear(self, ctx, n=None):
+        """Clear the oldest [n] errors from the error log (0 = all errors)"""
+        if not n:
+            self.client.last_errors = []
+            await ctx.send('Error log cleared')
+        else:
+            for _ in range(n):
+                self.client.last_errors.pop(0)
+            await ctx.send(f'Deleted the {n} oldest messages ')
+
+    @error.command(
+        name='traceback',
+        aliases=['tb'],
+        hidden=True
+    )
+    async def error_traceback(self, ctx, n: int = None):
+        """Print the traceback of error [n] from the error log"""
+        error_log = self.client.last_errors
+
+        if not error_log:
+            await ctx.send('Error log is empty')
+            return
+
+        if n is None:
+            await ctx.send('Please specify an error index')
+            await self.client.get_command('error').invoke(ctx)
+            return
+
+        if n >= len(error_log) or n < 0:
+            await ctx.send('Error index does not exist')
+            return
+
+        exc, date, error_ctx = error_log[n]
         delta = (datetime.utcnow() - date).total_seconds()
         hours = int(delta // 3600)
         seconds = int(delta - (hours * 3600))
         delta_str = f'{hours} hours and {seconds} seconds ago'
-        response = [f'Last error occured `{delta_str}`\n```python\n'] \
-            + traceback.format_exception(type(exc), exc, exc.__traceback__) \
-            + ['```']
-        await ctx.send(''.join(response))
+        tb = ''.join(
+            traceback.format_exception(type(exc), exc, exc.__traceback__)
+        )
+        response = [f'`Error occured {delta_str}`']
+        if error_ctx:
+            response.append(f'`Command: {error_ctx.invoked_with}`')
+            response.append(f'`User: {error_ctx.author.name}`')
+            response.append(f'`Channel:{error_ctx.channel.name}`')
+        else:
+            response.append('`Error happened outside of command`')
+        response.append(f'```python\n{tb}```')
+        await ctx.send('\n'.join(response))
 
 
 def setup(client):
