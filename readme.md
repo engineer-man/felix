@@ -5,16 +5,12 @@ Felix Discord Bot
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
-* **Python 3.6** or higher
-* **Node.js 8.10.0** or higher
+* **Python 3.7** or higher
 
 ### Installing
+#### without docker
 ```
 git clone https://github.com/engineer-man/felix.git
-cd felix
-cd node
-npm install
-cd ..
 pip install -U discord.py
 pip install -U matplotlib
 ```
@@ -37,8 +33,6 @@ docker-compose up
 This bot uses the `discord.py API wrapper` (https://rapptz.github.io/discord.py/docs/index.html)
 
 You can create new bot commands or tasks by creating your own extension/cog.
-
-A `sample_cog.py` is included inside the `python/extension` folder.
 
 ### Contributing to Felix
 If you want to contribute to Felix you can just submit a pull request.
