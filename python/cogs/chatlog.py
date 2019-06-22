@@ -47,7 +47,7 @@ class ChatLog(commands.Cog, name='Chat Log'):
             'channel': paginator[1],
             'user': paginator[2],
             'message': paginator[3],
-            'user_id': paginator[4]
+            'discord_id': paginator[4]
         }
         async with self.client.session.post(
             'https://emkc.org/api/internal/chats',
