@@ -34,18 +34,20 @@ class ChatLog(commands.Cog, name='Chat Log'):
             str(msg.channel),
             f'{msg.author.name}#{msg.author.discriminator}',
             msg.content.replace('\n', '\\n'),
+            msg.author.id
         ]
-        self.logfile.write('|'.join(paginator) + '\n')
+        self.logfile.write('|'.join(paginator[:-1]) + '\n')
         self.logfile.flush()
         # send chat message to emkc
         headers = {
             'authorization': self.client.config['emkc_key']
         }
         data = {
+            'timestamp': paginator[0],
             'channel': paginator[1],
             'user': paginator[2],
             'message': paginator[3],
-            'timestamp': paginator[0]
+            'id': paginator[4]
         }
         async with self.client.session.post(
             'https://emkc.org/api/internal/chats',
