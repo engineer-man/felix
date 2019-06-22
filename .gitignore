@@ -13,3 +13,4 @@ python/cogs/*.settings
 python/cogs/*.history
 python/questions.txt
 last_graph.png
+id_mapping.json
