@@ -298,7 +298,7 @@ class General(commands.Cog, name='General'):
     async def memberinfo(self, ctx, member: Member):
         """Provides information about the given member."""
         url = 'https://emkc.org/api/v1/stats/discord/messages'
-        params = [('user', str(member))]
+        params = [('discord_id', member.id)]
         async with self.client.session.get(url, params=params) as r:
             if r.status != 200:
                 raise commands.BadArgument('Bad response from EMKC API')
