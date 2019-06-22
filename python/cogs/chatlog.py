@@ -26,8 +26,8 @@ class ChatLog(commands.Cog, name='Chat Log'):
         if not isinstance(msg.channel, TextChannel):
             # Don't log DMs
             return
-        if not msg.channel.guild.id == 473161189120147456:
-            # Don't log messages on servers other than "EngineerMan"
+        if not msg.channel.guild.id == self.client.main_guild.id:
+            # Don't log messages on servers other than the main server
             return
         paginator = [
             msg.created_at.isoformat(),

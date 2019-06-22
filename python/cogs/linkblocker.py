@@ -24,9 +24,6 @@ FORBIDDEN = [
     'gofund.me'
 ]
 
-REPORT_CHANNEL = 483978527549554698
-REPORT_ROLE = 500710389131247636
-
 
 @dataclass
 class MinimalMessage:
@@ -41,6 +38,8 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         self.allowed_once = []
         self.naughty_list = {}
         self.NAUGHTY_LIST_TIME = 600
+        self.REPORT_CHANNEL = self.client.config['report_channel']
+        self.REPORT_ROLE = self.client.config['report_role']
 
     async def cog_check(self, ctx):
         return self.client.user_is_admin(ctx.author)
@@ -95,11 +94,11 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
 
     async def post_report(self, msg):
         """Post report of deletion to target channel"""
-        target = self.client.get_channel(REPORT_CHANNEL)
+        target = self.client.get_channel(self.REPORT_CHANNEL)
         e = Embed(description=msg.content,
                   color=random.randint(0, 0xFFFFFF))
         await target.send(
-            f'<@&{REPORT_ROLE}> I deleted a message\n'
+            f'<@&{self.REPORT_ROLE}> I deleted a message\n'
             f'Message sent by {msg.author.mention} in {msg.channel.mention}',
             embed=e
         )
@@ -112,8 +111,8 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         my_msg.content = my_msg.content.replace('||', '')
         if self.is_dm(my_msg):
             return False
-        if self.is_allowed(my_msg):
-            return False
+        # if self.is_allowed(my_msg):
+        #     return False
         if await self.has_discord_link(my_msg):
             return True
         if await self.has_forbidden_text(my_msg):

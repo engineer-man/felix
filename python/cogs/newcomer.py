@@ -8,7 +8,6 @@ from datetime import datetime
 from discord.ext import commands
 
 # SETTINGS:
-NEWCOMER_ROLE = 589402753495990274
 NEWCOMER_DURATION = 48 * 3600  # seconds
 NEWCOMER_CHECK_INTERVAL = 3600  # seconds
 
@@ -17,6 +16,7 @@ class Newcomer(commands.Cog, name='Newcomer'):
     def __init__(self, client):
         self.client = client
         self.my_task = self.client.loop.create_task(self.clear_newcomers())
+        self.NEWCOMER_ROLE = self.client.config['newcomer_role']
 
     # ----------------------------------------------
     # Cog Event listeners
@@ -25,7 +25,7 @@ class Newcomer(commands.Cog, name='Newcomer'):
     async def on_member_join(self, member):
         if not member.guild.id == self.client.main_guild.id:
             return
-        await member.add_roles(member.guild.get_role(NEWCOMER_ROLE))
+        await member.add_roles(member.guild.get_role(self.NEWCOMER_ROLE))
 
     # ----------------------------------------------
     # Cog Tasks
@@ -36,7 +36,8 @@ class Newcomer(commands.Cog, name='Newcomer'):
         try:
             while not self.client.is_closed():
                 for member in self.client.main_guild.members:
-                    if NEWCOMER_ROLE not in [role.id for role in member.roles]:
+                    member_roles = [role.id for role in member.roles]
+                    if self.NEWCOMER_ROLE not in member_roles:
                         continue
                     join_date = member.joined_at
                     if not join_date:
@@ -45,7 +46,7 @@ class Newcomer(commands.Cog, name='Newcomer'):
                     time_delta = (current_date - join_date).total_seconds()
                     if time_delta > NEWCOMER_DURATION:
                         await member.remove_roles(
-                            member.guild.get_role(NEWCOMER_ROLE)
+                            member.guild.get_role(self.NEWCOMER_ROLE)
                         )
                 await asyncio.sleep(NEWCOMER_CHECK_INTERVAL)
         except asyncio.CancelledError:

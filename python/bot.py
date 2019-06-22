@@ -47,7 +47,7 @@ class Felix(Bot):
 
     def user_is_ignored(self, user):
         user_roles = [role.id for role in user.roles]
-        if 581535776697876491 in user_roles:
+        if self.config['ignore_role'] in user_roles:
             return True
         return False
 
@@ -74,7 +74,8 @@ for extension in reversed(STARTUP_EXTENSIONS):
 
 @client.event
 async def on_ready():
-    client.main_guild = client.get_guild(473161189120147456) or client.guilds[0]
+    main_id = client.config['main_guild']
+    client.main_guild = client.get_guild(main_id) or client.guilds[0]
     print('\nActive in these guilds/servers:')
     [print(g.name) for g in client.guilds]
     print('\nMain guild:', client.main_guild.name)
