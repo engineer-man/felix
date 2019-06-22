@@ -86,6 +86,11 @@ class myHelpCommand(HelpCommand):
 
     async def send_group_help(self, group):
         filtered = await self.filter_commands(group.commands, sort=True)
+        if not filtered:
+            await self.context.send(
+                'No public commands in group. Try again with felix helpall.'
+            )
+            return
         category = f'**{group.name}** - {group.description or group.short_doc}'
         entries = '\n'.join(
             self.spacer + f'**{command.name}** → {command.short_doc}'
