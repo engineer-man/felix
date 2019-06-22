@@ -353,10 +353,9 @@ class General(commands.Cog, name='General'):
     # ------------------------------------------------------------------------
 
     @commands.command(
-        aliases=['ud', 'urban', 'urbandict'],
-        hidden=True,
+        name='urban',
+        aliases=['ud', 'urbandictionary', 'urbandict'],
     )
-    # @commands.has_role(498576446147788824)
     async def urbandictionary(self, ctx, *, term):
         """Ask urbandictionary
         Get the definition of a word from Urbandictionary"""
