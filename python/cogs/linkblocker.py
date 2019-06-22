@@ -11,7 +11,8 @@ Only users that have an admin role can use the commands.
 """
 
 from discord.ext import commands
-from discord import Member, DMChannel, Embed, Message, Member, TextChannel
+from discord import Member, DMChannel, Embed, Message
+from discord.abc import Messageable
 from dataclasses import dataclass
 import re
 import time
@@ -31,7 +32,7 @@ REPORT_ROLE = 500710389131247636
 class MinimalMessage:
     content: str
     author: Member
-    channel: TextChannel
+    channel: Messageable
 
 
 class LinkBlocker(commands.Cog, name='Link Blocker'):
@@ -47,6 +48,10 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
     # ----------------------------------------------
     # Message checks
     # ----------------------------------------------
+    def is_dm(self, msg):
+        """return True if message is a DM"""
+        return isinstance(msg.channel, DMChannel)
+
     def is_allowed(self, msg):
         """return True if user is permitted to post links"""
         if msg.author == self.client.user:
@@ -105,6 +110,8 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         my_msg = MinimalMessage(msg.content, msg.author, msg.channel)
         # ignore spoiler tags
         my_msg.content = my_msg.content.replace('||', '')
+        if self.is_dm(my_msg):
+            return False
         if self.is_allowed(my_msg):
             return False
         if await self.has_discord_link(my_msg):
