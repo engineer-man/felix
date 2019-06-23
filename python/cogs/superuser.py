@@ -24,6 +24,7 @@ class Superuser(commands.Cog, name='Superuser'):
     # Function to pull the latest changes from github
     # ----------------------------------------------
     @commands.group(
+        invoke_without_command=True,
         name='git',
         hidden=True,
     )

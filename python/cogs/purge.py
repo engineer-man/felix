@@ -37,7 +37,6 @@ class Purge(commands.Cog, name='Purge'):
         name='purge',
         hidden=True,
     )
-    @commands.guild_only()
     async def purge(
         self, ctx,
         n: typing.Optional[int] = 0,

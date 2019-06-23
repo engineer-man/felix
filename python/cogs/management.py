@@ -340,18 +340,16 @@ class Management(commands.Cog, name='Management'):
         name='list',
         hidden=True
     )
-    @commands.guild_only()
     async def _list(self, ctx):
         """List stuff"""
         await ctx.send_help('list')
         return True
 
     @_list.command(
-        name='duplicates',
-        brief='List duplicate usernames',
-        description='List duplicate usernames')
-    @commands.guild_only()
+        name='duplicates'
+    )
     async def duplicates(self, ctx):
+        """List duplicate usernames"""
         name_count = {}
         aka = {}
         pages = []
@@ -443,7 +441,6 @@ class Management(commands.Cog, name='Management'):
 
     @error.command(
         name='clear',
-        hidden=True
     )
     async def error_clear(self, ctx, n=None):
         """Clear the oldest [n] errors from the error log (0 = all errors)"""
@@ -458,7 +455,6 @@ class Management(commands.Cog, name='Management'):
     @error.command(
         name='traceback',
         aliases=['tb'],
-        hidden=True
     )
     async def error_traceback(self, ctx, n: int = None):
         """Print the traceback of error [n] from the error log"""

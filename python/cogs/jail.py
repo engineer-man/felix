@@ -170,7 +170,6 @@ class Jail(commands.Cog, name='Jail'):
         aliases=['silence'],
         hidden=True,
     )
-    @commands.guild_only()
     async def jail(self, ctx, members: commands.Greedy[Member]):
         """Put a list of @users in jail"""
         if not members:
@@ -189,7 +188,6 @@ class Jail(commands.Cog, name='Jail'):
         aliases=['release', 'unsilence'],
         hidden=True,
     )
-    @commands.guild_only()
     async def unjail(self, ctx, members: commands.Greedy[Member]):
         """Release a list of @users from jail"""
         if not members:

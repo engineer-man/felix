@@ -133,7 +133,6 @@ class Help(commands.Cog):
         aliases=['halpall'],
         hidden=True
     )
-    @commands.guild_only()
     async def helpall(self, ctx, *, text=None):
         """Print bot help including all hidden commands"""
         self.client.help_command = myHelpCommand(show_hidden=True)

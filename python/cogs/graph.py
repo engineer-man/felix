@@ -123,7 +123,6 @@ class Graph(commands.Cog,
         name='graph',
         hidden=True,
     )
-    @commands.guild_only()
     async def graph(self, ctx):
         """Print Graphs"""
         await ctx.send_help('graph')
@@ -131,7 +130,6 @@ class Graph(commands.Cog,
     @graph.command(
         name='top',
     )
-    @commands.guild_only()
     async def top(
         self,
         ctx,
@@ -154,7 +152,6 @@ class Graph(commands.Cog,
     @graph.command(
         name='users',
     )
-    @commands.guild_only()
     async def users(
         self,
         ctx,

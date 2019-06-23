@@ -61,12 +61,10 @@ class RemoteControl(commands.Cog, command_attrs=dict(hidden=True)):
     @commands.group(
         invoke_without_command=True,
         name='rc',
-        brief='start rc',
-        description='start rc',
         hidden=True,
     )
-    @commands.guild_only()
     async def remote_control(self, ctx, target_channel: TextChannel = None):
+        """Remote control felix in a channel"""
         if self.rc_active:
             if not ctx.author == self.rc_user:
                 await ctx.send(f'{self.rc_user.name} is currently using rc!')
@@ -82,12 +80,9 @@ class RemoteControl(commands.Cog, command_attrs=dict(hidden=True)):
 
     @remote_control.command(
         name='off',
-        brief='stop rc',
-        description='stop rc',
-        hidden=True
     )
-    @commands.guild_only()
     async def rc_off(self, ctx):
+        """Stop the remote control"""
         if not self.rc_active:
             return
         if not ctx.author == self.rc_user:

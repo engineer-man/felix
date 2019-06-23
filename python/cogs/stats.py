@@ -43,7 +43,6 @@ class Stats(commands.Cog, name='Stats'):
         invoke_without_command=True,
         hidden=True,
     )
-    @commands.guild_only()
     # @commands.cooldown(1, 300, commands.BucketType.user)
     async def stats(self, ctx):
         """Print member numbers"""
@@ -92,7 +91,6 @@ class Stats(commands.Cog, name='Stats'):
         await ctx.send(''.join(response))
 
     @stats.command()
-    @commands.guild_only()
     async def users(self, ctx, n: typing.Optional[int] = 30):
         """Show top users by messages for past n days"""
         await ctx.trigger_typing()
@@ -114,7 +112,6 @@ class Stats(commands.Cog, name='Stats'):
         await ctx.send('```css\n' + '\n'.join(formatted) + '```')
 
     @stats.command()
-    @commands.guild_only()
     async def channels(
         self, ctx,
         n: typing.Optional[int] = 30,

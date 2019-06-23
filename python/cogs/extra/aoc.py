@@ -93,7 +93,6 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
                     '\n(only works in #advent-of-code)',
         hidden=False,
     )
-    @commands.guild_only()
     async def aoc(self, ctx, day):
         day = day.replace('day', '')
         if not day.isdigit():

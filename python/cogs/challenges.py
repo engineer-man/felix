@@ -115,10 +115,8 @@ class Challenges(commands.Cog, name='Challenges'):
     @commands.group(
         invoke_without_command=True,
         name='challenge',
-        hidden=False,
         aliases=['chal', 'task', 'project']
     )
-    @commands.guild_only()
     async def challenge(self, ctx):
         """'Show awesome challenges'"""
         await ctx.send_help('challenge')
@@ -126,9 +124,7 @@ class Challenges(commands.Cog, name='Challenges'):
     @challenge.command(
         name='random',
         aliases=['r', 'shuf'],
-        hidden=False
     )
-    @commands.guild_only()
     async def random(self, ctx):
         """Randomly choose a challenge"""
         await ctx.trigger_typing()
@@ -145,9 +141,7 @@ class Challenges(commands.Cog, name='Challenges'):
     @challenge.command(
         name='num',
         aliases=['n'],
-        hidden=False
     )
-    @commands.guild_only()
     async def num(
         self, ctx,
         n: int
@@ -168,9 +162,7 @@ class Challenges(commands.Cog, name='Challenges'):
 
     @challenge.command(
         name='guide',
-        hidden=False
     )
-    @commands.guild_only()
     async def guide(self, ctx):
         """Print the guide"""
         await ctx.trigger_typing()
@@ -181,9 +173,7 @@ class Challenges(commands.Cog, name='Challenges'):
 
     @challenge.command(
         name='guide_extra',
-        hidden=False
     )
-    @commands.guild_only()
     async def guide_extra(self, ctx):
         """Print the additional resources"""
         await ctx.trigger_typing()
@@ -195,9 +185,7 @@ class Challenges(commands.Cog, name='Challenges'):
     @challenge.command(
         name='difficulty',
         aliases=['dif', 'd'],
-        hidden=False
     )
-    @commands.guild_only()
     async def difficulty(self, ctx, difficulty: str):
         """Choose by difficulty"""
         await ctx.trigger_typing()
