@@ -89,7 +89,7 @@ class Management(commands.Cog, name='Management'):
             return
 
         if isinstance(error, commands.CommandNotFound):
-            await ctx.send(f'Sorry, command `{ctx.invoked_with}` not found.')
+            # await ctx.send(f'Sorry, command `{ctx.invoked_with}` not found.')
             return
 
         if isinstance(error, commands.BadArgument):
