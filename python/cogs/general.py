@@ -293,7 +293,7 @@ class General(commands.Cog, name='General'):
     @commands.command(
         name='faq'
     )
-    async def links(self, ctx):
+    async def faq(self, ctx):
         embed = Embed(color=0x2ECC71)
         embed.set_author(name='Frequently Asked Questions')
         questions = {
