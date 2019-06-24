@@ -273,12 +273,15 @@ class General(commands.Cog, name='General'):
     async def links(self, ctx):
         """Show links to all things EngineerMan"""
         links = (
-            '• Youtube : <https://www.youtube.com/engineerman>' +
-            '\n• Discord : <https://engineerman.org/discord>' +
-            '\n• Youtube code : <https://github.com/engineer-man/youtube-code>' +
-            '\n• EMKC: <https://github.com/engineer-man/emkc>' +
-            '\n• Felix: <https://github.com/engineer-man/felix>' +
-            '\n• Piston a.k.a. Felix Run: <https://github.com/engineer-man/piston>' +
+            '• Youtube: <https://www.youtube.com/engineerman>' +
+            '\n• Discord: <https://engineerman.org/discord>' +
+            '\n• EMKC: <https://emkc.org/>' +
+            '\n• EMKC snippets: <https://emkc.org/snippets>' +
+            '\n• EMKC challenges: <https://emkc.org/challenges>' +
+            '\n• Youtube Github: <https://github.com/engineer-man/youtube-code>' +
+            '\n• EMKC Github: <https://github.com/engineer-man/emkc>' +
+            '\n• Felix Github: <https://github.com/engineer-man/felix>' +
+            '\n• Piston Github: <https://github.com/engineer-man/piston>' +
             '\n• Reddit: <https://www.reddit.com/r/engineerman/>' +
             '\n• Twitter: <https://twitter.com/_EngineerMan>' +
             '\n• Facebook: <https://www.facebook.com/engineermanyt>'
