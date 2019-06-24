@@ -187,7 +187,7 @@ class General(commands.Cog, name='General'):
     @commands.group(
         name="howto",
         invoke_without_command=True,
-        aliases=['how-to', 'info', 'faq']
+        aliases=['how-to', 'info']
     )
     async def howto(self, ctx):
         """Show useful information for newcomers"""
@@ -289,6 +289,30 @@ class General(commands.Cog, name='General'):
             color=0x2ECC71
         )
         await ctx.send(embed=e)
+
+    @commands.command(
+        name='faq'
+    )
+    async def links(self, ctx):
+        embed = Embed(color=0x2ECC71)
+        embed.set_author(name='Frequently Asked Questions')
+        questions = {
+            'What do you do professionally?':
+                'In addition to YouTube, Engineer Man works on various client projects and oversees several projects.',
+            'How long have you been programming?':
+                'About ' + str(dt.now().year - 1994) + ' years',
+            'I want to get into programming, how should I get started?':
+                'First, figure out what sort of programming interests you, such as web, desktop, game, systems, etc. '
+                'From there, choose a language that relates to that area and begin reviewing documentation, reading '
+                'tutorials, and watching videos. Finally, start creating your own projects.'
+        }
+        for question, answer in questions.items():
+            embed.add_field(
+                name=question,
+                value=answer,
+                inline=False
+            )
+        await ctx.send(embed=embed)
     # ------------------------------------------------------------------------
 
     @commands.command(
