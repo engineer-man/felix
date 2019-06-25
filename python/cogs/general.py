@@ -391,11 +391,15 @@ class General(commands.Cog, name='General'):
             answer = await response.json()
         if not answer['list']:
             await ctx.send('Sorry, I did not understand that')
+        definition = answer["list"][0]["definition"]
+        example = answer["list"][0]["example"]
+        if len(definition + example) > 1950:
+            definition = definition[:1950 - len(example)] + ' (...)'
         response = (
             '\n**Definition:**\n'
-            f'{answer["list"][0]["definition"]}\n'
+            f'{definition}\n'
             '\n**Example:**\n'
-            f'{answer["list"][0]["example"]}'
+            f'{example}'
         )
         embed = Embed(
             title=f'"**{term}**" according to urbandictionary.com',
