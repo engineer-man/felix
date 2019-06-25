@@ -17,11 +17,11 @@ Commands:
 #      no, send challenge to user, update file, save it
 # no, send challenge to user, update file, save it
 
+import json
+from os import path
+from random import choice
 from discord.ext import commands
 from discord import Embed
-from random import choice
-from os import path
-import json
 
 # custom exceptions
 class ChallengesNotFoundError(IOError):

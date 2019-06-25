@@ -6,8 +6,8 @@ Commands:
 
 """
 
-from discord.ext import commands
 import typing
+from discord.ext import commands
 
 
 class Run(commands.Cog, name='Run'):

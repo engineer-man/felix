@@ -12,7 +12,7 @@ Only users that have an admin role can use the commands.
 import itertools
 from discord import Embed
 from discord.ext import commands
-from discord.ext.commands import HelpCommand, Command, Group, DefaultHelpCommand
+from discord.ext.commands import HelpCommand, DefaultHelpCommand
 
 
 class myHelpCommand(HelpCommand):

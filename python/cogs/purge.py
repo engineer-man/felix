@@ -16,11 +16,10 @@ Commands:
 Only users that have an admin role can use the commands.
 """
 
+import typing
+from inspect import Parameter
 from discord.ext import commands
 from discord import Member
-from inspect import Parameter
-import typing
-import asyncio
 
 
 class Purge(commands.Cog, name='Purge'):

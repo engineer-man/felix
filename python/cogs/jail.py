@@ -9,11 +9,11 @@ Commands:
 Only users that have an admin role can use the commands.
 """
 
-from discord.ext import commands
-from discord import Member
 import asyncio
 import json
 import time
+from discord.ext import commands
+from discord import Member
 
 # SETTINGS:
 # TODO: Ideally these settings sould also come from the config.json file

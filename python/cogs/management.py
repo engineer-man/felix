@@ -20,8 +20,8 @@ import subprocess
 import json
 import traceback
 from datetime import datetime
-from discord import Activity, Embed, Member
 from os import path, listdir
+from discord import Activity, Embed, Member
 from discord.ext import commands
 
 
@@ -55,8 +55,8 @@ class Management(commands.Cog, name='Management'):
         await self.client.main_guild.system_channel.send(
             f'Welcome to the Engineer Man Discord Server, {member.mention}\n'
             'I\'m Felix, the server smart assistant. You can learn more about '
-            'what I can do by saying `felix help`. If you want answers to frequently asked '
-            'questions about Engineer Man, say `felix faq`. '
+            'what I can do by saying `felix help`. If you want answers to '
+            'frequently asked questions about Engineer Man, say `felix faq`. '
             'You can view the server rules in <#484103976296644608>. '
             'Please be kind and decent to one another. '
             'Glad you\'re here!'

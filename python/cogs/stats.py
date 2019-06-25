@@ -9,12 +9,12 @@ Commands:
 Only users that have an admin role can use the commands.
 """
 
-from discord.ext import commands
-from discord import Member, DMChannel
-from datetime import datetime, timedelta
 import json
 import time
 import typing
+from datetime import datetime, timedelta
+from discord.ext import commands
+from discord import Member, DMChannel
 
 
 class Stats(commands.Cog, name='Stats'):

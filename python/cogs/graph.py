@@ -11,9 +11,9 @@ This cog requires matplotlib:
 
 Only users that have an admin role can use the commands.
 """
+from datetime import datetime, timedelta
 from discord.ext import commands
 from discord import Member, File
-from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 
 

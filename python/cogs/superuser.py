@@ -8,9 +8,8 @@ Only users which are specified as a superuser in the config.json
 can run commands from this cog.
 """
 
-from discord.ext import commands
 import subprocess
-import json
+from discord.ext import commands
 
 
 class Superuser(commands.Cog, name='Superuser'):

@@ -10,12 +10,12 @@ The extension "management" provides the commands to load/unload other extensions
 This bot requires discord.py
     pip install -U discord.py
 """
+import json
+from datetime import datetime
+from os import path, listdir
 from discord.ext.commands import Bot, when_mentioned_or
 from discord import DMChannel
 from aiohttp import ClientSession
-from datetime import datetime
-from os import path, listdir
-import json
 
 
 

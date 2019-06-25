@@ -15,8 +15,8 @@ It also breaks if the poll-cog is reloaded or the bot is restarted.
 Only users that have an admin role can use the commands.
 """
 
-from discord.ext import commands
 import re
+from discord.ext import commands
 
 
 class Poll(commands.Cog, name='Poll'):

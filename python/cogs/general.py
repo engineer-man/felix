@@ -16,12 +16,12 @@ Commands:
     weather         get the weather for a specific location
 """
 
-from discord.ext import commands
-from discord import Embed, DMChannel, Member
-from datetime import datetime as dt
-from urllib.parse import quote
 import random
 import re
+from datetime import datetime as dt
+from urllib.parse import quote
+from discord.ext import commands
+from discord import Embed, DMChannel, Member
 
 
 class General(commands.Cog, name='General'):
@@ -297,17 +297,21 @@ class General(commands.Cog, name='General'):
         name='faq'
     )
     async def faq(self, ctx):
+        """Show answers to frequently asked questions"""
         embed = Embed(color=0x2ECC71)
         embed.set_author(name='Frequently Asked Questions')
         questions = {
             'What do you do professionally?':
-                'In addition to YouTube, Engineer Man works on various client projects and oversees several projects.',
+                'In addition to YouTube, Engineer Man works on various client '
+                'projects and oversees several projects.',
             'How long have you been programming?':
                 'About ' + str(dt.now().year - 1994) + ' years',
             'I want to get into programming, how should I get started?':
-                'First, figure out what sort of programming interests you, such as web, desktop, game, systems, etc. '
-                'From there, choose a language that relates to that area and begin reviewing documentation, reading '
-                'tutorials, and watching videos. Finally, start creating your own projects.'
+                'First, figure out what sort of programming interests you, '
+                'such as web, desktop, game, systems, etc. '
+                'From there, choose a language that relates to that area and '
+                'begin reviewing documentation, reading tutorials, and '
+                'watching videos. Finally, start creating your own projects.'
         }
         for question, answer in questions.items():
             embed.add_field(
