@@ -14,15 +14,13 @@ import time
 import typing
 from datetime import datetime, timedelta
 from discord.ext import commands
-from discord import Member, DMChannel
+from discord import Member
 
 
 class Stats(commands.Cog, name='Stats'):
     def __init__(self, client):
         self.client = client
         self.last_time = self.load_stats()
-        self.usage = self.load_usage()
-        self.usage_save = 0
         self.NEWCOMER_ROLE = self.client.config['newcomer_role']
 
     async def cog_check(self, ctx):
@@ -41,32 +39,6 @@ class Stats(commands.Cog, name='Stats'):
         state['stats'] = stats
         with open("../state.json", "w") as statefile:
             return json.dump(state, statefile, indent=1)
-
-    def load_usage(self):
-        state = self.load_state()
-        return state.get('usage', {})
-
-    def save_usage(self, usage):
-        state = self.load_state()
-        state['usage'] = usage
-        with open("../state.json", "w") as statefile:
-            return json.dump(state, statefile, indent=1)
-
-    @commands.Cog.listener()
-    async def on_message(self, msg):
-        if msg.author.bot:
-            return
-        if isinstance(msg.channel, DMChannel):
-            return
-        ctx = await self.client.get_context(msg)
-        cmd = ctx.command
-        if cmd:
-            cmd_name = cmd.qualified_name
-            self.usage_save += 1
-            self.usage[cmd_name] = self.usage.get(cmd_name, 0) + 1
-            if self.usage_save > 24:
-                self.save_usage(self.usage)
-                self.usage_save = 0
 
     @commands.group(
         invoke_without_command=True,
@@ -169,22 +141,6 @@ class Stats(commands.Cog, name='Stats'):
         ]
 
         await ctx.send('```css\n' + '\n'.join(formatted) + '```')
-
-    @stats.command(
-        name='usage'
-    )
-    async def usage(self, ctx):
-        """Show command usage stats"""
-        await ctx.trigger_typing()
-        response = [
-            f'{cmd} : {num_used}'
-            for cmd, num_used in sorted(
-                self.usage.items(),
-                key=lambda x: x[1],
-                reverse=True
-            )
-        ]
-        await ctx.send('```\n' + '\n'.join(response) + '```')
 
 
 def setup(client):
