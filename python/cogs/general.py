@@ -146,6 +146,13 @@ class General(commands.Cog, name='General'):
             msg.content
         ):
             await msg.channel.send('arrays do not start at 1, they start at 0')
+        
+        if re.search(
+            r'(?i)^felix meow',
+            msg.content
+        ):
+            await msg.channel.send('ฅ^•ﻌ•^ฅ')
+
 
     # ----------------------------------------------
     # Cog Commands
@@ -306,6 +313,8 @@ class General(commands.Cog, name='General'):
                 'projects and oversees several projects.',
             'How long have you been programming?':
                 'About ' + str(dt.now().year - 1994) + ' years',
+            'What distro and text-editor do you use?':
+                'Distro: Xubuntu, Text-Editor: Atom',
             'I want to get into programming, how should I get started?':
                 'First, figure out what sort of programming interests you, '
                 'such as web, desktop, game, systems, etc. '
