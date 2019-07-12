@@ -146,7 +146,7 @@ class General(commands.Cog, name='General'):
             msg.content
         ):
             await msg.channel.send('arrays do not start at 1, they start at 0')
-        
+
         if re.search(
             r'(?i)^felix meow',
             msg.content
@@ -313,14 +313,28 @@ class General(commands.Cog, name='General'):
                 'projects and oversees several projects.',
             'How long have you been programming?':
                 'About ' + str(dt.now().year - 1994) + ' years',
-            'What distro and text-editor do you use?':
-                'Distro: Xubuntu, Text-Editor: Atom',
+            'What distro and editor do you use?':
+                'Distro: Xubuntu, Editor: Atom',
             'I want to get into programming, how should I get started?':
                 'First, figure out what sort of programming interests you, '
                 'such as web, desktop, game, systems, etc. '
                 'From there, choose a language that relates to that area and '
                 'begin reviewing documentation, reading tutorials, and '
-                'watching videos. Finally, start creating your own projects.'
+                'watching videos. Finally, start creating your own projects.',
+            'What is the best way to learn Language X':
+                'Most languages are similar in the types of things they '
+                'accomplish, where they differ is in how they accomplish them. '
+                'If you\'re new to programming, it\'s important to learn '
+                'syntax first. After that, learning that language\'s standard '
+                'library is a good use of time. Beyond that, it\'s just '
+                'experimenting with the language and working on projects in '
+                'that language.',
+            'How can I stay focused/prevent burn out?':
+                'The best way is to try to finish something, anything, even '
+                'if it\'s not as complete as you want. Finishing things is '
+                'satisfying, and once you do you\'ll be more motivated to '
+                'improve what you have. Allowing a project to drone on '
+                'forever without finishing is a way to get bored with it.'
         }
         for question, answer in questions.items():
             embed.add_field(
