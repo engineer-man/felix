@@ -397,6 +397,7 @@ class General(commands.Cog, name='General'):
     )
     async def question(self, ctx, *, question):
         """Ask Felix a question"""
+        await ctx.trigger_typing()
         url = 'https://api.wolframalpha.com/v1/result?i=' + \
             f'{quote(question)}&appid={self.client.config["wolfram_key"]}'
         async with self.client.session.get(url) as response:
