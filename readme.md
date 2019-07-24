@@ -11,8 +11,7 @@ These instructions will get you a copy of the project up and running on your loc
 #### without docker
 ```
 git clone https://github.com/engineer-man/felix.git
-pip install -U discord.py
-pip install -U matplotlib
+pip install -U -r requirements.txt
 ```
 Duplicate `config.json.sample` and rename it `config.json` and update it with your own discord bot token.
 
