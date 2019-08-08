@@ -15,6 +15,7 @@ class Run(commands.Cog, name='Run'):
         self.client = client
         self.languages = {
             'asm': 'nasm',
+            'bash': 'bash',
             'bf': 'brainfuck',
             'brainfuck': 'brainfuck',
             'c': 'c',
@@ -45,7 +46,8 @@ class Run(commands.Cog, name='Run'):
             'rust': 'rust',
             'sage': 'python3',
             'swift': 'swift',
-            'bash': 'bash',
+            'ts': 'typescript',
+            'typescript': 'typescript',
         }
 
     @commands.command()
