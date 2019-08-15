@@ -168,7 +168,9 @@ class Mastermind(commands.Cog, name='Mastermind'):
             return False
         to_send = []
         for n, line in enumerate(result, start=1):
-            to_send.append(str(hex(n))[2:] + ': ' + line)
+            # to_send.append(str(hex(n))[2:] + ': ' + line)
+            # to_send.append(f'{n:X}: {line}')      # UPPERCASE HEX CHARS
+            to_send.append(f'{n:x}: {line}')        # lowercase hex chars
         to_send = '```\n' + '\n'.join(to_send) + '```'
         if winner:
             to_send += '\nThe Game is Over - you win'
