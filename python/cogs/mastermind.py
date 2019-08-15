@@ -30,7 +30,6 @@ class MMGame():
             choice(range(1, 7 if self.difficulty == 4 else 8))
             for _ in range(self.difficulty)
         ]
-        self.last_message = None
 
     def add_guess(self, guess):
         guess = guess.replace(' ', '')
@@ -114,8 +113,6 @@ class Mastermind(commands.Cog, name='Mastermind'):
             for n, line in enumerate(current, start=1):
                 to_send.append(str(hex(n))[2:] + ': ' + line)
             to_send = '```\n' + '\n'.join(to_send) + '```' if to_send else ''
-            if current_game.last_message:
-                await current_game.last_message.delete()
             await ctx.send('You already have a game - Here it is\n' + to_send)
             return False
         if difficulty.lower() not in ('easy', 'hard'):
@@ -179,9 +176,6 @@ class Mastermind(commands.Cog, name='Mastermind'):
         elif finished:
             to_send += '\nThe Game is Over - you lose\nThe correct solution was'
             to_send += '\n' + current_game.get_solution()
-        if current_game.last_message:
-            await current_game.last_message.delete()
-        await ctx.message.delete()
         current_game.last_message = await ctx.send(to_send)
 
     @mastermind.command(
