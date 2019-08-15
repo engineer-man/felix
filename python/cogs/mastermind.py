@@ -175,8 +175,8 @@ class Mastermind(commands.Cog, name='Mastermind'):
             self.active_games.remove(current_game)
         elif finished:
             to_send += '\nThe Game is Over - you lose\nThe correct solution was'
-            to_send += '\n' + current_game.get_solution()
-        current_game.last_message = await ctx.send(to_send)
+            to_send += '\n`' + current_game.get_solution() + '`'
+        await ctx.send(to_send)
 
     @mastermind.command(
         name='quit',
