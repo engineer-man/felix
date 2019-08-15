@@ -30,6 +30,7 @@ class MMGame():
             choice(range(1, 7 if self.difficulty == 4 else 8))
             for _ in range(self.difficulty)
         ]
+        self.last_message = None
 
     def add_guess(self, guess):
         guess = guess.replace(' ', '')
@@ -101,6 +102,7 @@ class Mastermind(commands.Cog, name='Mastermind'):
         invoke_without_command=True,
     )
     async def mastermind(self, ctx, difficulty='easy'):
+        """Start a game of mastermind [easy/hard]"""
         current_game = None
         for game in self.active_games:
             if game.player == ctx.author:
@@ -112,8 +114,9 @@ class Mastermind(commands.Cog, name='Mastermind'):
             for n, line in enumerate(current, start=1):
                 to_send.append(str(hex(n))[2:] + ': ' + line)
             to_send = '```\n' + '\n'.join(to_send) + '```' if to_send else ''
-            await ctx.send('You already have a game running\n' + to_send)
-
+            if current_game.last_message:
+                await current_game.last_message.delete()
+            await ctx.send('You already have a game - Here it is\n' + to_send)
             return False
         if difficulty.lower() not in ('easy', 'hard'):
             raise commands.CommandError('Valid difficulties: easy, hard')
@@ -152,6 +155,7 @@ class Mastermind(commands.Cog, name='Mastermind'):
         aliases=['g'],
     )
     async def guess(self, ctx, *, guess):
+        """Make a guess for your running mastermind game"""
         current_game = None
         for game in self.active_games:
             if game.player == ctx.author:
@@ -175,13 +179,17 @@ class Mastermind(commands.Cog, name='Mastermind'):
         elif finished:
             to_send += '\nThe Game is Over - you lose\nThe correct solution was'
             to_send += '\n' + current_game.get_solution()
-        await ctx.send(to_send)
+        if current_game.last_message:
+            await current_game.last_message.delete()
+        await ctx.message.delete()
+        current_game.last_message = await ctx.send(to_send)
 
     @mastermind.command(
         name='quit',
         aliases=['q'],
     )
     async def quit(self, ctx):
+        """Quit your running mastermind game"""
         current_game = None
         for game in self.active_games:
             if game.player == ctx.author:
