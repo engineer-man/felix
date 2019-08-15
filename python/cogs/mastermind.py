@@ -15,22 +15,28 @@ seed()
 
 
 class MMGame():
-    PEGS = ('🖤', '❤️', '🧡', '💛', '💚', '💙', '💜')
-    COLORS = '_roygbp'
+    PEGS = ('_', '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤')
+    COLORS = '_roygbpl'
     REFEREE_PEGS = ('🔴', '⚪')
 
-    def __init__(self, player: Member):
+    def __init__(self, player: Member, difficulty=4):
         self.player = player
+        if difficulty not in (4, 5):
+            raise commands.CommandError('Invalid difficulty')
+        self.difficulty = difficulty
         self.game = []
         self.referee = []
-        self.solution = [choice((1, 2, 3, 4, 5, 6)) for _ in range(4)]
+        self.solution = [
+            choice(range(1, 7 if self.difficulty == 4 else 8))
+            for _ in range(self.difficulty)
+        ]
 
     def add_guess(self, guess):
         guess = guess.replace(' ', '')
-        if not len(guess) == 4:
-            raise ValueError('Please provide 4 colors')
+        if not len(guess) == self.difficulty:
+            raise commands.CommandError(f'Please provide {self.difficulty} colors')
         if any(x.lower() not in MMGame.COLORS for x in guess):
-            raise ValueError('Please provide valid colors')
+            raise commands.CommandError('Please provide valid colors')
         self.game.append([MMGame.COLORS.index(x) for x in guess.lower()])
         self.check_correct()
         return self.process_game()
@@ -41,13 +47,13 @@ class MMGame():
         solution = self.solution.copy()
         guess = self.game[-1].copy()
         correct = 0
-        for x in range(4):
+        for x in range(self.difficulty):
             if guess[x] == solution[x]:
                 correct += 1
                 guess[x] = 0
                 solution[x] = 0
         almost_correct = 0
-        for x in range(4):
+        for x in range(self.difficulty):
             candidate = guess[x]
             if not candidate:
                 continue
@@ -58,7 +64,7 @@ class MMGame():
 
     def process_game(self):
         finished = True if len(self.game) == 12 else False
-        winner = True if self.referee[-1][0] == 4 else False
+        winner = True if self.referee[-1][0] == self.difficulty else False
         return (finished, winner, self.to_print())
 
     def to_print(self):
@@ -80,6 +86,7 @@ class MMGame():
             solution_str += MMGame.PEGS[peg]
         return solution_str
 
+
 class Mastermind(commands.Cog, name='Mastermind'):
     def __init__(self, client):
         self.client = client
@@ -93,7 +100,7 @@ class Mastermind(commands.Cog, name='Mastermind'):
         aliases=['mm'],
         invoke_without_command=True,
     )
-    async def mastermind(self, ctx):
+    async def mastermind(self, ctx, difficulty='easy'):
         current_game = None
         for game in self.active_games:
             if game.player == ctx.author:
@@ -108,31 +115,36 @@ class Mastermind(commands.Cog, name='Mastermind'):
             await ctx.send('You already have a game running\n' + to_send)
 
             return False
-        game = MMGame(ctx.author)
+        if difficulty.lower() not in ('easy', 'hard'):
+            raise commands.CommandError('Valid difficulties: easy, hard')
+
+        game = MMGame(ctx.author, 4 if difficulty.lower()=='easy' else 5)
         self.active_games.append(game)
         instructions = (
             "**Welcome to Felix Mastermind** "
-            "Your goal is to guess the right combination of 4 colors "
-            "After every guess you will be told how many colors are "
+            f"Your goal is to guess the right combination of {game.difficulty} "
+            "colors. After every guess you will be told how many colors are "
             "correct AND in the right position (red marker) and how many "
             "colors are correct but NOT in the right position (white marker)."
             "You can guess a color combination by typing \n**felix mastermind "
-            "guess xxxx** \nwhere xxxx should be replaced by a combination of 4 "
-            "color letters. Available colors:\n"
+            "guess xxx** \nwhere xxx should be replaced by a combination of "
+            f"{game.difficulty} color letters. Available colors:\n"
             "r : RED\n"
             "o : ORANGE\n"
             "y : YELLOW\n"
             "g : GREEN\n"
             "b : BLUE\n"
-            "p : PURPLE\n\n"
+            "p : PURPLE\n"
+            f"{'l : BLACK' * (game.difficulty - 4)}\n"
+
             "You can cancel the game with:\n**felix mastermind quit**\n\n"
             "Shortcuts:\nfelix mastermind - **felix mm**\n"
             "felix mastermind guess - **felix mm g**"
         )
 
         embed = Embed(title='Felix Mastermind',
-                  description=instructions,
-                )
+                      description=instructions,
+                      )
         await ctx.send(embed=embed)
 
     @mastermind.command(
@@ -148,7 +160,11 @@ class Mastermind(commands.Cog, name='Mastermind'):
         if not current_game:
             await ctx.send('Cannot find active game')
             return False
-        finished, winner, result = current_game.add_guess(guess)
+        try:
+            finished, winner, result = current_game.add_guess(guess)
+        except commands.CommandError as e:
+            await ctx.send(e)
+            return False
         to_send = []
         for n, line in enumerate(result, start=1):
             to_send.append(str(hex(n))[2:] + ': ' + line)
@@ -176,6 +192,7 @@ class Mastermind(commands.Cog, name='Mastermind'):
             return False
         self.active_games.remove(current_game)
         await ctx.send('Game Cancelled')
+
 
 def setup(client):
     """This is called when the cog is loaded via load_extension"""
