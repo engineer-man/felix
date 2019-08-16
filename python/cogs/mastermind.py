@@ -72,10 +72,13 @@ class MMGame():
         self.update_referee()
         loser = True if len(self.game) == 12 else False
         winner = True if self.referee[-1][0] == self.difficulty else False
+        if self.last_guess_message:
+            await self.last_guess_message.delete()
+        self.last_guess_message = ctx.message
         await self.print_to_ctx(ctx)
         return (loser, winner)
 
-    async def print_to_ctx(self, ctx):
+    async def print_to_ctx(self, ctx, heading=''):
         game_to_print = []
         for row, referee in zip(self.game, self.referee):
             row_str = ''
@@ -89,7 +92,11 @@ class MMGame():
         for n, line in enumerate(game_to_print, start=1):
             to_send.append(str(n).rjust(2) + ': ' + line)
         to_send = '```\n' + '\n'.join(to_send) + '```' if to_send else ''
-        await ctx.send(to_send)
+        if self.last_game_message:
+            await self.last_game_message.delete()
+        if to_send:
+            self.last_game_message = await ctx.send(heading + '\n' + to_send)
+        return True
 
     def get_solution(self):
         solution_str = ''
@@ -119,7 +126,10 @@ class Mastermind(commands.Cog, name='Mastermind'):
                 current_game = game
                 break
         if current_game:
-            current_game.print_to_ctx()
+            await current_game.print_to_ctx(
+                ctx,
+                'You already have an active game - here it is:'
+            )
             return False
         if difficulty.lower() not in ('easy', 'hard'):
             raise commands.CommandError('Valid difficulties: easy, hard')
