@@ -33,6 +33,8 @@ class MMGame():
             choice(range(1, 7 if self.difficulty == 4 else 8))
             for _ in range(self.difficulty)
         ]
+        self.last_guess_message = None
+        self.last_game_message = None
 
     def add_guess(self, guess):
         guess = guess.replace(' ', '')
@@ -42,10 +44,9 @@ class MMGame():
         if any(x.lower() not in MMGame.COLORS for x in guess):
             raise commands.CommandError('Please provide valid colors')
         self.game.append([MMGame.COLORS.index(x) for x in guess.lower()])
-        self.check_correct()
-        return self.process_game()
+        return True
 
-    def check_correct(self):
+    def update_referee(self):
         if not len(self.game) == len(self.referee) + 1:
             return False
         solution = self.solution.copy()
@@ -66,14 +67,16 @@ class MMGame():
                 solution[solution.index(candidate)] = 0
         self.referee.append([correct, almost_correct])
 
-    def process_game(self):
-        finished = True if len(self.game) == 12 else False
+    async def process_game(self, ctx):
+        self.add_guess(ctx.kwargs['guess'])
+        self.update_referee()
+        loser = True if len(self.game) == 12 else False
         winner = True if self.referee[-1][0] == self.difficulty else False
-        return (finished, winner, self.to_print())
+        await self.print_to_ctx(ctx)
+        return (loser, winner)
 
-    def to_print(self):
-        result = []
-
+    async def print_to_ctx(self, ctx):
+        game_to_print = []
         for row, referee in zip(self.game, self.referee):
             row_str = ''
             for peg in row:
@@ -81,8 +84,12 @@ class MMGame():
             row_str += '|'
             row_str += MMGame.REFEREE_PEGS[0] * referee[0]
             row_str += MMGame.REFEREE_PEGS[1] * referee[1]
-            result.append(row_str)
-        return result
+            game_to_print.append(row_str)
+        to_send = []
+        for n, line in enumerate(game_to_print, start=1):
+            to_send.append(str(n).rjust(2) + ': ' + line)
+        to_send = '```\n' + '\n'.join(to_send) + '```' if to_send else ''
+        await ctx.send(to_send)
 
     def get_solution(self):
         solution_str = ''
@@ -112,12 +119,7 @@ class Mastermind(commands.Cog, name='Mastermind'):
                 current_game = game
                 break
         if current_game:
-            current = current_game.to_print()
-            to_send = []
-            for n, line in enumerate(current, start=1):
-                to_send.append(str(hex(n))[2:] + ': ' + line)
-            to_send = '```\n' + '\n'.join(to_send) + '```' if to_send else ''
-            await ctx.send('You already have a game - Here it is\n' + to_send)
+            current_game.print_to_ctx()
             return False
         if difficulty.lower() not in ('easy', 'hard'):
             raise commands.CommandError('Valid difficulties: easy, hard')
@@ -166,21 +168,17 @@ class Mastermind(commands.Cog, name='Mastermind'):
             await ctx.send('Cannot find active game')
             return False
         try:
-            finished, winner, result = current_game.add_guess(guess)
+            loser, winner = await current_game.process_game(ctx)
         except commands.CommandError as e:
             await ctx.send(e)
             return False
-        to_send = []
-        for n, line in enumerate(result, start=1):
-            to_send.append(str(n).rjust(2) + ': ' + line)
-        to_send = '```\n' + '\n'.join(to_send) + '```'
-        if winner:
-            to_send += '\nThe Game is Over - you win'
+        if winner or loser:
+            to_send = 'The Game is Over - '
+            to_send += 'you win' if winner else (
+                'you lose\nSolution:' + '`' + current_game.get_solution() + '`'
+            )
             self.active_games.remove(current_game)
-        elif finished:
-            to_send += '\nThe Game is Over - you lose\nThe correct solution was'
-            to_send += '\n`' + current_game.get_solution() + '`'
-        await ctx.send(to_send)
+            await ctx.send(to_send)
 
     @mastermind.command(
         name='quit',
