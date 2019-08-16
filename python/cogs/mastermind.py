@@ -132,7 +132,8 @@ class Mastermind(commands.Cog, name='Mastermind'):
             )
             return False
         if difficulty.lower() not in ('easy', 'hard'):
-            raise commands.CommandError('Valid difficulties: easy, hard')
+            await ctx.send('Valid difficulties: easy, hard')
+            return False
 
         game = MMGame(ctx.author, 4 if difficulty.lower() == 'easy' else 5)
         self.active_games.append(game)
