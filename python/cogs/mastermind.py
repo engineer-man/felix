@@ -2,9 +2,12 @@
 It will provide a mastermind type game for everyone to play.
 
 Commands:
-    mastermind      Start or continue a game
-
-Only users that have an admin role can use the commands.
+    mastermind [easy/hard]      Start a game
+    mastermind guess            Make a guess on a running mastermind game
+    mastermind quit             Quit a running game
+Short Commands:
+    mastermind -> mm
+    mastermind guess -> mm g
 """
 
 from random import choice, seed
@@ -34,7 +37,8 @@ class MMGame():
     def add_guess(self, guess):
         guess = guess.replace(' ', '')
         if not len(guess) == self.difficulty:
-            raise commands.CommandError(f'Please provide {self.difficulty} colors')
+            raise commands.CommandError(
+                f'Please provide {self.difficulty} colors')
         if any(x.lower() not in MMGame.COLORS for x in guess):
             raise commands.CommandError('Please provide valid colors')
         self.game.append([MMGame.COLORS.index(x) for x in guess.lower()])
@@ -118,7 +122,7 @@ class Mastermind(commands.Cog, name='Mastermind'):
         if difficulty.lower() not in ('easy', 'hard'):
             raise commands.CommandError('Valid difficulties: easy, hard')
 
-        game = MMGame(ctx.author, 4 if difficulty.lower()=='easy' else 5)
+        game = MMGame(ctx.author, 4 if difficulty.lower() == 'easy' else 5)
         self.active_games.append(game)
         instructions = (
             "**Welcome to Felix Mastermind** "
@@ -135,7 +139,7 @@ class Mastermind(commands.Cog, name='Mastermind'):
             "g : GREEN\n"
             "b : BLUE\n"
             "p : PURPLE\n"
-            f"{'l : BLACK' * (game.difficulty - 4)}\n"
+            "l : BLACK (only for hard difficulty)\n\n"
 
             "You can cancel the game with:\n**felix mastermind quit**\n\n"
             "Shortcuts:\nfelix mastermind - **felix mm**\n"
@@ -168,9 +172,7 @@ class Mastermind(commands.Cog, name='Mastermind'):
             return False
         to_send = []
         for n, line in enumerate(result, start=1):
-            # to_send.append(str(hex(n))[2:] + ': ' + line)
-            # to_send.append(f'{n:X}: {line}')      # UPPERCASE HEX CHARS
-            to_send.append(f'{n:x}: {line}')        # lowercase hex chars
+            to_send.append(str(n).rjust(2) + ': ' + line)
         to_send = '```\n' + '\n'.join(to_send) + '```'
         if winner:
             to_send += '\nThe Game is Over - you win'
