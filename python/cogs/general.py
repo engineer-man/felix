@@ -284,15 +284,16 @@ class General(commands.Cog, name='General'):
             '• Youtube: <https://www.youtube.com/engineerman>' +
             '\n• Discord: <https://engineerman.org/discord>' +
             '\n• EMKC: <https://emkc.org/>' +
-            '\n• EMKC snippets: <https://emkc.org/snippets>' +
-            '\n• EMKC challenges: <https://emkc.org/challenges>' +
-            '\n• Youtube Github: <https://github.com/engineer-man/youtube-code>' +
-            '\n• EMKC Github: <https://github.com/engineer-man/emkc>' +
-            '\n• Felix Github: <https://github.com/engineer-man/felix>' +
-            '\n• Piston Github: <https://github.com/engineer-man/piston>' +
-            '\n• Reddit: <https://www.reddit.com/r/engineerman/>' +
+            '\n• EMKC Snippets: <https://emkc.org/snippets>' +
+            '\n• EMKC Challenges: <https://emkc.org/challenges>' +
+            '\n• Github Youtube: <https://github.com/engineer-man/youtube-code>' +
+            '\n• Github EMKC: <https://github.com/engineer-man/emkc>' +
+            '\n• Github Felix: <https://github.com/engineer-man/felix>' +
+            '\n• Github Piston: <https://github.com/engineer-man/piston>' +
             '\n• Twitter: <https://twitter.com/_EngineerMan>' +
-            '\n• Facebook: <https://www.facebook.com/engineermanyt>'
+            '\n• Facebook: <https://www.facebook.com/engineermanyt>' +
+            '\n• Reddit: <https://www.reddit.com/r/engineerman/>' +
+            '\n• Reddit Resources: <https://www.reddit.com/r/engineerman/search/?q=flair%3AResource&restrict_sr=1>'
         )
         e = Embed(
             title='Links',
