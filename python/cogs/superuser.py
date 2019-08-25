@@ -8,14 +8,17 @@ Only users which are specified as a superuser in the config.json
 can run commands from this cog.
 """
 
+import re
 import subprocess
-from discord import File
 from discord.ext import commands
 
 
 class Superuser(commands.Cog, name='Superuser'):
     def __init__(self, client):
         self.client = client
+        self.cog_re = re.compile(
+            r'\s*python\/cogs\/(.+)\.py\s*\|\s*\d+\s*[+-]+'
+        )
 
     async def cog_check(self, ctx):
         return self.client.user_is_superuser(ctx.author)
@@ -43,7 +46,12 @@ class Superuser(commands.Cog, name='Superuser'):
                 ['git', 'pull']).decode()
             await ctx.send('```git\n' + output + '\n```')
         except Exception as e:
-            await ctx.send(str(e))
+            return await ctx.send(str(e))
+
+        _cogs = [f'cogs.{i}' for i in self.cog_re.findall(output)]
+        active_cogs = [i for i in _cogs if i in self.client.extensions]
+        if active_cogs:
+            await ctx.invoke(self.client.get_command('reload'), *active_cogs)
 
     # ----------------------------------------------
     # Command to reset the repo to a previous commit

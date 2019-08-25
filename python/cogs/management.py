@@ -256,16 +256,19 @@ class Management(commands.Cog, name='Management'):
         hidden=True,
         aliases=['re']
     )
-    async def reload_extension(self, ctx, extension_name):
-        if extension_name in 'all':
+    async def reload_extension(self, ctx, *extension_names):
+        if 'all' in extension_names:
             target_extensions = [__name__] + \
-                [x for x in self.client.extensions.keys() if not x == __name__]
+                [x for x in self.client.extensions if not x == __name__]
         else:
-            if '.' not in extension_name:
-                extension_name = 'cogs.' + extension_name
-            if extension_name not in self.client.extensions:
-                return
-            target_extensions = [extension_name]
+            extension_names = [
+                i if 'cogs.' in i else f'cogs.{i}' for i in extension_names
+            ]
+            target_extensions = [
+                i for i in extension_names if i in self.client.extensions
+            ]
+        if not target_extensions:
+            return
         result = []
         for ext in target_extensions:
             try:
