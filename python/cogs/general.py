@@ -3,7 +3,7 @@ It will add general commands and responses to a bot
 
 Commands:
     gif             make the bot post a random gif for a given search term
-    google          make the bot post a google link
+    search          make the bot post a web-search link
     howto           make the bot post tutorials
      ├ codeblocks       how to send discord markdown codeblocks
      ├ ask              how to ask question on the server
@@ -180,14 +180,14 @@ class General(commands.Cog, name='General'):
     # ------------------------------------------------------------------------
 
     @commands.command(
-        name='google',
-        aliases=['lmgtfy']
+        name='search',
+        aliases=['lmgtfy', 'duck', 'duckduckgo', 'google']
     )
-    async def google(self, ctx, *, search_text):
-        """Post a google search link"""
+    async def search(self, ctx, *, search_text):
+        """Post a duckduckgo search link"""
         await ctx.trigger_typing()
         await ctx.send(
-            f'here you go! <https://google.com/search?q={quote(search_text)}>'
+            f'here you go! <https://duckduckgo.com/?q={quote(search_text)}>'
         )
     # ------------------------------------------------------------------------
 
