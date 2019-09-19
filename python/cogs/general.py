@@ -153,10 +153,10 @@ class General(commands.Cog, name='General'):
         ):
             await msg.channel.send('ฅ^•ﻌ•^ฅ')
 
-
     # ----------------------------------------------
     # Cog Commands
     # ----------------------------------------------
+
     @commands.command(
         name='gif'
     )
@@ -347,7 +347,8 @@ class General(commands.Cog, name='General'):
         await ctx.send(embed=embed)
     # ------------------------------------------------------------------------
 
-    @commands.command(
+    @commands.group(
+        invoke_without_command=True,
         name='memberinfo',
         aliases=['member']
     )
@@ -391,6 +392,17 @@ class General(commands.Cog, name='General'):
                 value=value
             )
         await ctx.send(embed=embed)
+
+    @memberinfo.command(
+        name='oldest',
+    )
+    async def oldest(self, ctx):
+        """Get the oldest Discord account on the Server"""
+        oldst = min([x for x in ctx.guild.members], key=lambda y: y.created_at)
+        await ctx.send(
+            'Oldest Discord account on this Server:\n'
+            f'`{str(oldst)} created {oldst.created_at}`'
+        )
     # ------------------------------------------------------------------------
 
     @commands.command(
