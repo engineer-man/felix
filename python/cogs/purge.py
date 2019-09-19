@@ -19,7 +19,7 @@ Only users that have an admin role can use the commands.
 import typing
 from inspect import Parameter
 from discord.ext import commands
-from discord import Member, User
+from discord import User
 
 
 class Purge(commands.Cog, name='Purge'):
@@ -39,7 +39,7 @@ class Purge(commands.Cog, name='Purge'):
     async def purge(
         self, ctx,
         n: typing.Optional[int] = 0,
-        users: commands.Greedy[typing.Union[Member, User]] = [],
+        users: commands.Greedy[User] = [],
         n2: typing.Optional[int] = 0
         # This allows the command to be used with either order of [num] [user]
     ):
