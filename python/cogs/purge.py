@@ -2,24 +2,16 @@
 It adds the purge command to the bot that can be used to delete messages
 
 Commands:
-    purge           Specify either an number of messages x or a list of users
-                    or both
-                    - If you specify a number the last x messages in the current
-                      channel will be deleted
-                    - If you specify a list of users all messages of these
-                      users within the last 100 messages will be deleted
-                    - If you specify both, all messages of the specified users
-                      that are within the last x messages will be deleted.
-    purge all       All messages in the channel will be deleted.
-                    (might take a long time)
+    purge <n>               Delete the last n messages
+    purge_user <User> [n]   Delete all messages of <User> within the last
+                            [n] Messages (Default 100)
 
 Only users that have an admin role can use the commands.
 """
 
 import typing
-from inspect import Parameter
 from discord.ext import commands
-from discord import Member
+from discord import User
 
 
 class Purge(commands.Cog, name='Purge'):
@@ -38,40 +30,32 @@ class Purge(commands.Cog, name='Purge'):
     )
     async def purge(
         self, ctx,
-        n: typing.Optional[int] = 0,
-        users: commands.Greedy[Member] = [],
-        n2: typing.Optional[int] = 0,
-        # This allows the command to be used with either order of [num] [user]
+        num_messages: int,
     ):
-        """Clear messages from current channel
-        ```
-        Examples:
-        *  purge 10
-        *  purge @user
-        *  purge 10 @user
-        *  purge @user 10
-        *  purge @user1 @user2
-        ```"""
-        if not users and not n:
-            param = Parameter('number_of_messages', Parameter.POSITIONAL_ONLY)
-            raise commands.MissingRequiredArgument(param)
+        """Clear <n> messages from current channel"""
         channel = ctx.message.channel
-        if not users:
-            msg_limit = n+1 if n else 100
-            await channel.purge(limit=msg_limit, check=None, before=None)
-        else:
-            if n2:
-                n = n2
-
-            userids = [user.id for user in users]
-
-            def check(m):
-                return any(m.author.id == userid for userid in userids)
-
-            msg_limit = n if n else 100
-            await ctx.message.delete()
-            await channel.purge(limit=msg_limit, check=check, before=None)
+        await ctx.message.delete()
+        await channel.purge(limit=num_messages, check=None, before=None)
         return True
+
+    @commands.command(
+        name='purge_user',
+        hidden=True,
+        aliases=['purgeu', 'purgeuser'],
+    )
+    async def purge_user(
+        self, ctx,
+        user: User,
+        num_messages: typing.Optional[int] = 100,
+    ):
+        """Clear all messagges of <User> withing the last [n=100] messages"""
+        channel = ctx.message.channel
+
+        def check(msg):
+            return msg.author.id == user.id
+
+        await ctx.message.delete()
+        await channel.purge(limit=num_messages, check=check, before=None)
 
 
 def setup(client):
