@@ -1,2 +1,4 @@
 discord.py
 matplotlib
+google-api-python-client
+google-auth-oauthlib
