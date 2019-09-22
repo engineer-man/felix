@@ -4,12 +4,13 @@ It provides a youtube livestream chat question integration with discord
 
 import asyncio
 import json
-import httplib2
+from datetime import datetime
 import googleapiclient.discovery
 from google_auth_oauthlib import flow as googleFlow
 from discord import Embed
 from discord.ext import tasks, commands
-from datetime import datetime
+
+#pylint: disable=E1101
 
 
 class Stream(commands.Cog, name='Stream'):
@@ -19,12 +20,12 @@ class Stream(commands.Cog, name='Stream'):
         self.staging_ch = None
         self.questions_ch = None
         self.answered_ch = None
-        self.PREFIXES = ['q', 'question']
+        self.PREFIXES = ['q ', 'question ', 'q:', 'question:']
         self.staged_questions = dict()
         self.forwarded_questions = dict()
         self.reaction_in_progress = set()
         self.youtube_api = None
-        self.check_date = datetime(2000,1,1)
+        self.check_date = datetime(2000, 1, 1)
 
     async def cog_check(self, ctx):
         return self.client.user_is_admin(ctx.author)
@@ -56,8 +57,6 @@ class Stream(commands.Cog, name='Stream'):
         with open("../state.json", "w") as statefile:
             return json.dump(state, statefile, indent=1)
 
-    # -----------------------------------------------
-
     def set_up_api(self, credentials):
         api_service_name = "youtube"
         api_version = "v3"
@@ -67,7 +66,6 @@ class Stream(commands.Cog, name='Stream'):
         return True
 
     def refresh_api(self):
-        print('Refreshing api')
         refresh_token = self.load_refresh_token()
         if not refresh_token:
             return False
@@ -84,11 +82,9 @@ class Stream(commands.Cog, name='Stream'):
         )
         credentials = flow.credentials
         self.set_up_api(credentials)
-        print('done')
         return True
 
     async def stage_question(self, question_text, author_name, avatar):
-        print('Staging Question', question_text)
         e = Embed(
             description=question_text,
             color=0x2ECC71
@@ -134,7 +130,9 @@ class Stream(commands.Cog, name='Stream'):
         self.forwarded_questions.pop(old_question.id)
         return True
 
-    # -----------------------------------------------------
+    # ----------------------------------------------
+    # Listeners
+    # ----------------------------------------------
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         if user.bot:
@@ -157,20 +155,23 @@ class Stream(commands.Cog, name='Stream'):
                 await self.drop_forwarded_question(msg_id)
         self.reaction_in_progress.remove(msg_id)
 
-    # ----------------------------------------------------
+    # ----------------------------------------------
+    # Commands
+    # ----------------------------------------------
     @commands.group(
         name='stream',
         hidden=True,
         invoke_without_command=True,
     )
     async def stream(self, ctx):
-        """Commands to control the stream question forwarding"""
+        """Commands to control the live stream integration"""
         await ctx.send_help('stream')
 
     @stream.command(
         name='authenticate',
     )
     async def authenticate(self, ctx):
+        """The stream owner has to run this to authenticate felix on youtube"""
         channel = ctx.channel
         caller = ctx.author
         scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
@@ -193,7 +194,7 @@ class Stream(commands.Cog, name='Stream'):
                 timeout=120
             )
         except asyncio.TimeoutError:
-            await channel.send(f'TIMEOUT - Setup Cancelled')
+            await channel.send(f'TIMEOUT - Authentication Cancelled')
             return
         code = code_msg.content
         flow.fetch_token(code=code)
@@ -206,7 +207,7 @@ class Stream(commands.Cog, name='Stream'):
         name='setup',
     )
     async def stream_setup(self, ctx):
-        """Setup the stream question forwarding"""
+        """Setup the 'staging', 'question', and 'archive' channel"""
         channel = ctx.channel
         caller = ctx.author
 
@@ -228,7 +229,7 @@ class Stream(commands.Cog, name='Stream'):
                 timeout=60
             )
 
-            await channel.send('Please specify the "Answered Questions" channel ID')
+            await channel.send('Please specify the "Archive" channel ID')
             answered_msg = await self.client.wait_for(
                 'message',
                 check=check,
@@ -238,7 +239,6 @@ class Stream(commands.Cog, name='Stream'):
         except asyncio.TimeoutError:
             await channel.send(f'TIMEOUT - Setup Cancelled')
             return
-
 
         staging_id = int(staging_msg.content)
         questions_id = int(questions__msg.content)
@@ -279,17 +279,27 @@ class Stream(commands.Cog, name='Stream'):
             await ctx.send('No active livestream found')
             return
         self.LIVE_CHAT_ID = response['items'][0]['snippet']['liveChatId']
+        await self.staging_ch.purge(limit=500, check=None, before=None)
+        await self.questions_ch.purge(limit=500, check=None, before=None)
         await ctx.send(
             'Found Stream: `' +
             response['items'][0]['snippet']['title'] +
             '` - Attaching to live chat'
         )
-
         self.read_chat_task.start()
 
+    @stream.command(
+        name='stop',
+    )
+    async def stream_stop(self, ctx):
+        """Stop monitoring the live chat"""
+        self.read_chat_task.stop()
+
+    # ----------------------------------------------
+    # Tasks
+    # ----------------------------------------------
     @tasks.loop(seconds=10.0)
     async def read_chat_task(self):
-        print('running task')
         request = self.youtube_api.liveChatMessages().list(
             liveChatId=self.LIVE_CHAT_ID,
             part="snippet,authorDetails"
@@ -310,8 +320,7 @@ class Stream(commands.Cog, name='Stream'):
             author_image = msg['authorDetails']['profileImageUrl']
 
             await self.stage_question(message_text, author_name, author_image)
-
-
+    # ----------------------------------------------
 
     def cog_unload(self):
         self.read_chat_task.cancel()
