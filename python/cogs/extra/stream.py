@@ -247,13 +247,15 @@ class Stream(commands.Cog, name='Stream'):
         stream_channels = [staging_id, questions_id, answered_id]
         self.save_stream_channels(stream_channels)
 
-
     @stream.command(
         name='start',
     )
     async def stream_start(self, ctx):
+        """Find active stream and start monitoring the live chat"""
         try:
             self.refresh_api()
+            if not self.youtube_api:
+                raise RuntimeError('API failiure - are you authenticated')
         except:
             await ctx.send('Please run `felix stream authenticate` first')
             return False
