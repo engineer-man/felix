@@ -270,6 +270,9 @@ class Stream(commands.Cog, name='Stream'):
             broadcastType="all"
         )
         response = request.execute()
+        if not response['items']:
+            await ctx.send('No active livestream found')
+            return
         self.LIVE_CHAT_ID = response['items'][0]['snippet']['liveChatId']
         await ctx.send(
             'Found Stream: `' +
