@@ -26,6 +26,9 @@ class Stream(commands.Cog, name='Stream'):
         self.youtube_api = None
         self.check_date = datetime(2000,1,1)
 
+    async def cog_check(self, ctx):
+        return self.client.user_is_admin(ctx.author)
+
     # ----------------------------------------------
     # Helper Functions
     # ----------------------------------------------
