@@ -213,15 +213,17 @@ class Management(commands.Cog, name='Management'):
         hidden=True,
     )
     async def load_extension(self, ctx, extension_name):
-        if '.' not in extension_name:
-            extension_name = 'cogs.' + extension_name
+        for cog_name in self.crawl_cogs():
+            if extension_name in cog_name:
+                target_extension = cog_name
+                break
         try:
-            self.client.load_extension(extension_name)
+            self.client.load_extension(target_extension)
         except Exception as e:
             self.client.last_errors.append((e, datetime.utcnow(), ctx))
             await ctx.send(f'```py\n{type(e).__name__}: {str(e)}\n```')
             return
-        await ctx.send(f'```css\nExtension [{extension_name}] loaded.```')
+        await ctx.send(f'```css\nExtension [{target_extension}] loaded.```')
 
     # ----------------------------------------------
     # Function to unload extensions
@@ -233,18 +235,20 @@ class Management(commands.Cog, name='Management'):
         hidden=True,
     )
     async def unload_extension(self, ctx, extension_name):
-        if '.' not in extension_name:
-            extension_name = 'cogs.' + extension_name
-        if extension_name.lower() in 'cogs.management':
+        for cog_name in self.client.extensions:
+            if extension_name in cog_name:
+                target_extension = cog_name
+                break
+        if target_extension.lower() in 'cogs.management':
             await ctx.send(
-                f"```diff\n- {extension_name} can't be unloaded" +
-                f"\n+ try felix reload {extension_name}!```"
+                f"```diff\n- {target_extension} can't be unloaded" +
+                f"\n+ try felix reload {target_extension}!```"
             )
             return
-        if self.client.extensions.get(extension_name) is None:
+        if self.client.extensions.get(target_extension) is None:
             return
-        self.client.unload_extension(extension_name)
-        await ctx.send(f'```css\nExtension [{extension_name}] unloaded.```')
+        self.client.unload_extension(target_extension)
+        await ctx.send(f'```css\nExtension [{target_extension}] unloaded.```')
 
     # ----------------------------------------------
     # Function to reload extensions
@@ -256,17 +260,16 @@ class Management(commands.Cog, name='Management'):
         hidden=True,
         aliases=['re']
     )
-    async def reload_extension(self, ctx, *extension_names):
-        if 'all' in extension_names:
+    async def reload_extension(self, ctx, extension_name):
+        target_extensions = []
+        if 'all' in extension_name:
             target_extensions = [__name__] + \
                 [x for x in self.client.extensions if not x == __name__]
         else:
-            extension_names = [
-                i if 'cogs.' in i else f'cogs.{i}' for i in extension_names
-            ]
-            target_extensions = [
-                i for i in extension_names if i in self.client.extensions
-            ]
+            for cog_name in self.client.extensions:
+                if extension_name in cog_name:
+                    target_extensions = [cog_name]
+                    break
         if not target_extensions:
             return
         result = []
