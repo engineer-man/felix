@@ -6,7 +6,7 @@ Commands:
 
 """
 from discord.ext import commands
-from discord import TextChannel
+from discord import DMChannel
 
 
 # set up log path
@@ -23,7 +23,7 @@ class ChatLog(commands.Cog, name='Chat Log'):
         if msg.author.bot:
             # Dont log messages of bots
             return
-        if not isinstance(msg.channel, TextChannel):
+        if isinstance(msg.channel, DMChannel):
             # Don't log DMs
             return
         if not msg.channel.guild.id == self.client.main_guild.id:

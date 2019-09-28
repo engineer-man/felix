@@ -4,7 +4,7 @@ It adds Yarr
 import random
 from datetime import datetime as dt
 from discord.ext import commands
-from discord import Activity
+from discord import Activity, DMChannel
 
 
 class Yarr(commands.Cog, command_attrs=dict(hidden=True)):
@@ -18,6 +18,9 @@ class Yarr(commands.Cog, command_attrs=dict(hidden=True)):
     @commands.Cog.listener()
     async def on_message(self, msg):
         if msg.author.bot:
+            return
+        if isinstance(msg.channel, DMChannel):
+            # Ignore DM
             return
         if random.randint(1, 100 // self.chance) == 1:
             if (dt.utcnow() - self.last_yarr).total_seconds() < self.cooldown:

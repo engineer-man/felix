@@ -13,7 +13,7 @@ import asyncio
 import json
 import time
 from discord.ext import commands
-from discord import Member
+from discord import Member, DMChannel
 
 # SETTINGS:
 # TODO: Ideally these settings sould also come from the config.json file
@@ -118,6 +118,9 @@ class Jail(commands.Cog, name='Jail'):
         member = msg.author
         if member == self.client.user:
             # Don't run on the bots own messages
+            return
+        if isinstance(msg.channel, DMChannel):
+            # Ignore DM
             return
         now = time.time()
         uid = str(member.id)

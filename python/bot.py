@@ -87,12 +87,12 @@ async def on_ready():
 
 
 @client.event
-async def on_message(message):
-    if isinstance(message.channel, DMChannel):
+async def on_message(msg):
+    if isinstance(msg.channel, DMChannel):
         return
-    if client.user_is_ignored(message.author):
+    if client.user_is_ignored(msg.author):
         return
-    await client.process_commands(message)
+    await client.process_commands(msg)
 
 
 client.run()
