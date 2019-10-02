@@ -13,7 +13,7 @@ import asyncio
 import json
 import time
 from discord.ext import commands
-from discord import Member, DMChannel
+from discord import Member, DMChannel, Embed
 
 # SETTINGS:
 # TODO: Ideally these settings sould also come from the config.json file
@@ -27,16 +27,23 @@ SPAM_NAUGHTY_DURATION = 900  # Seconds
 # The task that clears the history and removes users from the "watchlist" if
 # they have been on it for more than SPAM_NAUGHTY_DURATION will run every
 SPAM_NAUGHTY_CHECK_INTERVAL = 300  # seconds
+# Staff will recieve a warning if more than
+JOIN_NUM = 15  # Users join
+# Within
+JOIN_TIME = 10  # Seconds
 
 
 class Jail(commands.Cog, name='Jail'):
     def __init__(self, client):
         self.client = client
         self.jail_roles = self.client.config['jail_roles']
+        self.REPORT_CHANNEL = self.client.config['report_channel']
         # Dict to store offenders
         self.naughty = {}
         # Dict to store the timestamps of each users last 10 messages
         self.history = {}
+        # List to temporarily store members
+        self.member_history = []
         # Task that will remove users from the naughty list if they behaved for
         # 15 minutes - will also clear self.history to not let it get too big
         self.my_task = self.client.loop.create_task(self.clear_naughty_list())
@@ -47,6 +54,32 @@ class Jail(commands.Cog, name='Jail'):
     # ----------------------------------------------
     # Helper Functions
     # ----------------------------------------------
+    async def flood_check(self, member):
+        now = time.time()
+        if not self.member_history:
+            self.member_history.append(now)
+        if member not in self.member_history:
+            self.member_history.append(member)
+        # JOIN_NUM is increased to compensate for 'time' float in list
+        if len(self.member_history) == (JOIN_NUM + 1):
+            if (now - self.member_history.pop(0)) < JOIN_TIME:
+                return await self.flood_true()
+            self.member_history.clear()
+
+    async def flood_true(self):
+        target = self.client.get_channel(self.REPORT_CHANNEL)
+        _members = '\n'.join(str(m) for m in self.member_history)
+        description = (
+            f'**{JOIN_NUM} users** joined within {JOIN_TIME} seconds.\n'
+            f'**Joined users:**\n```\n{_members}\n```'
+        )
+        embed = Embed(
+            title='Warning!',
+            description=description,
+            color=0xFF0000
+        )
+        await target.send(embed=embed)
+
     def load_state(self):
         with open("../state.json", "r") as statefile:
             return json.load(statefile)
@@ -164,6 +197,7 @@ class Jail(commands.Cog, name='Jail'):
             await self.send_to_jail(
                 member, reason='User tried to rejoin', permanent=False
             )
+        await self.flood_check(member)
 
     # ----------------------------------------------
     # Cog Commands
