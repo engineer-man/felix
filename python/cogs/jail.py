@@ -12,6 +12,7 @@ Only users that have an admin role can use the commands.
 import asyncio
 import json
 import time
+from collections import deque
 from discord.ext import commands
 from discord import Member, DMChannel, Embed
 
@@ -42,8 +43,12 @@ class Jail(commands.Cog, name='Jail'):
         self.naughty = {}
         # Dict to store the timestamps of each users last 10 messages
         self.history = {}
-        # List to temporarily store members
-        self.member_history = []
+        # Deque to temporarily store members
+        self.member_history = deque([], JOIN_NUM+1)
+        # Set to store reported members
+        self.reported_members = set()
+        # Bool which sets to True if member history len is exceeded
+        self.trigger = False
         # Task that will remove users from the naughty list if they behaved for
         # 15 minutes - will also clear self.history to not let it get too big
         self.my_task = self.client.loop.create_task(self.clear_naughty_list())
@@ -56,22 +61,26 @@ class Jail(commands.Cog, name='Jail'):
     # ----------------------------------------------
     async def flood_check(self, member):
         now = time.time()
-        if not self.member_history:
-            self.member_history.append(now)
-        if member not in self.member_history:
-            self.member_history.append(member)
-        # JOIN_NUM is increased to compensate for 'time' float in list
-        if len(self.member_history) == (JOIN_NUM + 1):
-            if (now - self.member_history.pop(0)) < JOIN_TIME:
-                return await self.flood_true()
-            self.member_history.clear()
+        self.member_history.append((now, member))
+        if len(self.member_history) > JOIN_NUM:
+            if (now - self.member_history[0][0]) < JOIN_TIME:
+                if self.trigger:
+                    self.reported_members.add(self.member_history[-1][1])
+                else:
+                    self.reported_members.update(
+                        i[1] for i in self.member_history
+                    )
+                    self.trigger = True
+                    await self.flood_true()
+            elif self.trigger:
+                self.trigger = False
 
     async def flood_true(self):
         target = self.client.get_channel(self.REPORT_CHANNEL)
-        _members = '\n'.join(str(m) for m in self.member_history)
         description = (
-            f'**{JOIN_NUM} users** joined within {JOIN_TIME} seconds.\n'
-            f'**Joined users:**\n```\n{_members}\n```'
+            f'More than {JOIN_NUM} users joined within {JOIN_TIME} '
+            'seconds. Type `felix flood` to see their usernames or '
+            '`felix help flood` for more available actions.'
         )
         embed = Embed(
             title='Warning!',
@@ -202,6 +211,43 @@ class Jail(commands.Cog, name='Jail'):
     # ----------------------------------------------
     # Cog Commands
     # ----------------------------------------------
+    @commands.group(
+        invoke_without_command=True,
+        name='flood',
+        hidden=True
+    )
+    async def flood(self, ctx):
+        """Server flooding prevention commands"""
+        if not self.reported_members:
+            return await ctx.send('List is empty.')
+        _members = '\n'.join(str(m) for m in self.reported_members)
+        if len(_members) > 1990:
+            _members = f'{_members[:1990]}...'
+        await ctx.send(f'```\n{_members}\n```')
+
+    @flood.command(
+        name='clear',
+        aliases=['clean']
+    )
+    async def clear_flood(self, ctx):
+        """Clears the reported member set"""
+        self.reported_members.clear()
+        await ctx.send('`Cleared`')
+
+    @flood.command(
+        name='jail',
+        aliases=['silence']
+    )
+    async def jail_flood(self, ctx):
+        """Jails all members in the reported member set"""
+        if not self.reported_members:
+            return await ctx.send('No members to jail.')
+        for i in self.reported_members:
+            await self.send_to_jail(i, reason='Server flooding')
+        await ctx.send('`Success`')
+        self.reported_members.clear()
+    # ------------------------------------------------------
+
     @commands.command(
         name='jail',
         aliases=['silence'],
