@@ -39,6 +39,7 @@ class Jail(commands.Cog, name='Jail'):
         self.client = client
         self.jail_roles = self.client.config['jail_roles']
         self.REPORT_CHANNEL = self.client.config['report_channel']
+        self.REPORT_ROLE = self.client.config['report_role']
         # Dict to store offenders
         self.naughty = {}
         # Dict to store the timestamps of each users last 10 messages
@@ -46,7 +47,7 @@ class Jail(commands.Cog, name='Jail'):
         # Deque to temporarily store members
         self.member_history = deque([], JOIN_NUM+1)
         # Set to store reported members
-        self.reported_members = set()
+        self.suspected_flooders = set()
         # Bool which sets to True if member history len is exceeded
         self.trigger = False
         # Task that will remove users from the naughty list if they behaved for
@@ -65,9 +66,9 @@ class Jail(commands.Cog, name='Jail'):
         if len(self.member_history) > JOIN_NUM:
             if (now - self.member_history[0][0]) < JOIN_TIME:
                 if self.trigger:
-                    self.reported_members.add(self.member_history[-1][1])
+                    self.suspected_flooders.add(self.member_history[-1][1])
                 else:
-                    self.reported_members.update(
+                    self.suspected_flooders.update(
                         i[1] for i in self.member_history
                     )
                     self.trigger = True
@@ -87,7 +88,7 @@ class Jail(commands.Cog, name='Jail'):
             description=description,
             color=0xFF0000
         )
-        await target.send(embed=embed)
+        await target.send(f'<@&{self.REPORT_ROLE}>', embed=embed)
 
     def load_state(self):
         with open("../state.json", "r") as statefile:
@@ -218,9 +219,9 @@ class Jail(commands.Cog, name='Jail'):
     )
     async def flood(self, ctx):
         """Server flooding prevention commands"""
-        if not self.reported_members:
+        if not self.suspected_flooders:
             return await ctx.send('List is empty.')
-        _members = '\n'.join(str(m) for m in self.reported_members)
+        _members = '\n'.join(str(m) for m in self.suspected_flooders)
         if len(_members) > 1990:
             _members = f'{_members[:1990]}...'
         await ctx.send(f'```\n{_members}\n```')
@@ -231,7 +232,7 @@ class Jail(commands.Cog, name='Jail'):
     )
     async def clear_flood(self, ctx):
         """Clears the reported member set"""
-        self.reported_members.clear()
+        self.suspected_flooders.clear()
         await ctx.send('`Cleared`')
 
     @flood.command(
@@ -240,12 +241,18 @@ class Jail(commands.Cog, name='Jail'):
     )
     async def jail_flood(self, ctx):
         """Jails all members in the reported member set"""
-        if not self.reported_members:
+        if not self.suspected_flooders:
             return await ctx.send('No members to jail.')
-        for i in self.reported_members:
-            await self.send_to_jail(i, reason='Server flooding')
-        await ctx.send('`Success`')
-        self.reported_members.clear()
+        _jailed = []
+        for i in self.suspected_flooders:
+            _status = await self.send_to_jail(i, reason='Server flooding')
+            if _status == 'Success':
+                _jailed.append(f'{i} jailed')
+        if _jailed:
+            await ctx.send('```\n' + '\n'.join(_jailed) + '\n```')
+        else:
+            await ctx.send('No members were jailed.')
+        self.suspected_flooders.clear()
     # ------------------------------------------------------
 
     @commands.command(
