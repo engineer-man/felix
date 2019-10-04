@@ -153,6 +153,15 @@ class Jail(commands.Cog, name='Jail'):
             status = f'{member} is not in jail'
         return status
 
+    async def post_report(self, msg):
+        """Post report of auto jailing to report channel"""
+        target = self.client.get_channel(self.REPORT_CHANNEL)
+        await target.send(
+            f'<@&{self.REPORT_ROLE}> I jailed a user\n'
+            f'User {msg.author.mention} spammed in {msg.channel.mention}'
+        )
+        return True
+
     # ----------------------------------------------
     # Cog Event listeners
     # ----------------------------------------------
@@ -182,6 +191,7 @@ class Jail(commands.Cog, name='Jail'):
                     await self.send_to_jail(member,
                                             reason='Excessive messaging')
                     await msg.channel.send("Aaaand it's gone")
+                    await self.post_report(msg)
                 else:
                     # Warn the user and add him to the naughty list
                     # If he is not on the naughty list yet
