@@ -280,8 +280,6 @@ class Stream(commands.Cog, name='Stream'):
             await ctx.send('No active livestream found')
             return
         self.LIVE_CHAT_ID = response['items'][0]['snippet']['liveChatId']
-        await self.staging_ch.purge(limit=500, check=None, before=None)
-        # await self.questions_ch.purge(limit=500, check=None, before=None)
         await ctx.send(
             'Found Stream: `' +
             response['items'][0]['snippet']['title'] +
