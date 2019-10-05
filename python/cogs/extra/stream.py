@@ -295,6 +295,7 @@ class Stream(commands.Cog, name='Stream'):
     async def stream_stop(self, ctx):
         """Stop monitoring the live chat"""
         self.read_chat_task.stop()
+        await ctx.send('Detached from stream Chat')
 
     # ----------------------------------------------
     # Tasks
