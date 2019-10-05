@@ -201,7 +201,7 @@ class Stream(commands.Cog, name='Stream'):
         credentials = flow.credentials
         refresh_token = credentials.refresh_token
         self.save_refresh_token(refresh_token)
-        self.set_up_api(credentials)
+        await ctx.send('Authentication Successful - refresh token saved')
 
     @stream.command(
         name='setup',
@@ -246,6 +246,7 @@ class Stream(commands.Cog, name='Stream'):
 
         stream_channels = [staging_id, questions_id, answered_id]
         self.save_stream_channels(stream_channels)
+        await ctx.send('Setup Successful - question channels saved')
 
     @stream.command(
         name='start',
@@ -280,7 +281,7 @@ class Stream(commands.Cog, name='Stream'):
             return
         self.LIVE_CHAT_ID = response['items'][0]['snippet']['liveChatId']
         await self.staging_ch.purge(limit=500, check=None, before=None)
-        await self.questions_ch.purge(limit=500, check=None, before=None)
+        # await self.questions_ch.purge(limit=500, check=None, before=None)
         await ctx.send(
             'Found Stream: `' +
             response['items'][0]['snippet']['title'] +
