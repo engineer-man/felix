@@ -60,7 +60,7 @@ class Superuser(commands.Cog, name='Superuser'):
     @git.command(
         name='reset',
     )
-    async def reset(self, ctx, n):
+    async def reset(self, ctx, n: int):
         """Reset repo to HEAD~[n]"""
         if not n > 0:
             raise commands.BadArgument('Please specify n>0')
