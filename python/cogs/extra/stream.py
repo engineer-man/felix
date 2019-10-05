@@ -307,7 +307,10 @@ class Stream(commands.Cog, name='Stream'):
         response = request.execute()
         chat_messages = response['items']
         for msg in chat_messages:
-            message_text = msg['snippet']['textMessageDetails']['messageText']
+            try:
+                message_text = msg['snippet']['textMessageDetails']['messageText']
+            except:
+                continue
             if not any(message_text.lower().startswith(pref) for pref in self.PREFIXES):
                 continue
             message_date_str = msg['snippet']['publishedAt']
