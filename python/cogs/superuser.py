@@ -51,7 +51,8 @@ class Superuser(commands.Cog, name='Superuser'):
         _cogs = [f'cogs.{i}' for i in self.cog_re.findall(output)]
         active_cogs = [i for i in _cogs if i in self.client.extensions]
         if active_cogs:
-            await ctx.invoke(self.client.get_command('reload'), *active_cogs)
+            for cog_name in active_cogs:
+                await ctx.invoke(self.client.get_command('reload'), cog_name)
 
     # ----------------------------------------------
     # Command to reset the repo to a previous commit
