@@ -23,6 +23,7 @@ FORBIDDEN = [
     'gofundme.com',
     'gofund.me'
 ]
+FORBIDDEN_FILETYPES = ('.exe',)
 
 
 @dataclass
@@ -30,6 +31,7 @@ class MinimalMessage:
     content: str
     author: Member
     channel: Messageable
+    attachments: list
 
 
 class LinkBlocker(commands.Cog, name='Link Blocker'):
@@ -92,11 +94,25 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
             return True
         return False
 
+    async def has_forbidden_attachments(self, msg):
+        """Check message and return True if
+            forbidden attachments were detected"""
+        attachments = msg.attachments
+        if not attachments:
+            return False
+        forbidden = (
+            i for i in attachments if i.filename.endswith(FORBIDDEN_FILETYPES)
+        )
+        return next(forbidden, False)
+
     async def post_report(self, msg):
         """Post report of deletion to target channel"""
         target = self.client.get_channel(self.REPORT_CHANNEL)
         e = Embed(description=msg.content,
                   color=random.randint(0, 0xFFFFFF))
+        if msg.attachments:
+            e.description += '\n\n**Attachments:**\n'
+            e.description += '\n'.join(i.filename for i in msg.attachments)
         await target.send(
             f'<@&{self.REPORT_ROLE}> I deleted a message\n'
             f'Message sent by {msg.author.mention} in {msg.channel.mention}',
@@ -106,7 +122,12 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
 
     async def check_message(self, msg):
         """Check message - return True if message contains forbidden text"""
-        my_msg = MinimalMessage(msg.content, msg.author, msg.channel)
+        my_msg = MinimalMessage(
+            msg.content,
+            msg.author,
+            msg.channel,
+            msg.attachments
+        )
         # ignore spoiler tags
         my_msg.content = my_msg.content.replace('||', '')
         if self.is_dm(my_msg):
@@ -116,6 +137,8 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         if await self.has_discord_link(my_msg):
             return True
         if await self.has_forbidden_text(my_msg):
+            return True
+        if await self.has_forbidden_attachments(my_msg):
             return True
         return False
 
