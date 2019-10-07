@@ -95,27 +95,27 @@ class General(commands.Cog, name='General'):
             await msg.channel.send('` - directed by M. Night Shyamalan.`')
 
         if re.search(
-                r'(?i)(the|this) (current )?year is ' +
-                r'((almost|basically) )?(over|done|finished)',
-                msg.content
+            r'(?i)(the|this) (current )?year is ' +
+            r'((almost|basically) )?(over|done|finished)',
+            msg.content
         ):
             await msg.channel.send(self.get_year_string())
 
         if re.search(
-                r'(?i)send bobs and vagene',
-                msg.content
+            r'(?i)send bobs and vagene',
+            msg.content
         ):
             await msg.channel.send('😏 *sensible chuckle*')
 
         if re.search(
-                r'(?i)^(hi|what\'s up|yo|hey|hello) felix',
-                msg.content
+            r'(?i)^(hi|what\'s up|yo|hey|hello) felix',
+            msg.content
         ):
             await msg.channel.send('hello')
 
         if re.search(
-                r'(?i)^felix should (i|he|she|they|we|@*)',
-                msg.content
+            r'(?i)^felix should i',
+            msg.content
         ):
             if random.random() >= 0.5:
                 response = 'the answer I am getting from my entropy is: Yes.'
@@ -124,32 +124,32 @@ class General(commands.Cog, name='General'):
             await msg.channel.send(response)
 
         if re.search(
-                r'(?i)^html is a programming language',
-                msg.content
+            r'(?i)^html is a programming language',
+            msg.content
         ):
             await msg.channel.send('no it\'s not, don\'t be silly')
 
         if re.search(
-                r'(?i)^you wanna fight, felix\?',
-                msg.content
+            r'(?i)^you wanna fight, felix\?',
+            msg.content
         ):
             await msg.channel.send('bring it on pal (╯°□°）╯︵ ┻━┻')
 
         if re.search(
-                r'(?i)^arrays start at 0',
-                msg.content
+            r'(?i)^arrays start at 0',
+            msg.content
         ):
             await msg.channel.send('arrays definitely start at 0')
 
         if re.search(
-                r'(?i)^arrays start at 1',
-                msg.content
+            r'(?i)^arrays start at 1',
+            msg.content
         ):
             await msg.channel.send('arrays do not start at 1, they start at 0')
 
         if re.search(
-                r'(?i)^felix meow',
-                msg.content
+            r'(?i)^felix meow',
+            msg.content
         ):
             await msg.channel.send('ฅ^•ﻌ•^ฅ')
 
@@ -179,9 +179,8 @@ class General(commands.Cog, name='General'):
             await ctx.send(embed=e)
     # ------------------------------------------------------------------------
 
-    @commands.group(
+    @commands.command(
         name='search',
-        invoke_without_command=True,
         aliases=['lmgtfy', 'duck', 'duckduckgo', 'google']
     )
     async def search(self, ctx, *, search_text):
@@ -190,17 +189,6 @@ class General(commands.Cog, name='General'):
         await ctx.send(
             f'here you go! <https://duckduckgo.com/?q={quote(search_text)}>'
         )
-
-    @search.command(
-        name='stackoverflow',
-        aliases=['stacko', 'so']
-    )
-    async def stackoverflow(self, ctx, search_text):
-        await ctx.trigger_typing()
-        await ctx.send(
-            f'here you go! <https://stackoverflow.com/search?q={quote(search_text)}>'
-        )
-
     # ------------------------------------------------------------------------
 
     @commands.group(
@@ -523,13 +511,13 @@ class General(commands.Cog, name='General'):
         name='weather'
     )
     async def weather(
-            self, ctx,
-            location: str,
-            days: int = 0,
-            units: str = 'm',
+        self, ctx,
+        location: str,
+        days: int = 0,
+        units: str = 'm',
     ):
         """Get the current weather/forecast in a location
-"
+
         Probably difficult to view on mobile
 
         Options:
@@ -556,7 +544,7 @@ class General(commands.Cog, name='General'):
             return
         if days:
             weather = [weather[0]]+weather[7:]
-            if not weather[-1]:
+            if len(weather[-1]) == 0:
                 weather = weather[:-1]
             if weather[-1].startswith('Location'):
                 weather = weather[:-1]
