@@ -94,6 +94,13 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
             msg.content
         )):
             return True
+        if len(re.findall(
+            r'(?i)(http(s)?\:\/\/(www\.)?[^\s]+(' +
+            '|'.join([s.replace('.', '\\.') for s in FORBIDDEN_FILETYPES]) +
+            '))',
+            msg.content
+        )):
+            return True
         return False
 
     async def has_forbidden_attachments(self, msg):
