@@ -14,6 +14,7 @@ from discord import Embed
 from discord.ext import commands
 from discord.ext.commands import HelpCommand, DefaultHelpCommand
 
+#pylint: disable=E1101
 
 class myHelpCommand(HelpCommand):
     def __init__(self, **options):
@@ -63,8 +64,12 @@ class myHelpCommand(HelpCommand):
             if len(cmds) == 1:
                 entries = f'{self.spacer}{cmds[0].name} → {cmds[0].short_doc}'
             else:
-                entries = ' | '.join([command.name for command in cmds])
-                entries = self.spacer + entries
+                entries = ''
+                while len(cmds) > 0:
+                    entries += self.spacer
+                    entries += ' | '.join([cmd.name for cmd in cmds[0:8]])
+                    cmds = cmds[8:]
+                    entries += '\n' if cmds else ''
             self.paginator.append((category, entries))
         await self.send_pages(header=True, footer=True)
 
