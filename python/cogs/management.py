@@ -262,7 +262,7 @@ class Management(commands.Cog, name='Management'):
     )
     async def reload_extension(self, ctx, extension_name):
         target_extensions = []
-        if 'all' in extension_name:
+        if extension_name == 'all':
             target_extensions = [__name__] + \
                 [x for x in self.client.extensions if not x == __name__]
         else:
