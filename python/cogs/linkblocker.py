@@ -14,8 +14,9 @@ import re
 import time
 import random
 from dataclasses import dataclass
+from io import BytesIO
 from discord.ext import commands
-from discord import Member, DMChannel, Embed
+from discord import Member, DMChannel, Embed, File
 from discord.abc import Messageable
 
 FORBIDDEN = [
@@ -42,6 +43,7 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         self.NAUGHTY_LIST_TIME = 600
         self.REPORT_CHANNEL = self.client.config['report_channel']
         self.REPORT_ROLE = self.client.config['report_role']
+        self.forbidden_files = []
 
     async def cog_check(self, ctx):
         return self.client.user_is_admin(ctx.author)
@@ -100,24 +102,39 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         attachments = msg.attachments
         if not attachments:
             return False
-        forbidden = (
+        forbidden = [
             i for i in attachments if i.filename.endswith(FORBIDDEN_FILETYPES)
-        )
-        return next(forbidden, False)
+        ]
+        if not forbidden:
+            return False
+        size = sum(i.size for i in forbidden)
+        # Do not attach files if the maximum upload size is exceeded
+        if size <= 8_000_000:
+            self.forbidden_files = [
+                File(
+                BytesIO(await i.read()),
+                filename=i.filename
+                ) for i in forbidden
+            ]
+        return True
 
     async def post_report(self, msg):
         """Post report of deletion to target channel"""
         target = self.client.get_channel(self.REPORT_CHANNEL)
-        e = Embed(description=msg.content,
-                  color=random.randint(0, 0xFFFFFF))
-        if msg.attachments:
-            e.description += '\n\n**Attachments:**\n'
-            e.description += '\n'.join(i.filename for i in msg.attachments)
+        extra_content = {}
+        if msg.content:
+            e = Embed(description=msg.content,
+                    color=random.randint(0, 0xFFFFFF))
+            extra_content['embed'] = e
+        if self.forbidden_files:
+            extra_content['files'] = self.forbidden_files
         await target.send(
             f'<@&{self.REPORT_ROLE}> I deleted a message\n'
             f'Message sent by {msg.author.mention} in {msg.channel.mention}',
-            embed=e
+            **extra_content
         )
+        if self.forbidden_files:
+            self.forbidden_files.clear()
         return True
 
     async def check_message(self, msg):
