@@ -21,10 +21,11 @@ class Snippet(commands.Cog, name='Snippet Upload'):
             "yml": "yaml",
             "json": "json",
             "cpp": "cpp",
+            "h": "cpp",
             "cs": "csharp",
-            "php": "php,
+            "php": "php",
             "sql": "sql",
-            "xml", "xml",
+            "xml": "xml",
             "cls": "apex",
             "tgr": "apex",
             "azcli": "azcli",
@@ -33,7 +34,7 @@ class Snippet(commands.Cog, name='Snippet Upload'):
             "coffee": "coffeescript",
             "litcoffee": "coffeescript",
             "csp": "csp",
-            "Dockerfile": "dockerfile",
+            "dockerfile": "dockerfile",
             "fs": "fsharp",
             "hbs": "handlebars",
             "ini": "ini",
@@ -45,7 +46,7 @@ class Snippet(commands.Cog, name='Snippet Upload'):
             "m": "objective-c",
             "pl": "perl",
             "pgsql": "pgsql",
-            "txt", "plaintext",
+            "txt": "plaintext",
             "sats": "postiats",
             "pq": "powerquery",
             "ps": "powershell",
@@ -110,10 +111,8 @@ class Snippet(commands.Cog, name='Snippet Upload'):
         # Upload each attachment
         for attachment in message.attachments:
             filename = attachment.filename
-            extension = filename.rsplit('.')[1]
-            
-            if filename == "Dockerfile":
-                extension = "Dockerfile"
+            extension = ('dockerfile' if filename.lower() == 'dockerfile'
+                         else filename.rsplit('.')[1])
 
             # Check that we support the file extension
             if extension not in self.file_extension_mapping:
