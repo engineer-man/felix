@@ -19,6 +19,48 @@ class Snippet(commands.Cog, name='Snippet Upload'):
             "html": "html",
             "rb": "ruby",
             "yml": "yaml",
+            "json": "json",
+            "cpp": "cpp",
+            "cs": "csharp",
+            "php": "php,
+            "sql": "sql",
+            "xml", "xml",
+            "cls": "apex",
+            "tgr": "apex",
+            "azcli": "azcli",
+            "bat": "bat",
+            "clj": "clojure",
+            "coffee": "coffeescript",
+            "litcoffee": "coffeescript",
+            "csp": "csp",
+            "Dockerfile": "dockerfile",
+            "fs": "fsharp",
+            "hbs": "handlebars",
+            "ini": "ini",
+            "less": "less",
+            "lua": "lua",
+            "md": "markdown",
+            "msdax": "msdax",
+            "mysql": "mysql",
+            "m": "objective-c",
+            "pl": "perl",
+            "pgsql": "pgsql",
+            "txt", "plaintext",
+            "sats": "postiats",
+            "pq": "powerquery",
+            "ps": "powershell",
+            "pug": "pug",
+            "r": "r",
+            "razor": "razor",
+            "sb": "sb",
+            "scm": "scheme",
+            "scss": "scss",
+            "sh": "shell",
+            "sol": "sol",
+            "st": "st",
+            "swift": "swift",
+            "ts": "typescript",
+            "vb": "vb",
         }
         self.upload_url = 'https://emkc.org/snippets'
         self.size_limit = 10_000_000  # 10 MB file limit
@@ -69,6 +111,9 @@ class Snippet(commands.Cog, name='Snippet Upload'):
         for attachment in message.attachments:
             filename = attachment.filename
             extension = filename.rsplit('.')[1]
+            
+            if filename == "Dockerfile":
+                extension = "Dockerfile"
 
             # Check that we support the file extension
             if extension not in self.file_extension_mapping:
