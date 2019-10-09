@@ -3,7 +3,7 @@ import json
 from discord.ext import commands
 
 
-class Upload(commands.Cog, name='Upload'):
+class Snippet(commands.Cog, name='Snippet Upload'):
 
     def __init__(self, client):
         self.client = client
@@ -48,11 +48,14 @@ class Upload(commands.Cog, name='Upload'):
     # ----------------------------------------------
     # Cog Commands
     # ----------------------------------------------
-    @commands.command(name='upload',
-                      brief='Upload attached files to EMKC Snippets',
-                      description='Upload attached files to EMKC Snippets. '
-                                  'Include message_id to upload files from other messages')
-    async def upload(self, ctx, message_id=None):
+    @commands.command(
+        name='snippet',
+        aliases=['upload'],
+    )
+    async def snippet(self, ctx, message_id=None):
+        """Upload attached files to EMKC Snippets.
+        Include message_id to upload files from other messages
+        """
         if message_id is None:
             message_id = ctx.message.id
 
@@ -84,7 +87,7 @@ class Upload(commands.Cog, name='Upload'):
 
                 # Upload the file to emkc and send to chat
                 snippet_url = await self.upload_file(
-                    self.file_extension_mapping[extension], 
+                    self.file_extension_mapping[extension],
                     content
                 )
 
@@ -96,4 +99,4 @@ class Upload(commands.Cog, name='Upload'):
 
 def setup(client):
     """This is called when the cog is loaded via load_extension"""
-    client.add_cog(Upload(client))
+    client.add_cog(Snippet(client))
