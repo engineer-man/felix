@@ -7,7 +7,6 @@ Commands:
     unload          unload an extension / cog
     reload          reload an extension / cog
     cogs            show currently active extensions / cogs
-    activity        set the bot's status message
     list            make felix compute a list
      └duplicates        find duplicate usernames
 

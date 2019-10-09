@@ -1,5 +1,8 @@
 """This is a cog for a discord.py bot.
-It will add changing activity to a bot
+It will add auto changing holiday activity to a bot
+
+Commands:
+    activity        set the bot's status message
 """
 
 import asyncio
