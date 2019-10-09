@@ -27,9 +27,6 @@ HOLIDAY_DICT = {
 class ActivityMgmt(commands.Cog, name='Activity Management'):
     def __init__(self, client):
         self.client = client
-        # Seconds till midnight from the time __init__ was called
-        # +120 for a 2 minute delay
-        self.seconds_till_start = round(self.get_seconds()) + 120
         self.previous_activity = None
         self.holidays_task.start()
 
@@ -39,11 +36,6 @@ class ActivityMgmt(commands.Cog, name='Activity Management'):
     # ----------------------------------------------
     # Helper Functions
     # ----------------------------------------------
-    def get_seconds(self):
-        now = dt.utcnow()
-        next_day = dt(now.year, now.month, now.day) + timedelta(days=1)
-        return (next_day - now).total_seconds()
-
     async def check_holiday(self):
         holiday = HOLIDAY_DICT.get(dt.utcnow().strftime('%m%d'))
 
@@ -124,7 +116,11 @@ class ActivityMgmt(commands.Cog, name='Activity Management'):
         await self.client.wait_until_ready()
         await asyncio.sleep(5)
         await self.check_holiday()
-        await asyncio.sleep(self.seconds_till_start)
+        # Seconds till midnight from now +120 for a 2 minute delay
+        now = dt.utcnow()
+        next_day = dt(now.year, now.month, now.day) + timedelta(days=1)
+        seconds_until_midnight = (next_day - now).total_seconds() + 120
+        await asyncio.sleep(seconds_until_midnight)
 
     def cog_unload(self):
         self.holidays.cancel()
