@@ -9,6 +9,7 @@ class Snippet(commands.Cog, name='Snippet Upload'):
         self.client = client
         self.file_extension_mapping = {
             "py": "python",
+            "pyw": "python",
             "c": "c",
             "js": "javascript",
             "rs": "rust",
