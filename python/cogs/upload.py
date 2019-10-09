@@ -25,9 +25,9 @@ class Snippet(commands.Cog, name='Snippet Upload'):
 
     async def upload_file(self, language, contents):
         payload = json.dumps({
-                "language": language,
-                "snip": contents,
-            })
+            "language": language,
+            "snip": contents,
+        })
 
         async with self.client.session.post(self.upload_url, data=payload) as response:
             if response.status >= 400:
@@ -53,18 +53,16 @@ class Snippet(commands.Cog, name='Snippet Upload'):
         name='snippet',
         aliases=['upload'],
     )
-    async def snippet(self, ctx, message_id=None):
+    async def snippet(self, ctx, message_id: int = None):
         """Upload attached files to EMKC Snippets.
         Include message_id to upload files from other messages
         """
-        if message_id is None:
-            message_id = ctx.message.id
-
-        message = await ctx.fetch_message(int(message_id))
+        message = (ctx.message if message_id is None
+                   else await ctx.fetch_message(message_id))
 
         # Check the message has a file
         if len(message.attachments) == 0:
-            await ctx.send("No file present")
+            await ctx.send("Message has no attachment")
             return
 
         # Upload each attachment
@@ -77,13 +75,13 @@ class Snippet(commands.Cog, name='Snippet Upload'):
                 await ctx.send(f"{filename} can't be uploaded, extension not recognized")
             elif attachment.size > self.size_limit:
                 await ctx.send(f"{filename} is too large to be uploaded, "
-                                 "the limit is {self.size_limit} bytes")
+                               f"the limit is {self.size_limit // 1000} kB")
             else:
 
                 # Retrieve the contents of the file
                 content = await self.download_file_contents(attachment.url)
                 if content is None:
-                    await ctx.send("Problem retrieving content from Discord")
+                    await ctx.send("Problem retrieving file content")
                     return
 
                 # Upload the file to emkc and send to chat
@@ -93,9 +91,9 @@ class Snippet(commands.Cog, name='Snippet Upload'):
                 )
 
                 if snippet_url:
-                    await ctx.send(f"{filename} uploaded: {snippet_url}")
+                    await ctx.send(f"{filename} uploaded: <{snippet_url}>")
                 else:
-                    await ctx.send(f"Error when uploading to EMKC")
+                    await ctx.send(f"Error while uploading to EMKC")
 
 
 def setup(client):
