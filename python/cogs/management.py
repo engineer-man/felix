@@ -304,42 +304,6 @@ class Management(commands.Cog, name='Management'):
         return True
 
     # ----------------------------------------------
-    # Function to set the bot's status message
-    # ----------------------------------------------
-    @commands.command(
-        name='activity',
-        brief='Set Bot activity',
-        description='Set Bot activity.\n\n'
-        + 'Available activities:\n'
-        + '  playing, streaming, listening, watching.\n\n'
-        + 'Example activities:\n'
-        + '    playing [game],\n'
-        + '    streaming [linkToStream] [game],\n'
-        + '    listening [music],\n'
-        + '    watching [movie]',
-        hidden=True,
-    )
-    async def change_activity(self, ctx, *activity: str):
-        if not activity:
-            await self.client.change_presence(activity=None)
-            return
-        activities = ['playing', 'streaming', 'listening', 'watching']
-        text_split = ' '.join(activity).split(' ')
-        _activity = text_split.pop(0).lower()
-        if _activity not in activities:
-            return False
-        _type = activities.index(_activity)
-        if _type == 1:
-            _url = text_split.pop(0)
-        else:
-            _url = None
-        _name = ' '.join(text_split)
-        await self.client.change_presence(
-            activity=Activity(name=_name, url=_url, type=_type)
-        )
-        return True
-
-    # ----------------------------------------------
     # Function Group to clear channel of messages
     # ----------------------------------------------
     @commands.group(

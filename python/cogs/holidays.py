@@ -8,26 +8,33 @@ from discord.ext import commands, tasks
 from discord import Activity
 
 
+#pylint: disable=E1101
+
 # dict's keys are months and days combined (month|day)
 HOLIDAY_DICT = {
-    "0101": "watching a new year emerge",
-    "0317": "playing in a pub 🇮🇪",
-    "0704": "watching fireworks 🇺🇸",
-    "1003": "watching people being united 🇩🇪",
-    "1225": "listening Christmas carols"
+    "0101": "watching a new year emerge 🥂",
+    "0317": "playing in a pub ☘️",
+    "0704": "watching freedom fireworks 🎇",
+    "0817": "playing it's my Birthday 🎂",
+    "1003": "watching people being united 🍺",
+    "1224": "watching christmas trees 🎄",
+    "1225": "watching christmas trees 🎄",
+    "1231": "watching fireworks 🎆",
+    "1009": "watching Hacktoberfest 🍺",
 }
 
 
-class Holidays(commands.Cog, name='Holidays'):
+class ActivityMgmt(commands.Cog, name='Activity Management'):
     def __init__(self, client):
         self.client = client
         # Seconds till midnight from the time __init__ was called
         # +120 for a 2 minute delay
         self.seconds_till_start = round(self.get_seconds()) + 120
         self.previous_activity = None
-        self.after_holiday = False
-        # Task which changes the bot's presence
-        self.holidays.start()
+        self.holidays_task.start()
+
+    async def cog_check(self, ctx):
+        return self.client.user_is_admin(ctx.author)
 
     # ----------------------------------------------
     # Helper Functions
@@ -37,44 +44,86 @@ class Holidays(commands.Cog, name='Holidays'):
         next_day = dt(now.year, now.month, now.day) + timedelta(days=1)
         return (next_day - now).total_seconds()
 
-    async def set_holiday(self):
-        now = dt.utcnow()
-        holiday = HOLIDAY_DICT.get(now.strftime('%m%d'))
+    async def check_holiday(self):
+        holiday = HOLIDAY_DICT.get(dt.utcnow().strftime('%m%d'))
+
         if not holiday:
-            if self.after_holiday:
-                await self.client.change_presence(
-                    activity=self.previous_activity
-                )
-                self.after_holiday = False
+            if self.previous_activity:
+                await self.set_activity(activity=self.previous_activity)
+                self.previous_activity = None
             return
-        bot_activity = self.client.guilds[0].me.activity
+
+        bot_activity = self.client.main_guild.me.activity
         if bot_activity:
-            if bot_activity.name not in [
-                i.split(' ', 1)[1] for i in HOLIDAY_DICT.values()
-            ]:
+            if not self.previous_activity:
                 self.previous_activity = bot_activity
-        activities = ('playing', 'streaming', 'listening', 'watching')
-        _type, _name = holiday.split(' ', 1)
-        if _type not in activities:
+
+        await self.set_activity(text=holiday)
+
+    async def set_activity(self, *args, text=None, activity=None):
+        if activity:
+            await self.client.change_presence(
+                activity=activity
+            )
             return
-        _type = activities.index(_type)
+
+        if text == '':
+            await self.client.change_presence(activity=None)
+            return
+
+        activities = ('playing', 'streaming', 'listening', 'watching')
+        text_split = text.split(' ')
+        _activity = text_split.pop(0).lower()
+        if _activity not in activities:
+            return False
+        _type = activities.index(_activity)
+        if _type == 1:
+            _url = text_split.pop(0)
+        else:
+            _url = None
+        _name = ' '.join(text_split)
         await self.client.change_presence(
-            activity=Activity(name=_name, type=_type)
+            activity=Activity(name=_name, url=_url, type=_type)
         )
-        self.after_holiday = True
+        return True
+
+    # ----------------------------------------------
+    # Command to set the bot's status message
+    # ----------------------------------------------
+
+    @commands.command(
+        name='activity',
+        hidden=True,
+    )
+    async def change_activity(self, ctx, *activity: str):
+        """Set Bot activity.
+
+        Available activities:
+        \u1160playing, streaming, listening, watching.
+
+        Example activities:
+        \u1160playing [game],
+        \u1160streaming [linkToStream] [game],
+        \u1160listening [music],
+        \u1160watching [movie]"""
+
+        if self.previous_activity:
+            await ctx.send('Sorry a holiday is in progress')
+            return
+        await self.set_activity(text=' '.join(activity))
 
     # ----------------------------------------------
     # Cog Tasks
     # ----------------------------------------------
     @tasks.loop(hours=24)
-    async def holidays(self):
-        await self.set_holiday()
+    async def holidays_task(self):
+        await self.check_holiday()
 
-    @holidays.before_loop
-    async def before_holidays(self):
+    @holidays_task.before_loop
+    async def before_holidays_task(self):
         await self.client.wait_until_ready()
         await asyncio.sleep(5)
-        await self.set_holiday()
+        await self.check_holiday()
         await asyncio.sleep(self.seconds_till_start)
 
     def cog_unload(self):
@@ -82,4 +131,4 @@ class Holidays(commands.Cog, name='Holidays'):
 
 
 def setup(client):
-    client.add_cog(Holidays(client))
+    client.add_cog(ActivityMgmt(client))
