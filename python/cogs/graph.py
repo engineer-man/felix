@@ -181,7 +181,8 @@ class Graph(commands.Cog,
         num_samples: int = 13,
         sample_distance: int = 7,
     ):
-        """Print server activity graph"""
+        """Print server message activity graph
+        Each plot point shows the number of messages since the previous one"""
         await ctx.trigger_typing()
         url = 'https://emkc.org/api/v1/stats/discord/messages'
         num_messages = []
