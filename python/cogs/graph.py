@@ -64,7 +64,7 @@ class Graph(commands.Cog,
                 return False
 
             unsorted_names = {data['user']: data['discord_id']
-                          for data in api_data}
+                              for data in api_data}
             num_messages = {data['user']: data['messages']
                             for data in api_data}
             user_names = dict()
@@ -171,6 +171,54 @@ class Graph(commands.Cog,
             await ctx.send(file=file_to_send)
         else:
             await ctx.send('Nothing found')
+
+    @graph.command(
+        name='server',
+    )
+    async def server(
+        self,
+        ctx,
+        num_samples: int = 13,
+        sample_distance: int = 7,
+    ):
+        """Print server activity graph"""
+        await ctx.trigger_typing()
+        url = 'https://emkc.org/api/v1/stats/discord/messages'
+        num_messages = []
+        for w in range(num_samples):
+            start = (datetime.utcnow() -
+                     timedelta(days=(w+1)*sample_distance))
+            end = (datetime.utcnow() -
+                   timedelta(days=(w)*sample_distance))
+            params = {
+                'start': start.isoformat(),
+                'end': end.isoformat()
+            }
+            async with self.client.session.get(url, params=params) as response:
+                api_data = await response.json()
+            if not api_data:
+                return False
+            num_messages.append(
+                (end.strftime('%b %d'),
+                 sum(data['messages'] for data in api_data))
+            )
+        num_messages.reverse()
+        values_x = [i[0] for i in num_messages]
+        values_y = [i[1] for i in num_messages]
+        fig, ax = plt.subplots()
+        ax.plot(values_x, values_y, marker='o', markersize=3)
+        ax.set_ylabel('Messages')
+        ax.set_xlabel('Date')
+        ax.set_ylim(ymin=0)
+        ax.grid(True)
+        labels = ax.get_xticklabels()
+        plt.setp(labels, rotation=90)
+        fig.savefig('last_graph.png', bbox_inches='tight')
+        fig.clear()
+
+        with open('last_graph.png', 'rb') as g:
+            file_to_send = File(g)
+        await ctx.send(file=file_to_send)
 
 
 def setup(client):
