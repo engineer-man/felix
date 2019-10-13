@@ -57,10 +57,8 @@ class Stream(commands.Cog, name='Stream'):
             return json.dump(state, statefile, indent=1)
 
     def set_up_api(self, credentials):
-        api_service_name = "youtube"
-        api_version = "v3"
         self.youtube_api = googleapiclient.discovery.build(
-            api_service_name, api_version, credentials=credentials
+            serviceName="youtube", version="v3", credentials=credentials
         )
         return True
 
@@ -130,9 +128,9 @@ class Stream(commands.Cog, name='Stream'):
         emoji = reaction.emoji
         msg = reaction.message
         msg_id = msg.id
-        if msg.id in self.reaction_in_progress:
+        if msg_id in self.reaction_in_progress:
             return
-        self.reaction_in_progress.add(msg.id)
+        self.reaction_in_progress.add(msg_id)
         if msg_id in self.staged_questions:
             if emoji == '✅':
                 await self.forward_question(msg_id)
