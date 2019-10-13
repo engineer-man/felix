@@ -290,18 +290,26 @@ class Stream(commands.Cog, name='Stream'):
             if not msg_type == 'textMessageEvent':
                 continue
             message_text = msg['snippet']['textMessageDetails']['messageText']
-            if not any(message_text.lower().startswith(pref) for pref in self.PREFIXES):
+            prefix_len = 0
+            for prefix in self.PREFIXES:
+                if message_text.lower().startswith(prefix):
+                    prefix_len = len(prefix)
+                    break
+            if not prefix_len:
                 continue
             message_date_str = msg['snippet']['publishedAt']
             message_date = datetime.fromisoformat(message_date_str[:-1])
             if message_date <= self.check_date:
                 continue
             self.check_date = message_date
-            # message_id = msg['id']
             author_name = msg['authorDetails']['displayName']
             author_image = msg['authorDetails']['profileImageUrl']
 
-            await self.stage_question(message_text, author_name, author_image)
+            await self.stage_question(
+                message_text[prefix_len:],
+                author_name,
+                author_image
+            )
     # ----------------------------------------------
 
     def cog_unload(self):
