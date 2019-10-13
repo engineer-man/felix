@@ -126,7 +126,7 @@ class ActivityMgmt(commands.Cog, name='Activity Management'):
         await asyncio.sleep(seconds_until_midnight)
 
     def cog_unload(self):
-        self.holidays.cancel()
+        self.holidays_task.cancel()
 
 
 def setup(client):
