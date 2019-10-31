@@ -399,8 +399,10 @@ class General(commands.Cog, name='General'):
         name='memberinfo',
         aliases=['member']
     )
-    async def memberinfo(self, ctx, member: Member):
+    async def memberinfo(self, ctx, member: Member = None):
         """Provides information about the given member."""
+        if not member:
+            member = ctx.author
         url = 'https://emkc.org/api/v1/stats/discord/messages'
         params = [('discord_id', member.id)]
         async with self.client.session.get(url, params=params) as r:
