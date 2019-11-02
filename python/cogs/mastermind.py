@@ -18,7 +18,7 @@ seed()
 
 
 class MMGame():
-    PEGS = ('_', '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤')
+    PEGS = ('_', '💖', '🧡', '💛', '💚', '💙', '💜', '🖤')
     COLORS = '_roygbpl'
     REFEREE_PEGS = ('🔴', '⚪')
 
