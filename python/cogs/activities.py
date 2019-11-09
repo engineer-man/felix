@@ -20,10 +20,10 @@ HOLIDAY_DICT = {
     "0704": "watching freedom fireworks 🎇",
     "0817": "playing it's my Birthday 🎂",
     "1003": "watching people being united 🍺",
+    "1109": "watching walls crumble 🧱",
     "1224": "watching christmas trees 🎄",
     "1225": "watching christmas trees 🎄",
     "1231": "watching fireworks 🎆",
-    "1009": "watching Hacktoberfest 🍺",
 }
 
 
