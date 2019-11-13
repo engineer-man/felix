@@ -582,7 +582,7 @@ class General(commands.Cog, name='General'):
           \u1160**units** (m/u/mM/uM): m = Metric | u = US | M = wind in M/s
 
           API used: https://en.wttr.in/:help"""
-        location = re.sub('(?:\.png)+$', '', location, flags=re.IGNORECASE)
+        location = location.replace('.png', '')
         url = (
             'https://wttr.in/'
             f'{location}?{units}{days}{"" if days else "q"}nTAF'
