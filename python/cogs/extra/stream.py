@@ -7,7 +7,7 @@ import json
 from datetime import datetime
 import googleapiclient.discovery
 from google_auth_oauthlib import flow as googleFlow
-from discord import Embed
+from discord import Embed, File
 from discord.ext import tasks, commands
 
 #pylint: disable=E1101
@@ -286,6 +286,12 @@ class Stream(commands.Cog, name='Stream'):
         for msg in chat_messages:
             msg_type = msg['snippet']['type']
             if not msg_type == 'textMessageEvent':
+                ch = self.client.config['report_channel']
+                with open('donation.json', 'w') as temp_file:
+                    json.dump(msg, temp_file)
+                with open('donation.json', 'rb') as temp_file:
+                    file_to_send = File(temp_file)
+                    await ch.send(file=file_to_send)
                 continue
             message_text = msg['snippet']['textMessageDetails']['messageText']
             prefix_len = 0
