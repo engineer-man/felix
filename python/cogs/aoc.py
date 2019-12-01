@@ -37,6 +37,8 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
             current_members = (await re.json())['members']
         msg = []
         for member_id, data in current_members.items():
+            if data['name'] is None:
+                data['name'] = 'Anonymous'
             if member_id not in self.members:
                 msg.append(
                     f"#{data['name'].replace(' ','_')} " +
@@ -90,6 +92,7 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
         (only works in #advent-of-code)"""
         if int(day) < 1 or int(day) > 24:
             return
+        day = str(day)
         if not ctx.channel.id == AOC_CHANNEL:
             return
         async with self.client.session.get(API_URL, cookies=self.cookie) as re:
@@ -101,7 +104,7 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
                 continue
             d = days[day]
             for k, v in d.items():
-                parts[k].append((v['get_star_ts'], data['name']))
+                parts[k].append((v['get_star_ts'], data['name'] or 'Anonymous'))
         if not parts['1'] or not parts['2']:
             await ctx.send(f'No data available for day {day}')
             return
