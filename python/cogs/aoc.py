@@ -30,15 +30,21 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
         self.members = {}
         self.aoc_task.start()
 
+    async def get_current_members(self):
+        async with self.client.session.get(API_URL, cookies=self.cookie) as re:
+            current_members = (await re.json())['members']
+        for member_id, data in current_members.items():
+            if data['name'] is None:
+                data['name'] = f'Anon_{member_id}'
+        # print('Current Running\n', current_members)
+        return current_members
+
     @tasks.loop(seconds=INTERVAL)
     async def aoc_task(self):
         channel = self.client.main_guild.get_channel(AOC_CHANNEL)
-        async with self.client.session.get(API_URL, cookies=self.cookie) as re:
-            current_members = (await re.json())['members']
+        current_members = await self.get_current_members()
         msg = []
         for member_id, data in current_members.items():
-            if data['name'] is None:
-                data['name'] = 'Anonymous'
             if member_id not in self.members:
                 msg.append(
                     f"#{data['name'].replace(' ','_')} " +
@@ -78,9 +84,9 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
     @aoc_task.before_loop
     async def before_aoc_task(self):
         await self.client.wait_until_ready()
-        async with self.client.session.get(API_URL, cookies=self.cookie) as re:
-            self.members = (await re.json())['members']
-        await asyncio.sleep(INTERVAL)
+        # async with self.client.session.get(API_URL, cookies=self.cookie) as re:
+        self.members = await self.get_current_members()
+        await asyncio.sleep(1)
 
     @commands.group(
         name='aoc',
@@ -95,19 +101,19 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
         day = str(day)
         if not ctx.channel.id == AOC_CHANNEL:
             return
-        async with self.client.session.get(API_URL, cookies=self.cookie) as re:
-            members = (await re.json())['members']
-        parts = {'1': [], '2': []}
+        members = await self.get_current_members()
+        parts = {'1': {}, '2': {}}
         for data in members.values():
             days = data['completion_day_level']
             if day not in days:
                 continue
             d = days[day]
             for k, v in d.items():
-                parts[k].append((v['get_star_ts'], data['name'] or 'Anonymous'))
-        if not parts['1'] or not parts['2']:
+                parts[k][data['name']] = v['get_star_ts']
+        if not parts['1'] and not parts['2']:
             await ctx.send(f'No data available for day {day}')
             return
+        day1_times = {}
         for p in '12':
             paginator = []
             current = parts[p]
@@ -115,17 +121,27 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
                 continue
             paginator.append(f'Advent of Code puzzle [{day}]|[{p}]')
             first_time = 0
-            for rank, entry in enumerate(sorted(current, key=lambda x: x[0])):
-                if not rank:
-                    first_time = int(entry[0])
+            for rank, entry in enumerate(sorted(current.items(), key=lambda x: x[1])):
+                name, time = entry[0], int(entry[1])
+                delta = ''
+                if p == '1':
+                    day1_times[name] = time
+                else:
+                    day1_time = day1_times.get(name, 0)
+                    delta = f' [Δ {timedelta(seconds=time - day1_time)}]'
+
+                if rank == 0:
+                    first_time = time
                     paginator.append(
-                        f'{rank+1}.{entry[1].replace(" ","_")}'.ljust(25) +
-                        f'[{datetime.fromtimestamp(first_time)}]'
+                        f'{rank+1}.{name.replace(" ","_")}'.ljust(25) +
+                        f'[{datetime.fromtimestamp(first_time).strftime("%H:%M:%S")}]'
+                        + delta
                     )
                 else:
                     paginator.append(
-                        f'{rank+1}.{entry[1].replace(" ","_")}'.ljust(25) +
-                        f'[+ {timedelta(seconds=int(entry[0]) - first_time)}]'
+                        f'{rank+1}.{name.replace(" ","_")}'.ljust(25) +
+                        f'[+{timedelta(seconds=time - first_time)}]'
+                        + delta
                     )
 
             if not paginator:
