@@ -20,6 +20,7 @@ from discord.ext import commands, tasks
 
 API_URL = 'https://adventofcode.com/2019/leaderboard/private/view/208847.json'
 AOC_CHANNEL = 647509035465048084
+AOC_CHANNEL = 483712305138368512
 INTERVAL = 120
 
 
@@ -146,10 +147,11 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
 
             if not paginator:
                 return
-            paginator.insert(0, f'```css')
-            paginator.append('```')
-
-            await ctx.send('\n'.join(paginator))
+            subs = [paginator[x:x+21] for x in range(0, len(paginator), 21)]
+            for sub_paginator in subs:
+                sub_paginator.insert(0, f'```css')
+                sub_paginator.append('```')
+                await ctx.send('\n'.join(sub_paginator))
 
     @aoc.command(
         name='howto',
