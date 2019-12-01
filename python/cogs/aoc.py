@@ -20,7 +20,6 @@ from discord.ext import commands, tasks
 
 API_URL = 'https://adventofcode.com/2019/leaderboard/private/view/208847.json'
 AOC_CHANNEL = 647509035465048084
-AOC_CHANNEL = 483712305138368512
 INTERVAL = 120
 
 
