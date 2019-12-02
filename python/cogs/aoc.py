@@ -13,6 +13,7 @@ or by calling it with the path and the name of this python file
 """
 import asyncio
 from datetime import datetime, timedelta
+from unicodedata import normalize
 from discord import Embed
 from discord.ext import commands, tasks
 
@@ -43,8 +44,9 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
             if data['name'] is None:
                 data['name'] = f'Anon_{member_id}'
             data['name'] = data['name'].replace('@', '')
-            data['name'] = data['name'].replace('š', 's')
-            data['name'] = data['name'].replace('ć', 'c')
+            data['name'] = normalize(
+                'NFKD', data['name']
+            ).encode('ascii', 'ignore').decode('utf-8')
         return current_members
 
     @tasks.loop(seconds=INTERVAL)
