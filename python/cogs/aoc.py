@@ -36,7 +36,9 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
         for member_id, data in current_members.items():
             if data['name'] is None:
                 data['name'] = f'Anon_{member_id}'
-        # print('Current Running\n', current_members)
+            data['name'] = data['name'].replace('@', '')
+            data['name'] = data['name'].replace('š', 's')
+            data['name'] = data['name'].replace('ć', 'c')
         return current_members
 
     @tasks.loop(seconds=INTERVAL)
@@ -84,7 +86,6 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
     @aoc_task.before_loop
     async def before_aoc_task(self):
         await self.client.wait_until_ready()
-        # async with self.client.session.get(API_URL, cookies=self.cookie) as re:
         self.members = await self.get_current_members()
         await asyncio.sleep(1)
 
