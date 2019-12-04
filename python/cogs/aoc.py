@@ -22,6 +22,10 @@ API_URL = 'https://adventofcode.com/2019/leaderboard/private/view/208847.json'
 AOC_CHANNEL = 647509035465048084
 INTERVAL = 120
 
+KNOWN_USERS = {
+    '749969': 'JaminenB',
+    '645784': 'Yamabushi',
+    }
 
 class AdventOfCode(commands.Cog, name='Advent of Code'):
     def __init__(self, client):
@@ -34,6 +38,8 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
         async with self.client.session.get(API_URL, cookies=self.cookie) as re:
             current_members = (await re.json())['members']
         for member_id, data in current_members.items():
+            if member_id in KNOWN_USERS:
+                data['name'] = KNOWN_USERS[member_id]
             if data['name'] is None:
                 data['name'] = f'Anon_{member_id}'
             data['name'] = data['name'].replace('@', '')
