@@ -154,6 +154,22 @@ class Stream(commands.Cog, name='Stream'):
         await ctx.send_help('stream')
 
     @stream.command(
+        name='dump',
+    )
+    async def dump(self, ctx):
+        request = self.youtube_api.liveChatMessages().list(
+            liveChatId=self.LIVE_CHAT_ID,
+            part="snippet,authorDetails"
+        )
+        response = request.execute()
+        ch = self.client.get_channel(self.client.config['report_channel'])
+        with open('donation.json', 'w') as temp_file:
+            json.dump(response, temp_file)
+        with open('donation.json', 'rb') as temp_file:
+            file_to_send = File(temp_file)
+            await ch.send(file=file_to_send)
+
+    @stream.command(
         name='authenticate',
     )
     async def authenticate(self, ctx):
@@ -286,12 +302,6 @@ class Stream(commands.Cog, name='Stream'):
         for msg in chat_messages:
             msg_type = msg['snippet']['type']
             if not msg_type == 'textMessageEvent':
-                ch = self.client.config['report_channel']
-                with open('donation.json', 'w') as temp_file:
-                    json.dump(msg, temp_file)
-                with open('donation.json', 'rb') as temp_file:
-                    file_to_send = File(temp_file)
-                    await ch.send(file=file_to_send)
                 continue
             message_text = msg['snippet']['textMessageDetails']['messageText']
             prefix_len = 0
