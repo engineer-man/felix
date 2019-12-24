@@ -96,9 +96,10 @@ class Snippet(commands.Cog, name='Snippet Upload'):
         name='snippet',
         aliases=['upload'],
     )
-    async def snippet(self, ctx, message_id: int = None):
+    async def snippet(self, ctx, message_id: int = None, language: str = None):
         """Upload attached files to EMKC Snippets.
-        Include message_id to upload files from other messages
+        Include *message_id* to upload files from other messages
+        Include *language* to specify the language highlighting rules to be used
         """
         message = (ctx.message if message_id is None
                    else await ctx.fetch_message(message_id))
@@ -111,13 +112,18 @@ class Snippet(commands.Cog, name='Snippet Upload'):
         # Upload each attachment
         for attachment in message.attachments:
             filename = attachment.filename
-            extension = ('dockerfile' if filename.lower() == 'dockerfile'
-                         else filename.rsplit('.')[1])
+            if not language:
+                extension = ('dockerfile' if filename.lower() == 'dockerfile'
+                             else ('txt' if '.' not in filename else filename.rsplit('.')[1]))
 
-            # Check that we support the file extension
-            if extension not in self.file_extension_mapping:
-                await ctx.send(f"{filename} can't be uploaded, extension not recognized")
-            elif attachment.size > self.size_limit:
+                # Check that we support the file extension
+                if extension not in self.file_extension_mapping:
+                    await ctx.send(f"{filename} extension not recognized. Using plaintext.")
+                    extension = 'txt'
+
+                language = self.file_extension_mapping[extension]
+
+            if attachment.size > self.size_limit:
                 await ctx.send(f"{filename} is too large to be uploaded, "
                                f"the limit is {self.size_limit // 1000} kB")
             else:
@@ -130,7 +136,7 @@ class Snippet(commands.Cog, name='Snippet Upload'):
 
                 # Upload the file to emkc and send to chat
                 snippet_url = await self.upload_file(
-                    self.file_extension_mapping[extension],
+                    language,
                     content
                 )
 
