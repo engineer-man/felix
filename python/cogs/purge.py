@@ -11,7 +11,7 @@ Only users that have an admin role can use the commands.
 
 import typing
 from discord.ext import commands
-from discord import User
+from discord import User, errors
 
 
 class Purge(commands.Cog, name='Purge'):
@@ -36,6 +36,26 @@ class Purge(commands.Cog, name='Purge'):
         channel = ctx.message.channel
         await ctx.message.delete()
         await channel.purge(limit=num_messages, check=None, before=None)
+        return True
+
+    @commands.command(
+        name='purge_until',
+        hidden=True,
+    )
+    async def purge_until(
+        self, ctx,
+        message_id: int,
+    ):
+        """Clear messages in a channel until the given message_id. Given ID is not deleted"""
+        channel = ctx.message.channel
+        try:
+            message = await channel.fetch_message(message_id)
+        except errors.NotFound:
+            await ctx.send("Message could not be found in this channel")
+            return
+
+        await ctx.message.delete()
+        await channel.purge(after=message)
         return True
 
     @commands.command(
