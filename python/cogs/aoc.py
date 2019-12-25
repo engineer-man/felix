@@ -105,7 +105,7 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
     async def aoc(self, ctx, day: int):
         """Show Advent of Code stats for a specific day
         (only works in #advent-of-code)"""
-        if int(day) < 1 or int(day) > 24:
+        if int(day) < 1 or int(day) > 25:
             return
         day = str(day)
         if not ctx.channel.id == AOC_CHANNEL:
