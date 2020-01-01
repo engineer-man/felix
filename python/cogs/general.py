@@ -7,7 +7,8 @@ Commands:
     howto           make the bot post tutorials
      ├ codeblocks       how to send discord markdown codeblocks
      ├ ask              how to ask question on the server
-     └ run              how to use felix run
+     ├ run              how to use felix run
+     └ sticker          how to apply EM's stickers
     links           make the bot post links to the engineerman github pages
     memberinfo      provide information about the given member
     question        ask a question which the bot will answer using wolframalpha
@@ -318,6 +319,32 @@ class General(commands.Cog, name='General'):
         e = Embed(title='Font Formatting',
                   url=link,
                   description=font_instructions,
+                  color=0x2ECC71)
+        await ctx.send(embed=e)
+
+    @howto.command(
+        name='sticker',
+        aliases=['stickers', 'apply-stickers']
+    )
+    async def sticker(self, ctx):
+        """Show help with applying stickers"""
+        sticker_instructions = (
+            "To ensure your sticker will hold on for a while, we have to"
+            " prepare the surface of the device. Get a paper towel or rag and "
+            "rubbing alcohol or glass cleaner. Apply a bit of your cleaner of your "
+            "choice and clean of any dust, fingerprints and smudges. Then grab new "
+            "paper towel any dry the surface. \n"
+            "Get your sticker and **peel off the back the side**, line your sticker "
+            "and press the sticker against the surface. Try to get air pockers out "
+            "sticker. Now peel off the front side carefully while checking no letters"
+            " have sticked on the front peel. \n And boom, you are done."
+            "\n\n**Getting EM stickers**\n"
+            "EngineerMan\'s stickers are limited edition, he usually announces when "
+            "new batch is coming out. Stay tuned for more stickers coming out soon."
+
+        )
+        e = Embed(title='Applying stickers',
+                  description=sticker_instructions,
                   color=0x2ECC71)
         await ctx.send(embed=e)
 
