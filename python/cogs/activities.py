@@ -72,6 +72,8 @@ class ActivityMgmt(commands.Cog, name='Activity Management'):
         if _activity not in activities:
             return False
         _type = activities.index(_activity)
+        if _type == 2 and text_split[0].lower() == 'to':
+            del text_split[0]
         if _type == 1:
             _url = text_split.pop(0)
         else:
