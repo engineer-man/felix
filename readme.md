@@ -5,7 +5,7 @@ Felix Discord Bot
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
-* **Python 3.7** or higher
+* **Python 3.8.1** or higher
 
 ### Installing
 #### without docker
