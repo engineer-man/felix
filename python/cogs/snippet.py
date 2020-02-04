@@ -1,5 +1,6 @@
 import json
 
+from discord import Message
 from discord.ext import commands
 
 
@@ -96,14 +97,13 @@ class Snippet(commands.Cog, name='Snippet Upload'):
         name='snippet',
         aliases=['upload'],
     )
-    async def snippet(self, ctx, message_id: int = None, language: str = None):
+    async def snippet(self, ctx, message: Message = None, language: str = None):
         """Upload attached files to EMKC Snippets.
         Include *message_id* to upload files from other messages
         Include *language* to specify the language highlighting rules to be used
         """
-        message = (ctx.message if message_id is None
-                   else await ctx.fetch_message(message_id))
-
+        if not message:
+            message = ctx.message
         # Check the message has a file
         if len(message.attachments) == 0:
             await ctx.send("Message has no attachment")
