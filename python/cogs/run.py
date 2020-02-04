@@ -43,6 +43,7 @@ class Run(commands.Cog, name='Run'):
             'r': 'r',
             'rb': 'ruby',
             'ruby': 'ruby',
+            'rs': 'rust',
             'rust': 'rust',
             'sage': 'python3',
             'swift': 'swift',
