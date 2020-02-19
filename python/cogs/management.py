@@ -464,7 +464,7 @@ class Management(commands.Cog, name='Management'):
         for line in response:
             num_chars += len(line)
             paginated_response.append(line)
-            if num_chars > 1900:
+            if num_chars > 1500:
                 paginated_response.append('```')
                 await ctx.send('\n'.join(paginated_response))
                 paginated_response = ['```python\n']
