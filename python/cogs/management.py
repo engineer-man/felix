@@ -459,7 +459,15 @@ class Management(commands.Cog, name='Management'):
         else:
             response.append('`Error happened outside of command`')
         response.append(f'```python\n{tb}```')
-        await ctx.send('\n'.join(response))
+        paginated_response = []
+        num_chars = 0
+        for line in response:
+            num_chars += len(line)
+            if num_chars > 1900:
+                await ctx.send('\n'.join(paginated_response))
+                paginated_response = []
+                num_chars = 0
+            paginated_response.append(line)
 
 
 def setup(client):
