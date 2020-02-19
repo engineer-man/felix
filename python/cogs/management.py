@@ -464,14 +464,14 @@ class Management(commands.Cog, name='Management'):
         for line in response:
             num_chars += len(line)
             paginated_response.append(line)
-            if num_chars > 1500:
+            if num_chars > 1000:
                 paginated_response.append('```')
-                await ctx.send('Sending ' + str(sum(len(x) for x in paginated_response)) + ' chars')
+                await ctx.send('Paginated send ' + str(sum(len(x) for x in paginated_response)) + ' chars ' + str(num_chars))
                 await ctx.send('\n'.join(paginated_response))
                 paginated_response = ['```python\n']
                 num_chars = 0
         paginated_response.append('```')
-        await ctx.send('Sending ' + str(sum(len(x) for x in paginated_response)) + ' chars')
+        await ctx.send('Final send ' + str(sum(len(x) for x in paginated_response)) + ' chars' + str(num_chars)))
         await ctx.send('\n'.join(paginated_response))
 
 
