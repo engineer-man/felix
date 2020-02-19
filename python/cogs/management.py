@@ -458,16 +458,19 @@ class Management(commands.Cog, name='Management'):
             response.append(f'`Channel:{error_ctx.channel.name}`')
         else:
             response.append('`Error happened outside of command`')
-        response.append(f'```python\n{tb}```')
+        response.append(f'```python\n{tb}')
         paginated_response = []
         num_chars = 0
         for line in response:
             num_chars += len(line)
-            if num_chars > 1900:
-                await ctx.send('\n'.join(paginated_response))
-                paginated_response = []
-                num_chars = 0
             paginated_response.append(line)
+            if num_chars > 1900:
+                paginated_response.append('```')
+                await ctx.send('\n'.join(paginated_response))
+                paginated_response = ['```python\n']
+                num_chars = 0
+        paginated_response.append('```')
+        await ctx.send('\n'.join(paginated_response))
 
 
 def setup(client):
