@@ -411,16 +411,16 @@ class Management(commands.Cog, name='Management'):
 
     @error.command(
         name='clear',
+        aliases=['delete'],
     )
-    async def error_clear(self, ctx, n=None):
-        """Clear the oldest [n] errors from the error log (0 = all errors)"""
-        if not n:
+    async def error_clear(self, ctx, n: int = None):
+        """Clear error with index [n]"""
+        if n is None:
             self.client.last_errors = []
             await ctx.send('Error log cleared')
         else:
-            for _ in range(n):
-                self.client.last_errors.pop(0)
-            await ctx.send(f'Deleted the {n} oldest messages ')
+            self.client.last_errors.pop(n)
+            await ctx.send(f'Deleted error #{n}')
 
     @error.command(
         name='traceback',
