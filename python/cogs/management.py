@@ -458,21 +458,18 @@ class Management(commands.Cog, name='Management'):
             response.append(f'`Channel:{error_ctx.channel.name}`')
         else:
             response.append('`Error happened outside of command`')
-        response.append(f'```python\n{tb}')
-        paginated_response = []
-        num_chars = 0
-        for line in response:
+        response.append(f'```python\n')
+        num_chars = sum(len(line) for line in response)
+        for line in tb.split('\n'):
             num_chars += len(line)
-            paginated_response.append(line)
-            if num_chars > 1000:
-                paginated_response.append('```')
-                await ctx.send('Paginated send ' + str(sum(len(x) for x in paginated_response)) + ' chars ' + str(num_chars))
-                await ctx.send('\n'.join(paginated_response))
-                paginated_response = ['```python\n']
+            response.append(line)
+            if num_chars > 1900:
+                response.append('```')
+                await ctx.send('\n'.join(response))
+                response = ['```python\n']
                 num_chars = 0
-        paginated_response.append('```')
-        await ctx.send('Final send ' + str(sum(len(x) for x in paginated_response)) + ' chars' + str(num_chars))
-        await ctx.send('\n'.join(paginated_response))
+        response.append('```')
+        await ctx.send('\n'.join(response))
 
 
 def setup(client):
