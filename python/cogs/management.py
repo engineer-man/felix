@@ -471,7 +471,7 @@ class Management(commands.Cog, name='Management'):
                 paginated_response = ['```python\n']
                 num_chars = 0
         paginated_response.append('```')
-        await ctx.send('Final send ' + str(sum(len(x) for x in paginated_response)) + ' chars' + str(num_chars)))
+        await ctx.send('Final send ' + str(sum(len(x) for x in paginated_response)) + ' chars' + str(num_chars))
         await ctx.send('\n'.join(paginated_response))
 
 
