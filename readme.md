@@ -29,7 +29,7 @@ docker-compose up
 ```
 
 ### Creating your own python bot extension (cog)
-This bot uses the `discord.py API wrapper` (https://rapptz.github.io/discord.py/docs/index.html)
+This bot uses the `discord.py API wrapper` (https://discordpy.readthedocs.io/en/latest/)
 
 You can create new bot commands or tasks by creating your own extension/cog.
 
