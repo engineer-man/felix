@@ -5,6 +5,7 @@ It provides a youtube livestream chat question integration with discord
 import asyncio
 import json
 from datetime import datetime
+from urllib.parse import quote
 import googleapiclient.discovery
 from google_auth_oauthlib import flow as googleFlow
 from discord import Embed, File
@@ -19,6 +20,7 @@ class Stream(commands.Cog, name='Stream'):
         self.LIVE_CHAT_ID = None
         self.staging_ch = None
         self.questions_ch = None
+        self.donations_ch = None
         self.PREFIXES = ['q ', 'question ', 'q:', 'question:']
         self.staged_questions = dict()
         self.forwarded_questions = dict()
@@ -116,6 +118,22 @@ class Stream(commands.Cog, name='Stream'):
         old_question = self.staged_questions[question_id]
         await old_question.delete()
         self.staged_questions.pop(old_question.id)
+        return True
+
+    async def post_donation(self, message, amount, author_name, avatar):
+        donation_message = f'{message}\n'
+        if amount:
+            donation_message += f'({amount} USD)'
+
+        e = Embed(
+            description=donation_message,
+            color=0xFFED46
+        )
+        e.set_footer(
+            text=author_name,
+            icon_url=avatar,
+        )
+        await self.donations_ch.send(embed=e)
         return True
 
     # ----------------------------------------------
@@ -225,7 +243,14 @@ class Stream(commands.Cog, name='Stream'):
             )
 
             await channel.send('Please specify the "Questions" channel ID')
-            questions__msg = await self.client.wait_for(
+            questions_msg = await self.client.wait_for(
+                'message',
+                check=check,
+                timeout=60
+            )
+
+            await channel.send('Please specify the "Donations" channel ID')
+            donations_msg = await self.client.wait_for(
                 'message',
                 check=check,
                 timeout=60
@@ -236,9 +261,10 @@ class Stream(commands.Cog, name='Stream'):
             return
 
         staging_id = int(staging_msg.content)
-        questions_id = int(questions__msg.content)
+        questions_id = int(questions_msg.content)
+        donations_id = int(donations_msg.content)
 
-        stream_channels = [staging_id, questions_id]
+        stream_channels = [staging_id, questions_id, donations_id]
         self.save_stream_channels(stream_channels)
         await ctx.send('Setup Successful - question channels saved')
 
@@ -262,6 +288,7 @@ class Stream(commands.Cog, name='Stream'):
 
         self.staging_ch = self.client.get_channel(stream_channels[0])
         self.questions_ch = self.client.get_channel(stream_channels[1])
+        self.donations_ch = self.client.get_channel(stream_channels[2])
 
         request = self.youtube_api.liveBroadcasts().list(
             part="snippet",
@@ -301,8 +328,34 @@ class Stream(commands.Cog, name='Stream'):
         chat_messages = response['items']
         for msg in chat_messages:
             msg_type = msg['snippet']['type']
-            if not msg_type == 'textMessageEvent':
+            if not msg_type in ('textMessageEvent', 'superChatEvent'):
                 continue
+            message_date_str = msg['snippet']['publishedAt']
+            message_date = datetime.fromisoformat(message_date_str[:-1])
+            if message_date <= self.check_date:
+                continue
+            self.check_date = message_date
+
+            author_name = msg['authorDetails']['displayName']
+            author_image = msg['authorDetails']['profileImageUrl']
+
+            if msg_type == 'superChatEvent':
+                amount = int(msg['snippet']['superChatDetails']['amountMicros']) / 1000000
+                currency = msg['snippet']['superChatDetails']['currency']
+                if not currency == 'USD':
+                    question = f'{currency} {amount} in dollars'
+                    url = 'https://api.wolframalpha.com/v1/result?i=' + \
+                    f'{quote(question)}&appid={self.client.config["wolfram_key"]}'
+                    async with self.client.session.get(url) as response:
+                        answer = await response.text()
+                    dollar_value = answer.split(' ')[1]
+                else:
+                    dollar_value = ''
+
+                display_message = msg['snippet']['displayMessage']
+                await self.post_donation(display_message, dollar_value, author_name, author_image)
+                continue
+
             message_text = msg['snippet']['textMessageDetails']['messageText']
             prefix_len = 0
             for prefix in self.PREFIXES:
@@ -311,13 +364,6 @@ class Stream(commands.Cog, name='Stream'):
                     break
             if not prefix_len:
                 continue
-            message_date_str = msg['snippet']['publishedAt']
-            message_date = datetime.fromisoformat(message_date_str[:-1])
-            if message_date <= self.check_date:
-                continue
-            self.check_date = message_date
-            author_name = msg['authorDetails']['displayName']
-            author_image = msg['authorDetails']['profileImageUrl']
 
             await self.stage_question(
                 message_text[prefix_len:],
