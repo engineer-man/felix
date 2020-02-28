@@ -19,6 +19,7 @@ Commands:
 
 import random
 import re
+import typing
 from datetime import datetime as dt
 from urllib.parse import quote
 from discord.ext import commands
@@ -589,8 +590,8 @@ class General(commands.Cog, name='General'):
     async def weather(
         self, ctx,
         location: str,
-        days: int = 0,
-        units: str = 'm',
+        days: typing.Optional[int] = 0,
+        units: typing.Optional[str] = 'm',
     ):
         """Get the current weather/forecast in a location
 
@@ -609,6 +610,9 @@ class General(commands.Cog, name='General'):
           \u1160**units** (m/u/mM/uM): m = Metric | u = US | M = wind in M/s
 
           API used: https://en.wttr.in/:help"""
+        if units not in ["m", "u", "mM", "uM"]:
+            location = f"{location} {units}"
+            units = "m"
         location = location.replace('.png', '')
         moon = location.startswith('moon')
         url = (
