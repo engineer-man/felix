@@ -17,9 +17,6 @@ from discord.ext import commands
 TRIES = 6
 # Minimum word lenght
 MIN_LENGHT = 5
-# A dict which stores currently active games
-# Key: user_id | Value: HangmanGame instance
-active_games = {}
 
 
 class HangmanGame:
@@ -122,6 +119,9 @@ class Hangman(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.words = []
+        # A dict which stores currently active games
+        # Key: user_id | Value: HangmanGame instance
+        self.active_games = {}
 
     async def get_words(self, amount=100):
         async with self.client.session.get(
@@ -138,13 +138,13 @@ class Hangman(commands.Cog):
         if ' ' in message.content:
             return
         _id = message.author.id
-        game = active_games.get(_id)
+        game = self.active_games.get(_id)
         if game:
             await message.channel.send(
                 embed=game.guess(message.content)
             )
             if game.is_complete:
-                del active_games[_id]
+                del self.active_games[_id]
 
     @commands.command(
         name="hangman"
@@ -152,7 +152,7 @@ class Hangman(commands.Cog):
     async def _hangman(self, ctx):
         """Starts a game of hangman"""
         author = ctx.author
-        game = active_games.get(author.id)
+        game = self.active_games.get(author.id)
         if game:
             return await ctx.send(
                 "Your game is still in progress. Here it is:",
@@ -165,11 +165,11 @@ class Hangman(commands.Cog):
         new_game = HangmanGame(word, author.color)
         current_time = time()
         # Remove old games
-        for user, game in active_games.items():
+        for user, game in self.active_games.items():
             # The time limit is 30 minutes
             if current_time - game.started_at > 1800:
-                del active_games[user]
-        active_games.update({author.id: new_game})
+                del self.active_games[user]
+        self.active_games.update({author.id: new_game})
 
         description = (
             f"Thank you for playing Felix Hangman, "
