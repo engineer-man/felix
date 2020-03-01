@@ -20,8 +20,9 @@ MIN_LENGHT = 5
 
 
 class HangmanGame:
-    def __init__(self, word, color=0x2ECC71):
+    def __init__(self, word, channel, color=0x2ECC71):
         self._word = word
+        self._channel = channel
         self.color = color
         self.tries = TRIES
         self.correct = []
@@ -36,6 +37,10 @@ class HangmanGame:
     @property
     def started_at(self):
         return self._time
+
+    @property
+    def channel(self):
+        return self._channel
 
     def guess(self, g):
         g = g.lower()
@@ -140,6 +145,8 @@ class Hangman(commands.Cog):
         _id = message.author.id
         game = self.active_games.get(_id)
         if game:
+            if game.channel.id != message.channel.id:
+                return
             await message.channel.send(
                 embed=game.guess(message.content)
             )
@@ -155,14 +162,15 @@ class Hangman(commands.Cog):
         game = self.active_games.get(author.id)
         if game:
             return await ctx.send(
-                "Your game is still in progress. Here it is:",
+                f"Your game is still going in "
+                f"{game.channel.mention}. Here it is:",
                 embed=game.state()
             )
         if not self.words:
             self.words = await self.get_words()
         word = self.words.pop()
 
-        new_game = HangmanGame(word, author.color)
+        new_game = HangmanGame(word, ctx.channel, author.color)
         current_time = time()
         # Remove old games
         for user, game in self.active_games.items():
@@ -172,16 +180,18 @@ class Hangman(commands.Cog):
         self.active_games[author.id] = new_game
 
         description = (
-            f"Thank you for playing Felix Hangman, "
+            "Thank you for playing Felix Hangman, "
             f"your word is: `{('_ '*len(word)).strip()}`\n"
             f"You have {TRIES} tries\n\n"
-            f"Just type the letter you'd like to guess\n"
-            f"You can also guess the entire word by just typing it, "
-            f"however you only get one chance\n\n"
-            f"To quit the game type `quit`\n"
-            f"Input with spaces will be ignored (this is so you would be "
-            f"able to use felix)\n"
-            f"Good luck!"
+            "Just type the letter you'd like to guess\n"
+            "You can also guess the entire word by just typing it, "
+            "however you only get one chance\n\n"
+            "To quit the game type `quit`\n"
+            "Once you start a game it'll be restricted "
+            "to the channel you started it in\n"
+            "Input with spaces will be ignored (this is so you would be "
+            "able to use felix)\n"
+            "Good luck!"
         )
         embed = Embed(
             title="Felix Hangman",
