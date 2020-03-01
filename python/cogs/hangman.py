@@ -169,7 +169,7 @@ class Hangman(commands.Cog):
             # The time limit is 30 minutes
             if current_time - game.started_at > 1800:
                 del self.active_games[user]
-        self.active_games.update({author.id: new_game})
+        self.active_games[author.id] = new_game
 
         description = (
             f"Thank you for playing Felix Hangman, "
