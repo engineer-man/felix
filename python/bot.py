@@ -53,13 +53,14 @@ class Felix(Bot):
             return True
         return False
 
+
 client = Felix(
     command_prefix=when_mentioned_or('felix ', 'Felix '),
     description='Hi I am Felix!',
     max_messages=15000
 )
 
-STARTUP_EXTENSIONS = ['hangman.hangman']
+STARTUP_EXTENSIONS = []
 
 for file in listdir(path.join(path.dirname(__file__), 'cogs/')):
     filename, ext = path.splitext(file)
