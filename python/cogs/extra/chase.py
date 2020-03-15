@@ -46,7 +46,7 @@ class Chase(commands.Cog, name='Chase'):
         else:
             if not 0 <= num < len(self.all_pictures):
                 raise commands.BadArgument(f"Choose number from `0-{len(self.all_pictures)-1}`")
-        await ctx.send(f'Picure #{num}: {self.all_pictures[num]}')
+        await ctx.send(f'Picture #{num}: {self.all_pictures[num]}')
 
     @commands.group(
         invoke_without_command=True,
