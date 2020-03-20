@@ -116,7 +116,7 @@ class General(commands.Cog, name='General'):
             await msg.channel.send('hello')
 
         if re.search(
-            r'(?i)^felix should (i|he|she|they|we|@*)',
+            r'(?i)^felix should (i|he|she|they|we|<@!?\d+>)',
             msg.content
         ):
             if random.random() >= 0.5:
