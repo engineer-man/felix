@@ -97,8 +97,8 @@ class General(commands.Cog, name='General'):
             await msg.channel.send('` - directed by M. Night Shyamalan.`')
 
         if re.search(
-            r'(?i)(the|this) (current )?year is ' +
-            r'((almost|basically) )?(over|done|finished)',
+            r'(?i)(?:the|this) (?:current )?year is ' +
+            r'(?:almost |basically )?(?:over|done|finished)',
             msg.content
         ):
             await msg.channel.send(self.get_year_string())
@@ -110,13 +110,13 @@ class General(commands.Cog, name='General'):
             await msg.channel.send('😏 *sensible chuckle*')
 
         if re.search(
-            r'(?i)^(hi|what\'s up|yo|hey|hello) felix',
+            r'(?i)^(?:hi|what\'s up|yo|hey|hello) felix',
             msg.content
         ):
             await msg.channel.send('hello')
 
         if re.search(
-            r'(?i)^felix should (i|he|she|they|we|<@!?\d+>)',
+            r'(?i)^felix should (?:i|he|she|they|we|<@!?\d+>)',
             msg.content
         ):
             if random.random() >= 0.5:
