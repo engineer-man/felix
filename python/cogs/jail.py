@@ -281,7 +281,9 @@ class Jail(commands.Cog, name='Jail'):
             raise commands.BadArgument('Please specify at least 1 member')
         results = []
         for member in members:
-            if self.client.user_is_admin(member):
+            if member == self.client.user:
+                results.append('I refuse to jail myself')
+            elif self.client.user_is_admin(member):
                 results.append(f'Sorry {member} is my friend')
             else:
                 r = await self.send_to_jail(member)
