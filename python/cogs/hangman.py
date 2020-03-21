@@ -20,15 +20,18 @@ MIN_LENGHT = 5
 
 
 class HangmanGame:
-    def __init__(self, word, channel, color=0x2ECC71):
+    def __init__(self, word, channel, author):
         self._word = word
         self._channel = channel
-        self.color = color
+        self.color = author.color or 0x2ECC71
+        self.user_name = author.display_name
+        self.user_avatar = author.avatar_url
         self.tries = TRIES
         self.correct = []
         self.incorrect = []
         self._is_complete = False
         self._time = time()
+        self.last_bot_message = None
 
     @property
     def is_complete(self):
@@ -95,6 +98,10 @@ class HangmanGame:
             description=description,
             color=self.color
         )
+        embed.set_footer(
+            text=self.user_name,
+            icon_url=self.user_avatar
+        )
         if self.correct:
             embed.add_field(
                 name="Correct:",
@@ -147,9 +154,14 @@ class Hangman(commands.Cog):
         if game:
             if game.channel.id != message.channel.id:
                 return
-            await message.channel.send(
+            if game.last_bot_message:
+                await game.last_bot_message.delete()
+                game.last_bot_message = None
+            await message.delete()
+            game.last_bot_message = await message.channel.send(
                 embed=game.guess(message.content)
             )
+            game.last_user_message = message
             if game.is_complete:
                 del self.active_games[_id]
 
@@ -161,16 +173,20 @@ class Hangman(commands.Cog):
         author = ctx.author
         game = self.active_games.get(author.id)
         if game:
-            return await ctx.send(
+            if game.last_bot_message:
+                await game.last_bot_message.delete()
+                game.last_bot_message = None
+            game.last_bot_message = await ctx.send(
                 f"Your game is still going in "
                 f"{game.channel.mention}. Here it is:",
                 embed=game.state()
             )
+            return
         if not self.words:
             self.words = await self.get_words()
         word = self.words.pop()
 
-        new_game = HangmanGame(word, ctx.channel, author.color)
+        new_game = HangmanGame(word, ctx.channel, author)
         current_time = time()
         # Remove old games
         for user, game in self.active_games.items():
@@ -198,7 +214,7 @@ class Hangman(commands.Cog):
             description=description,
             color=0x2ECC71
         )
-        await ctx.send(embed=embed)
+        new_game.last_bot_message = await ctx.send(embed=embed)
 
 
 def setup(client):
