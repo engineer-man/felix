@@ -27,7 +27,7 @@ from discord import Member, DMChannel, Embed
 # TODO: Implement the clear_naughy list task using the new task api
 # TODO: Use a deque instead of a list to keep track of user messages
 # Users will receive a warning if they send more than
-SPAM_NUM_MSG = 5  # Messages
+SPAM_NUM_MSG = 7  # Messages
 # Within
 SPAM_TIME = 10  # Seconds
 # If a user receives a second warning within
