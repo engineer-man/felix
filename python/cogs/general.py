@@ -272,7 +272,7 @@ class General(commands.Cog, name='General'):
         """How to properly run code with Felix"""
         run_instructions = (
             '**Here are my supported languages:**\n'
-            'bash\npython2\npython3\njavascript\ntypescript\n'
+            'awk\nbash\npython2\npython3\njavascript\ntypescript\n'
             'ruby\ngo\nc\ncs/csharp/c#\n'
             'c++/cpp\nr\nasm/nasm\nphp\njava\nswift\nbrainfuck/bf\nrust\n\n'
             '**You can run code by telling me things like:**\n'

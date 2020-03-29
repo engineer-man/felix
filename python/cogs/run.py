@@ -15,6 +15,7 @@ class Run(commands.Cog, name='Run'):
         self.client = client
         self.languages = {
             'asm': 'nasm',
+            'awk': 'awk',
             'bash': 'bash',
             'bf': 'brainfuck',
             'brainfuck': 'brainfuck',
