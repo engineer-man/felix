@@ -270,22 +270,8 @@ class General(commands.Cog, name='General'):
     )
     async def run(self, ctx):
         """How to properly run code with Felix"""
-        run_instructions = (
-            '**Here are my supported languages:**\n'
-            'awk\nbash\npython2\npython3\njavascript\ntypescript\n'
-            'ruby\ngo\nc\ncs/csharp/c#\n'
-            'c++/cpp\nr\nasm/nasm\nphp\njava\nswift\nbrainfuck/bf\nrust\n\n'
-            '**You can run code by telling me things like:**\n'
-            'felix run python\n'
-            '\\`\\`\\`python\nyour code\n\\`\\`\\`\n'
-            '**Example**:\n'
-            'felix run python\n```python\nprint("test")\n```'
-        )
+        await self.client.get_command('runhelp').invoke(ctx)
 
-        e = Embed(title='I can run code',
-                  description=run_instructions,
-                  color=0x2ECC71)
-        await ctx.send(embed=e)
 
     @howto.command(
         name='font',

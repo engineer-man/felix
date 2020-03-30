@@ -8,6 +8,7 @@ Commands:
 
 import typing
 from discord.ext import commands
+from discord import Embed
 
 
 class Run(commands.Cog, name='Run'):
@@ -52,13 +53,42 @@ class Run(commands.Cog, name='Run'):
             'typescript': 'typescript',
         }
 
+    @commands.command(hidden=True)
+    async def runhelp(self, ctx):
+        """How to properly run code with Felix"""
+        languages = []
+        last = ''
+        for language in sorted(set(self.languages.values())):
+            current = language[0].lower()
+            if current not in last:
+                languages.append([language])
+            else:
+                languages[-1].append(language)
+            last = current
+        languages = map('/'.join, languages)
+
+        run_instructions = (
+            '**Here are my supported languages:**\n'
+            + '\n'.join(languages) +
+            '\n\n**You can run code by telling me things like:**\n'
+            'felix run python\n'
+            '\\`\\`\\`python\nyour code\n\\`\\`\\`\n'
+            '**Example**:\n'
+            'felix run python\n```python\nprint("test")\n```'
+        )
+
+        e = Embed(title='I can run code',
+                  description=run_instructions,
+                  color=0x2ECC71)
+        await ctx.send(embed=e)
+
     @commands.command()
     async def run(self, ctx, language: typing.Optional[str] = None):
         """Run some code
         Type "felix run" for instructions"""
         await ctx.trigger_typing()
         if not language:
-            await self.client.get_command('howto run').invoke(ctx)
+            await self.client.get_command('runhelp').invoke(ctx)
             return
         language = language.replace('```', '')
         if language not in self.languages:
