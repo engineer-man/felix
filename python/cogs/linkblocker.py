@@ -90,14 +90,14 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         if len(re.findall(
             r'(?i)(http(s)?\:\/\/(www\.)?(' +
             '|'.join([s.replace('.', '\\.') for s in FORBIDDEN]) +
-            '))',
+            r'))\b',
             msg.content
         )):
             return True
         if len(re.findall(
             r'(?i)(http(s)?\:\/\/(www\.)?[^\s]+(' +
             '|'.join([s.replace('.', '\\.') for s in FORBIDDEN_FILETYPES]) +
-            '))',
+            r'))\b',
             msg.content
         )):
             return True
