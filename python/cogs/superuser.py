@@ -138,5 +138,17 @@ class Superuser(commands.Cog, name='Superuser'):
             await ctx.send(str(e))
 
 
+    @edit.command(
+        name='bot_name',
+    )
+    async def change_bot_name(self, ctx, name):
+        """Change the bot name"""
+        try:
+            await self.client.user.edit(username=name)
+            await ctx.send('Success')
+        except Exception as e:
+            await ctx.send(str(e))
+
+
 def setup(client):
     client.add_cog(Superuser(client))
