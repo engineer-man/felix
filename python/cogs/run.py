@@ -52,6 +52,41 @@ class Run(commands.Cog, name='Run'):
             'ts': 'typescript',
             'typescript': 'typescript',
         }
+        self.last_message = dict()
+
+    async def get_api_response(self, ctx, language):
+        language = language.replace('```', '')
+        if language not in self.languages:
+            raise commands.BadArgument(f'Unsupported language: {language}')
+        language = self.languages[language]
+        message = ctx.message.content.split('```')
+        if len(message) < 3:
+            raise commands.BadArgument('No code or invalid code present')
+        source = message[1]
+        source = source[source.find('\n'):].strip()
+
+        url = 'https://emkc.org/api/internal/piston/execute'
+        headers = {'Authorization': self.client.config["emkc_key"]}
+        data = {'language': language, 'source': source}
+
+        async with self.client.session.post(
+            url,
+            headers=headers,
+            data=data
+        ) as response:
+            r = await response.json()
+        if not r or 'status' not in r:
+            await ctx.send('Sorry, invalid response from Piston server')
+            return
+        if r['status'] not in 'ok' or r['payload']['output'] is None:
+            await ctx.send('Sorry, execution problem')
+            return
+        return (
+            f'Here is your output {ctx.author.mention}\n'
+            + '```\n'
+            + '\n'.join(r['payload']['output'].split('\n')[:30])
+            + '```'
+        )
 
     @commands.command(hidden=True)
     async def runhelp(self, ctx):
@@ -90,45 +125,27 @@ class Run(commands.Cog, name='Run'):
         if not language:
             await self.client.get_command('runhelp').invoke(ctx)
             return
-        language = language.replace('```', '')
-        if language not in self.languages:
-            raise commands.BadArgument(f'Unsupported language: {language}')
-        language = self.languages[language]
-        message = ctx.message.content.split('```')
-        if len(message) < 3:
-            raise commands.BadArgument('No code or invalid code present')
-        source = message[1]
-        source = source[source.find('\n'):].strip()
+        api_response = await self.get_api_response(ctx, language)
+        msg = await ctx.send(api_response)
+        self.last_message[ctx.author.id] = msg
 
-        url = 'https://emkc.org/api/internal/piston/execute'
-        headers = {'Authorization': self.client.config["emkc_key"]}
-        data = {'language': language, 'source': source}
 
-        async with self.client.session.post(
-            url,
-            headers=headers,
-            data=data
-        ) as response:
-            r = await response.json()
-        if not r or 'status' not in r:
-            await ctx.send('Sorry, invalid response from Piston server')
+    @commands.command(hidden=True)
+    async def run_after_edit(self, ctx, language: typing.Optional[str] = None):
+        """Run some edited code"""
+        if not language:
+            await self.client.get_command('runhelp').invoke(ctx)
             return
-        if r['status'] not in 'ok' or r['payload']['output'] is None:
-            await ctx.send('Sorry, execution problem')
-            return
-        await ctx.send(
-            f'Here is your output {ctx.author.mention}\n'
-            + '```\n'
-            + '\n'.join(r['payload']['output'].split('\n')[:30])
-            + '```'
-        )
+        api_response = await self.get_api_response(ctx, language)
+        msg_to_edit = self.last_message[ctx.author.id]
+        await msg_to_edit.edit(content=api_response)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
         if after.content.lower().startswith('felix run'):
             ctx = await self.client.get_context(after)
             if ctx.valid:
-                await self.client.get_command('run').invoke(ctx)
+                await self.client.get_command('run_after_edit').invoke(ctx)
 
 
 def setup(client):
