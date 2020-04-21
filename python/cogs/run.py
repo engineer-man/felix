@@ -123,6 +123,13 @@ class Run(commands.Cog, name='Run'):
             + '```'
         )
 
+    @commands.Cog.listener()
+    async def on_message_edit(self, before, after):
+        if after.content.lower().startswith('felix run'):
+            ctx = await self.client.get_context(after)
+            if ctx.valid:
+                await self.client.get_command('run').invoke(ctx)
+
 
 def setup(client):
     client.add_cog(Run(client))
