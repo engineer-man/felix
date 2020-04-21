@@ -57,11 +57,11 @@ class Run(commands.Cog, name='Run'):
     async def get_api_response(self, ctx, language):
         language = language.replace('```', '')
         if language not in self.languages:
-            raise commands.BadArgument(f'Unsupported language: {language}')
+            return f'`Unsupported language: {language}`'
         language = self.languages[language]
         message = ctx.message.content.split('```')
         if len(message) < 3:
-            raise commands.BadArgument('No code or invalid code present')
+            return '`No code or invalid code present`'
         source = message[1]
         source = source[source.find('\n'):].strip()
 
@@ -76,11 +76,9 @@ class Run(commands.Cog, name='Run'):
         ) as response:
             r = await response.json()
         if not r or 'status' not in r:
-            await ctx.send('Sorry, invalid response from Piston server')
-            return
+            return '`Sorry, invalid response from Piston server`'
         if r['status'] not in 'ok' or r['payload']['output'] is None:
-            await ctx.send('Sorry, execution problem')
-            return
+            return '`Sorry, execution problem`'
         return (
             f'Here is your output {ctx.author.mention}\n'
             + '```\n'
