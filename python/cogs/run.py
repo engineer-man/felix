@@ -135,12 +135,23 @@ class Run(commands.Cog, name='Run'):
             await self.client.get_command('runhelp').invoke(ctx)
             return
         api_response = await self.get_api_response(ctx, language)
-        msg_to_edit = self.last_message[ctx.author.id]
-        await msg_to_edit.edit(content=api_response)
+        try:
+            msg_to_edit = self.last_message[ctx.author.id]
+            await msg_to_edit.edit(content=api_response)
+        except KeyError:
+            return
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
-        if after.content.lower().startswith('felix run'):
+        if after.author.bot:
+            return
+        content = after.content.lower()
+        if not content.split()[1] == 'run':
+            return
+        prefixes = await self.client.get_prefix(after)
+        if isinstance(prefixes, str):
+            prefixes = [prefixes,]
+        if any(content.startswith(f'{prefix}run') for prefix in prefixes):
             ctx = await self.client.get_context(after)
             if ctx.valid:
                 await self.client.get_command('run_after_edit').invoke(ctx)
