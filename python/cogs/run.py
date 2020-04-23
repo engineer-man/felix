@@ -103,11 +103,9 @@ class Run(commands.Cog, name='Run'):
         run_instructions = (
             '**Here are my supported languages:**\n'
             + '\n'.join(languages) +
-            '\n\n**You can run code by telling me things like:**\n'
+            '\n\n**You can run code like this:**\n'
             'felix run python\n'
             '\\`\\`\\`python\nyour code\n\\`\\`\\`\n'
-            '**Example**:\n'
-            'felix run python\n```python\nprint("test")\n```'
         )
 
         e = Embed(title='I can run code',
