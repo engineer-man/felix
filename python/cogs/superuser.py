@@ -12,6 +12,8 @@ can run commands from this cog.
 
 import re
 import subprocess
+import json
+from ast import literal_eval
 from discord.ext import commands
 
 
@@ -73,6 +75,26 @@ class Superuser(commands.Cog, name='Superuser'):
             await ctx.send('```git\n' + output + '\n```')
         except Exception as e:
             await ctx.send(str(e))
+
+    # ----------------------------------------------
+    # Command to change a setting in the config file
+    # ----------------------------------------------
+    @commands.command(
+        name='setting',
+    )
+    async def setting(self, ctx, setting_name: str, setting_value):
+        """Change a setting
+
+        Be careful with this one, as it could overwrite the bot_key or similar settings"""
+        with open("../config.json") as conffile:
+            self.client.config = json.load(conffile)
+
+        self.client.config[setting_name] = literal_eval(setting_value)
+
+        with open("../config.json", 'w') as conffile:
+            json.dump(self.client.config, conffile, indent=1)
+
+        await ctx.send('`Success`')
 
 def setup(client):
     client.add_cog(Superuser(client))
