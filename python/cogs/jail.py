@@ -254,7 +254,7 @@ class Jail(commands.Cog, name='Jail'):
         report_channel = self.client.get_channel(self.REPORT_CHANNEL_ID)
         await report_channel.send(
             f'<@&{self.REPORT_ROLE}>\n'
-            f'{user.name} has been released from jail after agreeing to the following condition\n'
+            f'{user.mention} has been released from jail after agreeing to the following condition\n'
             f'`{pending.condition}`\n'
         )
 
