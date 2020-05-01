@@ -11,6 +11,7 @@
     ],
     "ignore_role": 123123123123123,
     "report_channel": 123123123123123,
+    "jail_channel" : 123123123123123,
     "report_role": 123123123123123,
     "newcomer_role": 123123123123123,
     "bot_key": "",

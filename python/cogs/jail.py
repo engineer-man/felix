@@ -19,8 +19,10 @@ import asyncio
 import json
 import time
 from collections import deque
+from dataclasses import dataclass, field
 from discord.ext import commands
 from discord import Member, DMChannel, Embed
+
 
 # SETTINGS:
 # TODO: Ideally these settings sould also come from the config.json file
@@ -42,11 +44,18 @@ FLOOD_JOIN_NUM = 10  # Users join
 FLOOD_JOIN_TIME = 10  # Seconds
 
 
+@dataclass
+class PendingAcceptance:
+    condition: str
+    users: list = field(default_factory=list)
+
+
 class Jail(commands.Cog, name='Jail'):
     def __init__(self, client):
         self.client = client
         self.jail_roles = self.client.config['jail_roles']
-        self.REPORT_CHANNEL = self.client.config['report_channel']
+        self.REPORT_CHANNEL_ID = self.client.config['report_channel']
+        self.JAIL_CHANNEL_ID = self.client.config['jail_channel']
         self.REPORT_ROLE = self.client.config['report_role']
         # Dict to store offenders
         self.naughty = {}
@@ -61,6 +70,7 @@ class Jail(commands.Cog, name='Jail'):
         # Task that will remove users from the naughty list if they behaved for
         # 15 minutes - will also clear self.history to not let it get too big
         self.my_task = self.client.loop.create_task(self.clear_naughty_list())
+        self.acceptance_pending = dict()
 
     async def cog_check(self, ctx):
         return self.client.user_is_admin(ctx.author)
@@ -69,7 +79,7 @@ class Jail(commands.Cog, name='Jail'):
     # Helper Functions
     # ----------------------------------------------
     async def report_flood(self):
-        target = self.client.get_channel(self.REPORT_CHANNEL)
+        target = self.client.get_channel(self.REPORT_CHANNEL_ID)
         description = (
             f'More than {FLOOD_JOIN_NUM} users joined within {FLOOD_JOIN_TIME} '
             'seconds. Type `felix flood list` to see their usernames, '
@@ -148,7 +158,7 @@ class Jail(commands.Cog, name='Jail'):
 
     async def post_report(self, msg):
         """Post report of auto jailing to report channel"""
-        target = self.client.get_channel(self.REPORT_CHANNEL)
+        target = self.client.get_channel(self.REPORT_CHANNEL_ID)
         await target.send(
             f'<@&{self.REPORT_ROLE}> I jailed a user\n'
             f'User {msg.author.mention} spammed in {msg.channel.mention}'
@@ -221,6 +231,39 @@ class Jail(commands.Cog, name='Jail'):
             if not self.already_reported:
                 await self.report_flood()
                 self.already_reported = True
+
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction, user):
+        if user.bot:
+            return
+
+        msg = reaction.message
+
+        if msg.id not in self.acceptance_pending:
+            return
+
+        pending = self.acceptance_pending[msg.id]
+        if not user.id in pending.users:
+            return
+
+        if not reaction.emoji == '✅':
+            return
+
+        await self.release_from_jail(user)
+
+        report_channel = self.client.get_channel(self.REPORT_CHANNEL_ID)
+        await report_channel.send(
+            f'<@&{self.REPORT_ROLE}>\n'
+            f'{user.name} has been released from jail after agreeing to the following condition\n'
+            f'`{pending.condition}`\n'
+        )
+
+        pending.users.remove(user.id)
+
+        if not pending.users:
+            del self.acceptance_pending[msg.id]
+
+
 
     # ----------------------------------------------
     # Cog Commands
@@ -295,15 +338,39 @@ class Jail(commands.Cog, name='Jail'):
         aliases=['release', 'unsilence'],
         hidden=True,
     )
-    async def unjail(self, ctx, members: commands.Greedy[Member]):
+    async def unjail(self, ctx, members: commands.Greedy[Member], *, condition: str = None):
         """Release a list of @users from jail"""
         if not members:
             raise commands.BadArgument('Please specify at least 1 member')
         results = []
-        for member in members:
-            r = await self.release_from_jail(member)
-            results.append(r)
-        await ctx.send('```\n'+'\n'.join(results)+'```')
+        if condition is None:
+            for member in members:
+                r = await self.release_from_jail(member)
+                results.append(r)
+        else:
+            mention_all = ' '.join(member.mention for member in members)
+            jail_channel = self.client.get_channel(self.JAIL_CHANNEL_ID)
+            accept_text = (
+                f'Hey {mention_all},\n'
+                'you have broken one or more of our rules with your recent behavior.\n'
+                'You will be released if you agree to the following condition:\n'
+                f'`{condition}`'
+            )
+            accept_message = await jail_channel.send(accept_text)
+            await accept_message.add_reaction('✅')
+
+            pending = PendingAcceptance(condition=condition)
+
+            for member in members:
+                if ctx.channel.id != self.JAIL_CHANNEL_ID:
+                    results.append(f'Acceptance message posted for {member.name}')
+                pending.users.append(member.id)
+            self.acceptance_pending[accept_message.id] = pending
+
+        if results:
+            await ctx.send('```\n'+'\n'.join(results)+'```')
+
+
 
     # ----------------------------------------------
     # Cog Tasks
