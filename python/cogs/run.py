@@ -30,6 +30,8 @@ class Run(commands.Cog, name='Run'):
             'go': 'go',
             'java': 'java',
             'javascript': 'javascript',
+            'jl': 'julia',
+            'julia': 'julia',
             'js': 'javascript',
             'nasm': 'nasm',
             'node': 'javascript',
