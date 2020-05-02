@@ -129,8 +129,10 @@ class Run(commands.Cog, name='Run'):
 
 
     @commands.command(hidden=True)
-    async def run_after_edit(self, ctx, language: typing.Optional[str] = None):
+    async def edit_last_run(self, ctx, language: typing.Optional[str] = None):
         """Run some edited code"""
+        if not ctx.invoked_with == 'run':
+            return
         if not language:
             await self.client.get_command('runhelp').invoke(ctx)
             return
@@ -154,7 +156,7 @@ class Run(commands.Cog, name='Run'):
         if any(content.startswith(f'{prefix}run') for prefix in prefixes):
             ctx = await self.client.get_context(after)
             if ctx.valid:
-                await self.client.get_command('run_after_edit').invoke(ctx)
+                await self.client.get_command('edit_last_run').invoke(ctx)
 
 
 def setup(client):
