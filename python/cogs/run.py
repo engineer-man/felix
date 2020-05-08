@@ -54,7 +54,8 @@ class Run(commands.Cog, name='Run'):
             'ts': 'typescript',
             'typescript': 'typescript',
         }
-        self.last_message = dict()
+        self.last_run_command_msg = dict()
+        self.last_run_outputs = dict()
 
     async def get_api_response(self, ctx, language):
         language = language.replace('```', '')
@@ -125,7 +126,8 @@ class Run(commands.Cog, name='Run'):
             return
         api_response = await self.get_api_response(ctx, language)
         msg = await ctx.send(api_response)
-        self.last_message[ctx.author.id] = msg
+        self.last_run_command_msg[ctx.author.id] = ctx.message
+        self.last_run_outputs[ctx.author.id] = msg
 
 
     @commands.command(hidden=True)
@@ -138,7 +140,7 @@ class Run(commands.Cog, name='Run'):
             return
         api_response = await self.get_api_response(ctx, language)
         try:
-            msg_to_edit = self.last_message[ctx.author.id]
+            msg_to_edit = self.last_run_outputs[ctx.author.id]
             await msg_to_edit.edit(content=api_response)
         except KeyError:
             return
@@ -147,16 +149,19 @@ class Run(commands.Cog, name='Run'):
     async def on_message_edit(self, before, after):
         if after.author.bot:
             return
-        content = after.content.lower()
-        if not content.split()[1] == 'run':
+        if before.author.id not in self.last_run_command_msg:
             return
+        if before.id != self.last_run_command_msg[before.author.id].id:
+            return
+        content = after.content.lower()
         prefixes = await self.client.get_prefix(after)
         if isinstance(prefixes, str):
             prefixes = [prefixes,]
-        if any(content.startswith(f'{prefix}run') for prefix in prefixes):
-            ctx = await self.client.get_context(after)
-            if ctx.valid:
-                await self.client.get_command('edit_last_run').invoke(ctx)
+        if not any(content.startswith(f'{prefix}run') for prefix in prefixes):
+            return
+        ctx = await self.client.get_context(after)
+        if ctx.valid:
+            await self.client.get_command('edit_last_run').invoke(ctx)
 
 
 def setup(client):
