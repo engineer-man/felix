@@ -181,16 +181,16 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
             await after.delete()
             await self.post_report(after)
 
-    # ----------------------------------------------
-    # Command to allow 1 discord.gg link
-    # ----------------------------------------------
+    # ------------------------------------------------
+    # Command to allow 1 link that is normally blocked
+    # ------------------------------------------------
     @commands.command(
         name='allow',
         hidden=True,
     )
     async def allow(self, ctx, member: Member):
-        """Allow a single discord.gg link by @user"""
-        await ctx.send(f'Hey {member.mention}, you can post 1 discord.gg link!')
+        """Allow a single link by @user"""
+        await ctx.send(f'Hey {member.mention}, you can post 1 link!')
         self.allowed_once.append(member.id)
 
 
