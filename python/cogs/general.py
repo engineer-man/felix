@@ -15,11 +15,13 @@ Commands:
     urbandictionary look up a word on urbandictionary.com
     video           make the bot post links to EM Videos on youtube
     weather         get the weather for a specific location
+    inspect         print source code of a command
 """
 
 import random
 import re
 import typing
+from inspect import getsourcelines
 from datetime import datetime as dt
 from urllib.parse import quote
 from discord.ext import commands
@@ -621,6 +623,24 @@ class General(commands.Cog, name='General'):
             weather_codeblock = 'Sorry - response longer than 2000 characters'
         await ctx.send(weather_codeblock)
 
+    @commands.command(
+        name='inspect'
+    )
+    async def inspect(self, ctx, *, command_name: str):
+        """Print a link and the source code of a command"""
+        cmd = self.client.get_command(command_name)
+        if cmd is None:
+            return
+        module = cmd.module
+        saucelines, startline = getsourcelines(cmd.callback)
+        url = (
+            '<https://github.com/engineer-man/felix/blob/master/python/'
+            f'{"/".join(module.split("."))}.py#L{startline}>\n'
+        )
+        sauce = ''.join(saucelines[:-1])
+        # Little hack so triple quotes don't end discord codeblocks when printed
+        sanitized = sauce.replace('`', '\u200B`')
+        await ctx.send(url + f'```python\n{sanitized}\n```')
 
 def setup(client):
     client.add_cog(General(client))
