@@ -637,7 +637,7 @@ class General(commands.Cog, name='General'):
             '<https://github.com/engineer-man/felix/blob/master/python/'
             f'{"/".join(module.split("."))}.py#L{startline}>\n'
         )
-        sauce = ''.join(saucelines[:-1])
+        sauce = ''.join(saucelines)
         # Little hack so triple quotes don't end discord codeblocks when printed
         sanitized = sauce.replace('`', '\u200B`')
         await ctx.send(url + f'```python\n{sanitized}\n```')
