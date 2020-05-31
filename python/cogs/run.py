@@ -78,14 +78,12 @@ class Run(commands.Cog, name='Run'):
             data=data
         ) as response:
             r = await response.json()
-        if not r or 'status' not in r:
-            return '`Sorry, invalid response from Piston server`'
-        if r['status'] not in 'ok' or r['payload']['output'] is None:
+        if (not response.status == 200) or (r['output'] is None):
             return '`Sorry, execution problem`'
         return (
             f'Here is your output {ctx.author.mention}\n'
             + '```\n'
-            + '\n'.join(r['payload']['output'].split('\n')[:30])
+            + '\n'.join(r['output'].split('\n')[:30])
             + '```'
         )
 

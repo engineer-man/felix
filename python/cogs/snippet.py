@@ -74,13 +74,9 @@ class Snippet(commands.Cog, name='Snippet Upload'):
         })
 
         async with self.client.session.post(self.upload_url, data=payload) as response:
-            if response.status >= 400:
-                return False
-
-            response = await response.json()
-
-            if response["status"] == "ok":
-                return "https://emkc.org" + response["payload"]["url"]
+            if response.status == 200:
+                response = await response.json()
+                return 'https://emkc.org' + response['url']
             else:
                 # Woops, something went wrong when sending
                 return False
