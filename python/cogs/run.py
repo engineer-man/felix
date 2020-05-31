@@ -78,8 +78,10 @@ class Run(commands.Cog, name='Run'):
             data=data
         ) as response:
             r = await response.json()
-        if (not response.status == 200) or (r['output'] is None):
-            return '`Sorry, execution problem`'
+        if not response.status == 200:
+            return f'`Sorry, execution problem - Invalid status {response.status}`'
+        if r['output'] is None:
+            return f'`Sorry, execution problem - Invalid Output received`'
         return (
             f'Here is your output {ctx.author.mention}\n'
             + '```\n'

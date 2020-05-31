@@ -60,9 +60,8 @@ class ChatLog(commands.Cog, name='Chat Log'):
             headers=headers,
             data=data
         ) as response:
-            s = response.status
-            if not s == 200:
-                print(f'ERROR while sending chat log to EMKC. Response {s}')
+            if response.status != 200:
+                print(f'ERROR while sending chat log to EMKC. Response {response.status}')
 
 
 def setup(client):

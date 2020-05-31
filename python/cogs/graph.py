@@ -43,6 +43,8 @@ class Graph(commands.Cog,
                 'limit': limit
             }
             async with self.client.session.get(url, params=params) as response:
+                if response.status != 200:
+                    return False
                 api_data = await response.json()
             if not api_data:
                 return False
@@ -59,6 +61,8 @@ class Graph(commands.Cog,
             )]
             params += [('discord_id', user_id) for user_id in user_ids]
             async with self.client.session.get(url, params=params) as response:
+                if response.status != 200:
+                    return False
                 api_data = await response.json()
             if not api_data:
                 return False
@@ -83,6 +87,8 @@ class Graph(commands.Cog,
                       ('end', (enddate).isoformat())]
             params += [('discord_id', uid) for uid in user_names.values()]
             async with self.client.session.get(url, params=params) as response:
+                if response.status != 200:
+                    return False
                 api_data = await response.json()
             retrieved_users = {x['user']: x for x in api_data}
             for username, data in graph_data.items():
@@ -196,6 +202,8 @@ class Graph(commands.Cog,
                 'end': end.isoformat()
             }
             async with self.client.session.get(url, params=params) as response:
+                if response.status != 200:
+                    return False
                 api_data = await response.json()
             if not api_data:
                 return False
