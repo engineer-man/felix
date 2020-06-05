@@ -33,6 +33,7 @@ class Run(commands.Cog, name='Run'):
             'jl': 'julia',
             'julia': 'julia',
             'js': 'javascript',
+            'kotlin': 'kotlin',
             'nasm': 'nasm',
             'node': 'javascript',
             'php': 'php',
