@@ -35,19 +35,6 @@ class General(commands.Cog, name='General'):
     # ----------------------------------------------
     # Helper Functions
     # ----------------------------------------------
-    def get_quack_string(self):
-        intro = ['Ghost of duckie... Quack', 'Ghost of duckie... QUACK',
-                 'Ghost of duckie... Quaaack']
-        body = ['quack', 'quuuaaack', 'quack quack', 'qua...', 'quaack']
-        ending = ['qua...', 'quack!', 'quack!!', 'qua..?', '..?', 'quack?',
-                  '...Quack?', 'quack :slight_smile:', 'Quack??? :thinking:',
-                  'QUAACK!! :angry:']
-        ret = [random.choice(intro)]
-        for _ in range(random.randint(1, 5)):
-            ret.append(random.choice(body))
-        ret.append(random.choice(3 * ending[:-1] + ending[-1:]))
-        return ' '.join(ret)
-
     def get_year_string(self):
         now = dt.utcnow()
         year_end = dt(now.year+1, 1, 1)
@@ -91,9 +78,6 @@ class General(commands.Cog, name='General'):
 
         if self.client.user_is_ignored(msg.author):
             return
-
-        if re.search(r'(?i).*quack.*', msg.content):
-            await msg.channel.send(self.get_quack_string())
 
         if re.search(r'(?i).*what a twist.*', msg.content):
             await msg.channel.send('` - directed by M. Night Shyamalan.`')
