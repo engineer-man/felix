@@ -21,7 +21,7 @@ import time
 from collections import deque
 from dataclasses import dataclass, field
 from discord.ext import commands
-from discord import Member, DMChannel, Embed
+from discord import Member, DMChannel, Embed, NotFound
 
 
 # SETTINGS:
@@ -125,7 +125,10 @@ class Jail(commands.Cog, name='Jail'):
         status = f'{member} successfully jailed'
         get_role = member.guild.get_role
         jail_roles = [get_role(x) for x in self.jail_roles if get_role(x)]
-        await member.add_roles(*jail_roles, reason=reason)
+        try:
+            await member.add_roles(*jail_roles, reason=reason)
+        except NotFound:
+            status = f'{member} not in guild'
         if permanent:
             perma_jail = self.load_perma_jail()
             if member.id not in perma_jail:
