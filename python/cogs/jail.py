@@ -288,7 +288,7 @@ class Jail(commands.Cog, name='Jail'):
         if not self.suspected_flooders:
             return await ctx.send('List is empty.')
         members = '\n'.join(str(m) for m in self.suspected_flooders)
-        if len(members) > 1990:
+        if len(members) > 1980:
             members = f'{members[:1980]}...'
         await ctx.send(f'```\n{members}\n```')
 
@@ -313,7 +313,9 @@ class Jail(commands.Cog, name='Jail'):
         for i in self.suspected_flooders:
             status = await self.send_to_jail(i, reason='Server flooding')
             jailed.append(status)
-        message = '\n'.join(jailed)[:1980]
+        message = '\n'.join(jailed)
+        if len(message) > 1980:
+            message = message[:1980]
         await ctx.send(f'```\n{message}...\n```')
     # ------------------------------------------------------
 
