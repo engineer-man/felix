@@ -432,8 +432,9 @@ class General(commands.Cog, name='General'):
             if guild_time >= 1 else message_count,
             'Flagged:': 'True'
             if 484183734686318613 in (i.id for i in member.roles) else 'False',
-            'Current activities:': '\n'.join(i.name for i in member.activities)
-            if member.activities else 'No current activities'
+            'Current activities:':
+            '\n'.join(i.name for i in member.activities if i.name) or
+            'No current activities'
         }
         for name, value in fields.items():
             embed.add_field(
