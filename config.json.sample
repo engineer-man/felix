@@ -14,6 +14,7 @@
     "jail_channel" : 123123123123123,
     "report_role": 123123123123123,
     "newcomer_role": 123123123123123,
+    "team_role": 123123123123123,
     "bot_key": "",
     "giphy_key": "",
     "yt_key": "",
