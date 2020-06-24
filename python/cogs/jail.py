@@ -57,6 +57,7 @@ class Jail(commands.Cog, name='Jail'):
         self.REPORT_CHANNEL_ID = self.client.config['report_channel']
         self.JAIL_CHANNEL_ID = self.client.config['jail_channel']
         self.REPORT_ROLE = self.client.config['report_role']
+        self.TEAM_ROLE = self.client.config['team_role']
         # Dict to store offenders
         self.naughty = {}
         # Dict to store the timestamps of each users last 10 messages
@@ -91,7 +92,7 @@ class Jail(commands.Cog, name='Jail'):
             description=description,
             color=0xFF0000
         )
-        await target.send(f'<@&{self.REPORT_ROLE}>', embed=embed)
+        await target.send(f'<@&{self.TEAM_ROLE}>', embed=embed)
 
     def load_state(self):
         with open("../state.json", "r") as statefile:
