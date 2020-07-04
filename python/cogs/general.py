@@ -595,6 +595,10 @@ class General(commands.Cog, name='General'):
         async with self.client.session.get(url) as response:
             weather = await response.text()
             weather = weather.split('\n')
+        if weather == ['']:
+            weather = f'the weather api returned an empty response, try again later'
+            await ctx.send(weather)
+            return
         if 'Sorry' in weather[0] or (weather[1] and not moon):
             return
         if days:
