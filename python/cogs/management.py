@@ -452,12 +452,9 @@ class Management(commands.Cog, name='Management'):
             traceback.format_exception(type(exc), exc, exc.__traceback__)
         )
         response = [f'`Error occured {delta_str}`']
-        if error_ctx:
-            response.append(f'`Command: {error_ctx.invoked_with}`')
-            response.append(f'`User: {error_ctx.author.name}`')
-            response.append(f'`Channel:{error_ctx.channel.name}`')
-        else:
-            response.append('`Error happened outside of command`')
+        response.append(f'`Command: {error_ctx.invoked_with}`')
+        response.append(f'`User: {error_ctx.author.name}`')
+        response.append(f'`Channel:{error_ctx.channel.name}`')
         response.append(f'```python\n')
         num_chars = sum(len(line) for line in response)
         for line in tb.split('\n'):
@@ -470,6 +467,11 @@ class Management(commands.Cog, name='Management'):
                 num_chars = 0
         response.append('```')
         await ctx.send('\n'.join(response))
+        e = Embed(title='Full command that caused the error:',
+                  description=error_ctx.message.content)
+        e.set_footer(text=error_ctx.author.display_name,
+                     icon_url=error_ctx.author.avatar_url)
+        await ctx.send(embed=e)
 
 
 def setup(client):
