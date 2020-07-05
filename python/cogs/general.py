@@ -595,8 +595,8 @@ class General(commands.Cog, name='General'):
         async with self.client.session.get(url) as response:
             weather = await response.text()
             weather = weather.split('\n')
-        if weather == ['']:
-            weather = f'the weather api returned an empty response, try again later'
+        if len(weather) < 8:
+            weather = f'the weather api returned an invalid response, try again later'
             await ctx.send(weather)
             return
         if 'Sorry' in weather[0] or (weather[1] and not moon):
@@ -629,6 +629,8 @@ class General(commands.Cog, name='General'):
         sauce = ''.join(saucelines)
         # Little hack so triple quotes don't end discord codeblocks when printed
         sanitized = sauce.replace('`', '\u200B`')
+        if len(sanitized) > 1900:
+            sanitized = sanitized[:1900] + '\n[...]'
         await ctx.send(url + f'```python\n{sanitized}\n```')
 
 def setup(client):
