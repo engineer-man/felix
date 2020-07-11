@@ -11,7 +11,7 @@ from discord.ext import commands
 from discord import Embed
 
 
-class Run(commands.Cog, name='Run'):
+class Run(commands.Cog, name='CodeExecution'):
     def __init__(self, client):
         self.client = client
         self.languages = {
@@ -94,31 +94,23 @@ class Run(commands.Cog, name='Run'):
             + '```'
         )
 
-    @commands.command(hidden=True)
-    async def runhelp(self, ctx):
-        """How to properly run code with Felix"""
-        languages = []
-        last = ''
-        for language in sorted(set(self.languages.values())):
-            current = language[0].lower()
-            if current not in last:
-                languages.append([language])
-            else:
-                languages[-1].append(language)
-            last = current
-        languages = map('/'.join, languages)
+    async def send_howto(self, ctx):
+        languages = sorted(set(self.languages.values()))
 
         run_instructions = (
             '**Here are my supported languages:**\n'
-            + '\n'.join(languages) +
+            + ', '.join(languages) +
             '\n\n**You can run code like this:**\n'
-            'felix run python\n'
-            '\\`\\`\\`python\nyour code\n\\`\\`\\`\n'
+            '/run <language>\n'
+            '\\`\\`\\`\nyour code\n\\`\\`\\`\n'
         )
 
-        e = Embed(title='I can run code',
+        e = Embed(title='I can execute code right here in Discord!',
                   description=run_instructions,
                   color=0x2ECC71)
+        # e.set_thumbnail(
+        #     url='https://cdn.discordapp.com/avatars/473160828502409217/1789e1e10d429ff4ef37d863433e684e.png'
+        # )
         await ctx.send(embed=e)
 
     @commands.command()
@@ -127,13 +119,12 @@ class Run(commands.Cog, name='Run'):
         Type "felix run" for instructions"""
         await ctx.trigger_typing()
         if not language:
-            await self.client.get_command('runhelp').invoke(ctx)
+            await self.send_howto(ctx)
             return
         api_response = await self.get_api_response(ctx, language)
         msg = await ctx.send(api_response)
         self.last_run_command_msg[ctx.author.id] = ctx.message
         self.last_run_outputs[ctx.author.id] = msg
-
 
     @commands.command(hidden=True)
     async def edit_last_run(self, ctx, language: typing.Optional[str] = None):
@@ -141,7 +132,6 @@ class Run(commands.Cog, name='Run'):
         if not ctx.invoked_with == 'run':
             return
         if not language:
-            await self.client.get_command('runhelp').invoke(ctx)
             return
         api_response = await self.get_api_response(ctx, language)
         try:
@@ -161,7 +151,7 @@ class Run(commands.Cog, name='Run'):
         content = after.content.lower()
         prefixes = await self.client.get_prefix(after)
         if isinstance(prefixes, str):
-            prefixes = [prefixes,]
+            prefixes = [prefixes, ]
         if not any(content.startswith(f'{prefix}run') for prefix in prefixes):
             return
         ctx = await self.client.get_context(after)
