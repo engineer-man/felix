@@ -337,6 +337,7 @@ class General(commands.Cog, name='General'):
             '\n• Github EMKC: <https://github.com/engineer-man/emkc>' +
             '\n• Github Felix: <https://github.com/engineer-man/felix>' +
             '\n• Github Piston: <https://github.com/engineer-man/piston>' +
+            '\n• Github Piston-Bot: <https://github.com/engineer-man/piston-bot>' +
             '\n• Twitter: <https://twitter.com/_EngineerMan>' +
             '\n• Facebook: <https://www.facebook.com/engineermanyt>' +
             '\n• Reddit: <https://www.reddit.com/r/engineerman/>' +
