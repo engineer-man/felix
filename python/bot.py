@@ -11,10 +11,12 @@ This bot requires discord.py
     pip install -U discord.py
 """
 import json
+import traceback
+import sys
 from datetime import datetime
 from os import path, listdir
 from discord.ext.commands import Bot, when_mentioned_or
-from discord import DMChannel
+from discord import DMChannel, Message, Activity
 from aiohttp import ClientSession
 
 
@@ -71,7 +73,7 @@ for extension in reversed(STARTUP_EXTENSIONS):
     try:
         client.load_extension(f'{extension}')
     except Exception as e:
-        client.last_errors.append((e, datetime.utcnow(), None))
+        client.last_errors.append((e, datetime.utcnow(), None, None))
         exc = f'{type(e).__name__}: {e}'
         print(f'Failed to load extension {extension}\n{exc}')
 
@@ -86,6 +88,27 @@ async def on_ready():
     print('\nFelix-Python started successfully')
     return True
 
+@client.event
+async def on_error(event_method, *args, **kwargs):
+    """|coro|
+
+    The default error handler provided by the client.
+
+    By default this prints to :data:`sys.stderr` however it could be
+    overridden to have a different implementation.
+    Check :func:`~discord.on_error` for more details.
+    """
+    print('Default Handler: Ignoring exception in {}'.format(event_method), file=sys.stderr)
+    traceback.print_exc()
+    # --------------- custom code below -------------------------------
+    # Saving the error if it resulted from a message edit
+    if len(args) > 1:
+        a1, a2,*_ = args
+        if isinstance(a1, Message) and isinstance(a2, Message):
+            client.last_errors.append((sys.exc_info()[1], datetime.utcnow(), a2, a2.content))
+        await client.change_presence(
+            activity=Activity(name='ERROR encountered', url=None, type=3)
+        )
 
 @client.event
 async def on_message(msg):
