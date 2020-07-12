@@ -634,5 +634,20 @@ class General(commands.Cog, name='General'):
             sanitized = sanitized[:1900] + '\n[...]'
         await ctx.send(url + f'```python\n{sanitized}\n```')
 
+    @commands.command(
+        name='run'
+    )
+    async def run_message(self, ctx):
+        run_command = self.client.get_command('run2')
+        if run_command is not None:
+            await run_command.invoke(ctx)
+            return
+
+        e = Embed(
+            title='I don\'t run code any more.',
+            description='You can use `/run` for all your code execution needs.'
+        )
+        await ctx.send(embed=e)
+
 def setup(client):
     client.add_cog(General(client))

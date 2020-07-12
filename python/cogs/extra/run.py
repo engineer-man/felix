@@ -114,7 +114,7 @@ class Run(commands.Cog, name='CodeExecution'):
         await ctx.send(embed=e)
 
     @commands.command()
-    async def run(self, ctx, language: typing.Optional[str] = None):
+    async def run2(self, ctx, language: typing.Optional[str] = None):
         """Run some code
         Type "felix run" for instructions"""
         await ctx.trigger_typing()
