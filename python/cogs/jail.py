@@ -334,7 +334,7 @@ class Jail(commands.Cog, name='Jail'):
             if member == self.client.user:
                 results.append('I refuse to jail myself')
             elif self.client.user_is_admin(member):
-                results.append(f'Sorry {member} is my friend')
+                results.append(f'Sorry, {member} is my friend')
             else:
                 r = await self.send_to_jail(member)
                 results.append(r)
