@@ -94,7 +94,11 @@ class Stats(commands.Cog, name='Stats'):
         await ctx.send(''.join(response))
 
     @stats.command()
-    async def users(self, ctx, n: typing.Optional[int] = 30):
+    async def users(
+        self,
+        ctx,
+        n: typing.Optional[int] = 30
+    ):
         """Show top users by messages for past n days"""
         await ctx.trigger_typing()
         params = {
@@ -117,15 +121,18 @@ class Stats(commands.Cog, name='Stats'):
     @stats.command()
     async def channels(
         self, ctx,
+        user: Member = None,
         n: typing.Optional[int] = 30,
-        user: Member = None
     ):
         """Show top channels by messages for past n days"""
         await ctx.trigger_typing()
-        params = {
-            'start': (datetime.utcnow() - timedelta(days=n)).isoformat(),
-            'limit': 25,
-        }
+        try:
+            params = {
+                'start': (datetime.utcnow() - timedelta(days=n)).isoformat(),
+                'limit': 25,
+            }
+        except OverflowError:
+            return
 
         if user:
             params['discord_id'] = user.id
