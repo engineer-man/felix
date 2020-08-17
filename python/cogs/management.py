@@ -357,12 +357,12 @@ class Management(commands.Cog, name='Management'):
     @_list.command(
         name='earliest'
     )
-    async def earliest(self, ctx, n: int = 50):
+    async def earliest(self, ctx, n: int = 50, start: int = 0):
         """List  earliest Members"""
-        earliest_members = sorted(self.client.main_guild.members, key=lambda x: x.joined_at)[:n]
+        sorted_members = sorted(self.client.main_guild.members, key=lambda x: x.joined_at)
         await ctx.send(
             '```\n' + '\n'.join(f'{x.name} ({x.joined_at.strftime("%Y-%m-%d")})'
-                                for x in earliest_members) + '\n```'
+                                for x in sorted_members[start:start+n]) + '\n```'
         )
 
     # ----------------------------------------------
