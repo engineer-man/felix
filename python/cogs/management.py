@@ -354,6 +354,17 @@ class Management(commands.Cog, name='Management'):
         for n, page in enumerate(pages):
             await ctx.send(f'{n+1}/{len(pages)}\n```' + '\n'.join(page) + '```')
 
+    @_list.command(
+        name='earliest'
+    )
+    async def earliest(self, ctx, n: int = 50):
+        """List  earliest Members"""
+        earliest_members = sorted(self.client.main_guild.members, key=lambda x: x.joined_at)[:n]
+        await ctx.send(
+            '```\n' + '\n'.join(f'{x.name} ({x.joined_at.strftime("%Y-%m-%d")})'
+                                for x in earliest_members) + '\n```'
+        )
+
     # ----------------------------------------------
     # Function to get the date a member joined
     # ----------------------------------------------
@@ -499,9 +510,9 @@ class Management(commands.Cog, name='Management'):
         await ctx.send('\n'.join(response))
         if error_source is not None:
             e = Embed(title='Full command that caused the error:',
-                    description=orig_content)
+                      description=orig_content)
             e.set_footer(text=error_source.author.display_name,
-                        icon_url=error_source.author.avatar_url)
+                         icon_url=error_source.author.avatar_url)
         await ctx.send(embed=e)
 
 
