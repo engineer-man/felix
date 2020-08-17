@@ -361,8 +361,23 @@ class Management(commands.Cog, name='Management'):
         """List  earliest Members"""
         sorted_members = sorted(self.client.main_guild.members, key=lambda x: x.joined_at)
         await ctx.send(
-            '```\n' + '\n'.join(f'{x.name} ({x.joined_at.strftime("%Y-%m-%d")})'
-                                for x in sorted_members[start:start+n]) + '\n```'
+            '```\n' +
+            '\n'.join(f'{x.name} ({x.joined_at.strftime("%Y-%m-%d")})'
+                      for x in sorted_members[start:start+n]) +
+            '\n```'
+        )
+
+    @_list.command(
+        name='oldest'
+    )
+    async def oldest(self, ctx, n: int = 50, start: int = 0):
+        """List oldest Member accounts"""
+        sorted_members = sorted(self.client.main_guild.members, key=lambda x: x.created_at)
+        await ctx.send(
+            '```\n' +
+            '\n'.join(f'{x.name} ({x.created_at.strftime("%Y-%m-%d")})'
+                      for x in sorted_members[start:start+n]) +
+            '\n```'
         )
 
     # ----------------------------------------------
