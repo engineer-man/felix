@@ -234,22 +234,42 @@ class General(commands.Cog, name='General'):
         name='ask',
         aliases=['questions', 'question']
     )
-    async def ask(self, ctx):
-        """How to properly ask a question"""
-        ask_instructions = (
-            "From time to time you'll stumble upon a question like this:\n"
-            "*Is anyone good at [this]?* / *Does anyone know [topic]?*\n"
-            "Please **just ask** your question.\n\n"
-            "• Make sure your question is easy to understand.\n"
-            "• Use the appropriate channel to ask your question.\n"
-            "• Always search before you ask (the internet is a big place).\n"
-            "• Be patient (someone will eventually try to help you)."
-        )
+    async def ask(self, ctx, members: commands.Greedy[Member]):
 
-        e = Embed(title='Just ask',
-                  description=ask_instructions,
-                  color=0x2ECC71)
-        await ctx.send(embed=e)
+        """How to properly ask a question"""
+        if not members:
+            ask_instructions = (
+                "From time to time you'll stumble upon a question like this:\n"
+                "*Is anyone good at [this]?* / *Does anyone know [topic]?*\n"
+                "Please **just ask** your question.\n\n"
+                "• Make sure your question is easy to understand.\n"
+                "• Use the appropriate channel to ask your question.\n"
+                "• Always search before you ask (the internet is a big place).\n"
+                "• Be patient (someone will eventually try to help you)."
+            )
+
+            e = Embed(title='Just ask',
+                      description=ask_instructions,
+                      color=0x2ECC71)
+            await ctx.send(embed=e)
+
+        else:
+            await ctx.message.delete()
+            ask_instructions = (
+                "It seems you are quite lost... Well, it's okay.\n"
+                "Sometimes people just stumble upon a question like:\n"
+                "*Is anyone good at [this]?* / *Does anyone know [topic]?*\n"
+                "Well, here is a tip, please **just ask** your question.\n\n"
+                "• Make sure you elaborate well on your problems.\n"
+                "• Use the appropriate channel to ask your questions.\n"
+                "• Always search before you ask, well, the internet is a big place!.\n"
+                "• Be patient (someone will eventually try to help you)."
+            )
+            e = Embed(title='Hey Pal!',
+                      description=ask_instructions,
+                      color=0x2ECC71)
+            await ctx.send(members[0].mention)
+            await ctx.send(embed=e)
 
     @howto.command(
         name='run'
