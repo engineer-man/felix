@@ -255,8 +255,8 @@ class General(commands.Cog, name='General'):
         name='run'
     )
     async def run(self, ctx):
-        """How to properly run code with Felix"""
-        await self.client.get_command('runhelp').invoke(ctx)
+        """How to run code"""
+        await ctx.send('Please use `/run` to run code.')
 
 
     @howto.command(
