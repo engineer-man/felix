@@ -251,13 +251,6 @@ class General(commands.Cog, name='General'):
                   color=0x2ECC71)
         await ctx.send(embed=e)
 
-    @howto.command(
-        name='run'
-    )
-    async def run(self, ctx):
-        """How to run code"""
-        await ctx.send('Please use `/run` to run code.')
-
 
     @howto.command(
         name='font',
@@ -638,16 +631,7 @@ class General(commands.Cog, name='General'):
         name='run'
     )
     async def run_message(self, ctx):
-        run_command = self.client.get_command('run2')
-        if run_command is not None:
-            await run_command.invoke(ctx)
-            return
-
-        e = Embed(
-            title='I don\'t run code any more.',
-            description='You can use `/run` for all your code execution needs.'
-        )
-        await ctx.send(embed=e)
+        await ctx.send('Please use `/run` to run code.')
 
 def setup(client):
     client.add_cog(General(client))
