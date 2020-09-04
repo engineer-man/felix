@@ -477,6 +477,7 @@ class General(commands.Cog, name='General'):
             answer = await response.json()
         if not answer['list']:
             await ctx.send('Sorry, I did not understand that')
+            return
         definition = answer["list"][0]["definition"]
         example = answer["list"][0]["example"]
         if len(definition + example) > 1950:
