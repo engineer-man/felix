@@ -16,7 +16,7 @@ import sys
 from datetime import datetime
 from os import path, listdir
 from discord.ext.commands import Bot, when_mentioned_or
-from discord import DMChannel, Message, Activity
+from discord import DMChannel, Message, Activity, Intents
 from aiohttp import ClientSession
 
 
@@ -55,11 +55,14 @@ class Felix(Bot):
             return True
         return False
 
+intents = Intents.default()
+intents.members = True
 
 client = Felix(
     command_prefix=when_mentioned_or('felix ', 'Felix '),
     description='Hi I am Felix!',
-    max_messages=15000
+    max_messages=15000,
+    intents=intents
 )
 
 STARTUP_EXTENSIONS = []
