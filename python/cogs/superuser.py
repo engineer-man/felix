@@ -97,5 +97,18 @@ class Superuser(commands.Cog, name='Superuser'):
 
         await ctx.send('`Success`')
 
+    # ----------------------------------------------
+    # Command to restart the bot
+    # ----------------------------------------------
+    @commands.command(
+        name='restart',
+        aliases=['shutdown'],
+        hidden=True
+    )
+    async def shutdown(self, ctx):
+        """Stop/Restart the bot"""
+        await self.client.close()
+
+
 def setup(client):
     client.add_cog(Superuser(client))
