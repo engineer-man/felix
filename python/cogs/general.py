@@ -7,7 +7,6 @@ Commands:
     howto           make the bot post tutorials
      ├ codeblocks       how to send discord markdown codeblocks
      ├ ask              how to ask question on the server
-     ├ run              how to use felix run
      └ sticker          how to apply EM's stickers
     links           make the bot post links to the engineerman github pages
     memberinfo      provide information about the given member
@@ -219,7 +218,7 @@ class General(commands.Cog, name='General'):
             "*\\`\\`\\`python\nprint('Hello world!')\n\\`\\`\\`*\n\n"
             "**This will result in the following:**\n"
             "```python\nprint('Hello world!')\n```\n"
-            "**NOTE:** Codeblocks are also used to run code via `felix run`."
+            "**NOTE:** Codeblocks are also used to run code via `/run`."
         )
         link = (
             'https://support.discordapp.com/hc/en-us/articles/'
