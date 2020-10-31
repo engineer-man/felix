@@ -96,6 +96,8 @@ class MMGame():
             await self.last_game_message.delete()
         if to_send:
             self.last_game_message = await ctx.send(heading + '\n' + to_send)
+        else:
+            self.last_game_message = await ctx.send(heading + '\n```You have not made any guesses yet.\nUse: \'felix help mastermind\' to get instructions.```')
         return True
 
     def get_solution(self):
