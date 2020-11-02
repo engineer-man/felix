@@ -125,7 +125,11 @@ class Snippet(commands.Cog, name='Snippet Upload'):
             else:
 
                 # Retrieve the contents of the file
-                content = await self.download_file_contents(attachment.url)
+                try:
+                    content = await self.download_file_contents(attachment.url)
+                except UnicodeDecodeError:
+                    await ctx.send("Invalid char in file")
+                    return
                 if content is None:
                     await ctx.send("Problem retrieving file content")
                     return
