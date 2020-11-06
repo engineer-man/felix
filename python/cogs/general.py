@@ -113,7 +113,7 @@ class General(commands.Cog, name='General'):
             await msg.channel.send(response)
 
         if re.search(
-            r'(?i)^html is a programming language',
+            r'(?i)^html is (a )?programming language',
             msg.content
         ):
             await msg.channel.send('no it\'s not, don\'t be silly')
