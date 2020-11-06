@@ -15,8 +15,8 @@ from discord.ext import commands
 
 # Times a player is allowed to answer incorrectly
 TRIES = 6
-# Minimum word lenght
-MIN_LENGHT = 5
+# Minimum word length
+MIN_LENGTH = 5
 
 
 class HangmanGame:
@@ -142,7 +142,7 @@ class Hangman(commands.Cog):
         ) as r:
             text = await r.text()
         words = random.sample(text.split(), 200)
-        return [i.strip() for i in words if len(i) >= MIN_LENGHT]
+        return [i.strip() for i in words if len(i) >= MIN_LENGTH]
 
     @commands.Cog.listener()
     async def on_message(self, message):
