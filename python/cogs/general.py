@@ -644,6 +644,11 @@ class General(commands.Cog, name='General'):
         """Sends an embed with an image of a cat, portraying the status code.
            If no status code is given it will return a random status cat."""
         valid = [s.value for s in list(HTTPStatus)]
+        # Append values which are not present in python3.8
+        new_valid = [103, # EARLY_HINTS
+                     418, # IM_A_TEAPOT
+                     425]
+        valid.extend(new_valid)
         code = code or random.choice(valid)
 
         if code not in valid:
