@@ -188,7 +188,7 @@ class General(commands.Cog, name='General'):
         """Post a stackoverflow search link"""
         await ctx.trigger_typing()
         await ctx.send(
-            f'here you go! <https://stackoverflow.com/?q={quote(search_text)}>'
+            f'here you go! <https://stackoverflow.com/search?q={quote(search_text)}>'
         )
 
     @commands.group(
