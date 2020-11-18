@@ -20,6 +20,7 @@ PAGINATION_EMOJIS = ('⏪', '◀️', '⏹️', '▶️', '⏩')
 log = logging.getLogger(__name__)
 
 class Stackoverflow(commands.Cog):
+    """Post a stackoverflow question link with the question tags"""
     def __init__(self, bot):
         self.bot = bot
         self.session = aiohttp.ClientSession()
