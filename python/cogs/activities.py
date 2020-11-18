@@ -16,13 +16,16 @@ from discord import Activity
 # dict's keys are months and days combined (month|day)
 HOLIDAY_DICT = {
     "0101": "watching a new year emerge 🥂",
+    "0126": "having a bbq & beers with my aussie mates 🇦🇺",
     "0317": "playing in a pub ☘️",
     "0704": "watching freedom fireworks 🎇",
     "0817": "playing it's my Birthday 🎂",
     "1003": "watching people being united 🍺",
     "1109": "watching walls crumble 🧱",
+    "1111": "observing those who sacrificed 🎖️",
     "1224": "watching christmas trees 🎄",
     "1225": "watching christmas trees 🎄",
+    "1226": "having beers for boxing day 🥊",
     "1231": "watching fireworks 🎆",
 }
 
