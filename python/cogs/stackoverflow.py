@@ -30,12 +30,12 @@ class Stackoverflow(commands.Cog):
         title = quote(title)
         filtered_request = {}
         api = f"https://api.stackexchange.com/2.2/search/advanced?key=U4DMV*8nvpm3EOpvf69Rxw((&site=stackoverflow&order=desc&sort=votes&closed=False&title={title}&filter=default"
-        print(api)
+        # print(api)
         async with self.session.get(url=api) as response:
             if response.status == 200:
                 request = await response.json()
                 results_found = request["items"]
-                print(results_found)
+                # print(results_found)
                 if results_found:
                     formatted_request = []
                     for result in results_found:
