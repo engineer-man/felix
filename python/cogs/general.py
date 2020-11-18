@@ -180,17 +180,6 @@ class General(commands.Cog, name='General'):
         )
     # ------------------------------------------------------------------------
 
-    @commands.command(
-        name='stackoverflow',
-        aliases=['stacko', 'stack']
-    )
-    async def stackoverflow(self, ctx, *, search_text):
-        """Post a stackoverflow search link"""
-        await ctx.trigger_typing()
-        await ctx.send(
-            f'here you go! <https://stackoverflow.com/search?q={quote(search_text)}>'
-        )
-
     @commands.group(
         name="howto",
         invoke_without_command=True,
