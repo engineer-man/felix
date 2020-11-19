@@ -77,7 +77,7 @@ class Wikipedia(commands.Cog):
             log.debug(f"Adding reaction: {repr(emoji)}")
             await pagination_msg.add_reaction(emoji)
 
-        def check(reaction_: Reaction, user_: Member) -> bool:
+        def check(reaction: Reaction, user: Member) -> bool:
             """Make sure that this reaction is what we want to operate on."""
             msg_pass = False
             user_pass = False
