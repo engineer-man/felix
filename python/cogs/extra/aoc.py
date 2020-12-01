@@ -26,6 +26,8 @@ INTERVAL = 120
 KNOWN_USERS = {
     '749969': 'JaminenB',
     '645784': 'Yamabushi',
+    '676763': 'Tomzy',
+    '995197': 'Ghostrunner0808',
     }
 
 class AdventOfCode(commands.Cog, name='Advent of Code'):
