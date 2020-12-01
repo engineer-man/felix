@@ -28,6 +28,8 @@ KNOWN_USERS = {
     '645784': 'Yamabushi',
     '676763': 'Tomzy',
     '995197': 'Ghostrunner0808',
+    '959036': 'Bones',
+    '957883': 'Jason Terror',
     }
 
 class AdventOfCode(commands.Cog, name='Advent of Code'):
