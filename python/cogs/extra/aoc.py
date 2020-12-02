@@ -30,6 +30,7 @@ KNOWN_USERS = {
     '995197': 'Ghostrunner0808',
     '959036': 'Bones',
     '957883': 'Jason Terror',
+    '996249': '/dev/null',
     }
 
 class AdventOfCode(commands.Cog, name='Advent of Code'):
