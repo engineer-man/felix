@@ -39,6 +39,7 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
         self.cookie = {'session': self.client.config['aoc_session']}
         self.members = {}
         self.aoc_task.start()
+        self.last_msgs = []
 
     async def get_current_members(self):
         async with self.client.session.get(API_URL, cookies=self.cookie) as re:
@@ -110,11 +111,18 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
     async def aoc(self, ctx, day: int):
         """Show Advent of Code stats for a specific day
         (only works in #advent-of-code)"""
-        if int(day) < 1 or int(day) > 25:
+        if not 1 <= int(day) <= datetime.now().day:
             return
         day = str(day)
         if not ctx.channel.id == AOC_CHANNEL:
             return
+
+        # Delete previous message
+        for msg in self.last_msgs:
+                await msg.delete()
+
+        self.last_msgs = []
+
         members = await self.get_current_members()
         parts = {'1': {}, '2': {}}
         for data in members.values():
@@ -147,24 +155,26 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
                 if rank == 0:
                     first_time = time
                     paginator.append(
-                        f'{rank+1}.{name.replace(" ","_")}'.ljust(25) +
+                        f'{rank+1}.{name.replace(" ","_")}'.ljust(27) +
                         f'[{datetime.fromtimestamp(first_time).strftime("%H:%M:%S")}]'
                         + delta
                     )
                 else:
                     paginator.append(
-                        f'{rank+1}.{name.replace(" ","_")}'.ljust(25) +
+                        f'{rank+1}.{name.replace(" ","_")}'.ljust(27) +
                         f'[+{timedelta(seconds=time - first_time)}]'
                         + delta
                     )
 
             if not paginator:
                 return
+
             subs = [paginator[x:x+21] for x in range(0, len(paginator), 21)]
             for sub_paginator in subs:
                 sub_paginator.insert(0, f'```css')
                 sub_paginator.append('```')
-                await ctx.send('\n'.join(sub_paginator))
+                msg = await ctx.send('\n'.join(sub_paginator))
+                self.last_msgs.append(msg)
 
     @aoc.command(
         name='howto',
