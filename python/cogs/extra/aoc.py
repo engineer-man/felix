@@ -58,7 +58,6 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
 
     @tasks.loop(seconds=INTERVAL)
     async def aoc_task(self):
-        print('Loop')
         channel = self.client.main_guild.get_channel(AOC_CHANNEL)
         current_members = await self.get_current_members()
         msg = []
@@ -86,9 +85,9 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
                     day, pzl = puzzle.split('-')
                     time = int(new_stats[day][pzl]['get_star_ts'])
                     msg.append(
-                        f"#{data['name'].replace(' ', '_')} " +
-                        f"solved: [{day} - {pzl}] at " +
-                        f"[{datetime.fromtimestamp(time).strftime('%H:%M:%S')}]"
+                        f"#{data['name'].replace(' ', '_')} ".ljust(27) +
+                        f"solved: [{day} - {pzl}] ".ljust(17) +
+                        f"at [{datetime.fromtimestamp(time).strftime('%H:%M:%S')}]"
                     )
         if msg:
             await channel.send(
