@@ -20,7 +20,7 @@ from discord.ext import commands, tasks
 # pylint: disable=E1101
 
 API_URL = 'https://adventofcode.com/2020/leaderboard/private/view/208847.json'
-AOC_CHANNEL = 778324114213175323
+AOC_CHANNEL = 483712305138368512
 INTERVAL = 120
 
 KNOWN_USERS = {
@@ -85,9 +85,9 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
                     day, pzl = puzzle.split('-')
                     time = int(new_stats[day][pzl]['get_star_ts'])
                     msg.append(
-                        f"#{data['name'].replace(' ', '_')} ".ljust(27) +
-                        f"solved: [{day} - {pzl}] ".ljust(17) +
-                        f"at [{datetime.fromtimestamp(time).strftime('%H:%M:%S')}]"
+                        f"#{data['name'].replace(' ', '_')} " +
+                        f"solved: [{day} - {pzl}] " +
+                        f"at [{datetime.fromtimestamp(time).strftime('%H:%M:%S')} UTC]"
                     )
         if msg:
             await channel.send(
