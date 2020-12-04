@@ -21,6 +21,7 @@ from discord.ext import commands, tasks
 
 API_URL = 'https://adventofcode.com/2020/leaderboard/private/view/208847.json'
 AOC_CHANNEL = 778324114213175323
+AOC_CHANNEL = 483712305138368512
 INTERVAL = 120
 
 KNOWN_USERS = {
@@ -58,6 +59,7 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
 
     @tasks.loop(seconds=INTERVAL)
     async def aoc_task(self):
+        print('Loop')
         channel = self.client.main_guild.get_channel(AOC_CHANNEL)
         current_members = await self.get_current_members()
         msg = []
@@ -83,9 +85,11 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
             for puzzle in sorted(current_stats):
                 if puzzle not in previous_stats:
                     day, pzl = puzzle.split('-')
+                    time = int(new_stats[day][pzl]['get_star_ts'])
                     msg.append(
                         f"#{data['name'].replace(' ', '_')} " +
-                        f"solved: [{day} - {pzl}]"
+                        f"solved: [{day} - {pzl}] at " +
+                        f"[{datetime.fromtimestamp(time).strftime('%H:%M:%S')}]"
                     )
         if msg:
             await channel.send(
