@@ -21,17 +21,25 @@ Commands:
 import re
 import random
 import typing
-from http import HTTPStatus
 from inspect import getsourcelines
 from datetime import datetime as dt
 from urllib.parse import quote
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord import Embed, DMChannel, Member
 
 
 class General(commands.Cog, name='General'):
     def __init__(self, client):
         self.client = client
+        self.load_http_codes.start()
+
+    @tasks.loop(count=1)
+    async def load_http_codes(self):
+        async with self.client.session.get('https://http.cat/') as response:
+            text = await response.text()
+            http_codes = re.findall(r'<a href="/(\d{3})">', text)
+            http_codes.append(0)  # Easter egg code
+            self.http_codes = [int(x) for x in http_codes]
 
     # ----------------------------------------------
     # Helper Functions
@@ -643,17 +651,14 @@ class General(commands.Cog, name='General'):
     async def statuscat(self, ctx, code: int = None):
         """Sends an embed with an image of a cat, portraying the status code.
            If no status code is given it will return a random status cat."""
-        valid = [s.value for s in list(HTTPStatus)]
-        # Append values which are not present in python3.8
-        new_valid = [
-            425, # UNORDERED COLLECTION
-            418 # IM_A_TEAPOT
-            ]
-        valid.extend(new_valid)
-        code = code or random.choice(valid)
+        if not hasattr(self, 'http_codes'):
+            raise commands.BadArgument('HTTP cats codes not loaded yet')
 
-        if code not in valid:
-            raise commands.BadArgument(f'Invalid status code: **{code}**')
+        if code is None:
+            code = random.choice(self.http_codes)
+        else:
+            if code not in self.http_codes:
+                raise commands.BadArgument(f'Invalid status code: **{code}**')
 
         embed = Embed()
         embed.set_image(url=f'https://http.cat/{code}.jpg')
