@@ -16,6 +16,7 @@ Commands:
     weather         get the weather for a specific location
     inspect         print source code of a command
     statuscat       Commands that gives the requested HTTP statuses described and visualized by cats."
+    statusdog       Commands that gives the requested HTTP statuses described and visualized by dogs."
 """
 
 import re
@@ -663,6 +664,28 @@ class General(commands.Cog, name='General'):
         embed = Embed()
         embed.set_image(url=f'https://http.cat/{code}.jpg')
         embed.set_footer(text=f"Provided by: https://http.cat")
+        await ctx.send(embed=embed)
+
+
+    @commands.command(
+        name='statusdog',
+        aliases=['dog']
+    )
+    async def statusdog(self, ctx, code: int = None):
+        """Sends an embed with an image of a dog, portraying the status code.
+           If no status code is given it will return a random status dog."""
+        if not hasattr(self, 'http_codes'):
+            raise commands.BadArgument('HTTP dogs codes not loaded yet')
+
+        if code is None:
+            code = random.choice(self.http_codes)
+        else:
+            if code not in self.http_codes:
+                raise commands.BadArgument(f'Invalid status code: **{code}**')
+
+        embed = Embed()
+        embed.set_image(url=f'https://httpstatusdogs.com/img/{code}.jpg')
+        embed.set_footer(text=f"Provided by: https://httpstatusdogs.com/")
         await ctx.send(embed=embed)
 
 
