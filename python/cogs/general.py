@@ -16,6 +16,7 @@ Commands:
     weather         get the weather for a specific location
     inspect         print source code of a command
     statuscat       Commands that gives the requested HTTP statuses described and visualized by cats."
+    statusdog       Commands that gives the requested HTTP statuses described and visualized by dogs."
 """
 
 import re
@@ -33,6 +34,7 @@ class General(commands.Cog, name='General'):
         self.client = client
         self.load_http_codes.start()
 
+
     @tasks.loop(count=1)
     async def load_http_codes(self):
         async with self.client.session.get('https://http.cat/') as response:
@@ -40,6 +42,12 @@ class General(commands.Cog, name='General'):
             http_codes = re.findall(r'<a href="/(\d{3})">', text)
             http_codes.append(0)  # Easter egg code
             self.http_codes = [int(x) for x in http_codes]
+
+        async with self.client.session.get('https://httpstatusdogs.com/') as response:
+            text = await response.text()
+            http_codes_dog = re.findall(r'<a href=\"(\d{3})-[^\"]*\"', text)
+            #http_codes.append(0)  # No Easter egg code :(
+            self.http_codes_dog = [int(x) for x in http_codes_dog]
 
     # ----------------------------------------------
     # Helper Functions
@@ -663,6 +671,28 @@ class General(commands.Cog, name='General'):
         embed = Embed()
         embed.set_image(url=f'https://http.cat/{code}.jpg')
         embed.set_footer(text=f"Provided by: https://http.cat")
+        await ctx.send(embed=embed)
+
+
+    @commands.command(
+        name='statusdog',
+        aliases=['dog']
+    )
+    async def statusdog(self, ctx, code: int = None):
+        """Sends an embed with an image of a dog, portraying the status code.
+           If no status code is given it will return a random status dog."""
+        if not hasattr(self, 'http_codes_dog'):
+            raise commands.BadArgument('HTTP dogs codes not loaded yet')
+
+        if code is None:
+            code = random.choice(self.http_codes_dog)
+        else:
+            if code not in self.http_codes_dog:
+                raise commands.BadArgument(f'Invalid status code: **{code}**')
+
+        embed = Embed()
+        embed.set_image(url=f'https://httpstatusdogs.com/img/{code}.jpg')
+        embed.set_footer(text=f"Provided by: https://httpstatusdogs.com/")
         await ctx.send(embed=embed)
 
 
