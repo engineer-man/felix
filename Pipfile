@@ -1,0 +1,31 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[packages]
+"discord.py" = "~=1.5.1"
+matplotlib = "~=3.3.3"
+google-api-python-client = "~=1.12.8"
+google-auth-oauthlib = "~=0.4.2"
+
+[dev-packages]
+flake8 = "~=3.8.4"
+flake8-annotations = "~=2.4.1"
+flake8-bugbear = "~=20.1.4"
+flake8-docstrings = "~=1.5.0"
+flake8-import-order = "~=0.18.1"
+flake8-string-format = "~=0.3.0"
+flake8-tidy-imports = "~=4.1.0"
+flake8-todo = "~=0.7"
+pep8-naming = "~=0.11.1"
+pre-commit = "~=2.7.1"
+
+[requires]
+python_version = "3.8.6"
+
+[scripts]
+start = "bash -c  'cd python ; python bot.py'"
+lint = "pre-commit run --all-files"
+precommit = "pre-commit install"
+flake8 = "python -m flake8"
