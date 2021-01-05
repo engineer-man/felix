@@ -24,9 +24,12 @@ import random
 import typing
 from inspect import getsourcelines
 from datetime import datetime as dt
-from urllib.parse import quote
+from urllib.parse import quote, quote_plus
+
+import aiohttp
 from discord.ext import commands, tasks
 from discord import Embed, DMChannel, Member
+from discord.ext.commands import Context
 
 
 class General(commands.Cog, name='General'):
@@ -694,6 +697,44 @@ class General(commands.Cog, name='General'):
         embed.set_image(url=f'https://httpstatusdogs.com/img/{code}.jpg')
         embed.set_footer(text=f"Provided by: https://httpstatusdogs.com/")
         await ctx.send(embed=embed)
+
+    # ------------------------------------------------------------------------
+
+    @staticmethod
+    def result_fmt(url: str, language: str, body_text: str) -> str:
+        """Format Result."""
+        body_space = min(1992 - len(language) - len(url), 1000)
+
+        if len(body_text) > body_space:
+            description = f"**Result Of cht.sh**\n```{language}\n{body_text[:body_space - 20]}\n... (truncated - too " \
+                          f"many lines)```\nFull results: {url} "
+            return description
+
+        description = f"**Result Of cht.sh**\n```{language}\n{body_text}```\n{url}"
+        return description
+
+    @commands.command(
+        usage="cheat <language> <search terms>",
+        name="cheat",
+        aliases=("cht.sh", "cheatsheet", "cheat-sheet", "cht"),
+    )
+    @commands.cooldown(3, 10, commands.BucketType.user)
+    async def cheat_sheet(
+            self, ctx: Context, language: str, *search_terms: str
+    ) -> None:
+        """Search cheat.sh."""
+        url = f'https://cheat.sh/{quote_plus(language)}/{quote_plus(" ".join(search_terms))}'
+        escape_tt = str.maketrans({"`": "\\`"})
+        ansi_re = re.compile(r"\x1b\[.*?m")
+
+        async with self.client.session.get(
+                url,
+                headers={"User-Agent": "curl/7.68.0"},
+                timeout=aiohttp.ClientTimeout(total=10),
+        ) as response:
+            result = ansi_re.sub("", await response.text()).translate(escape_tt)
+
+        await ctx.send(self.result_fmt(url, language, result))
 
 
 def setup(client):
