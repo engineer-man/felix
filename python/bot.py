@@ -20,7 +20,6 @@ from discord import DMChannel, Message, Activity, Intents, AllowedMentions
 from aiohttp import ClientSession, ClientTimeout
 
 
-
 class Felix(Bot):
     def __init__(self, *args, **options):
         super().__init__(*args, **options)
@@ -54,6 +53,7 @@ class Felix(Bot):
         if self.config['ignore_role'] in user_roles:
             return True
         return False
+
 
 intents = Intents.default()
 intents.members = True
@@ -92,6 +92,7 @@ async def on_ready():
     print('\nFelix-Python started successfully')
     return True
 
+
 @client.event
 async def on_error(event_method, *args, **kwargs):
     """|coro|
@@ -107,12 +108,13 @@ async def on_error(event_method, *args, **kwargs):
     # --------------- custom code below -------------------------------
     # Saving the error if it resulted from a message edit
     if len(args) > 1:
-        a1, a2,*_ = args
+        a1, a2, *_ = args
         if isinstance(a1, Message) and isinstance(a2, Message):
             client.last_errors.append((sys.exc_info()[1], datetime.utcnow(), a2, a2.content))
         await client.change_presence(
             activity=Activity(name='ERROR encountered', url=None, type=3)
         )
+
 
 @client.event
 async def on_message(msg):
