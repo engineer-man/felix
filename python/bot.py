@@ -17,7 +17,7 @@ from datetime import datetime
 from os import path, listdir
 from discord.ext.commands import Bot, when_mentioned_or
 from discord import DMChannel, Message, Activity, Intents, AllowedMentions
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ClientTimeout
 
 
 
@@ -30,7 +30,7 @@ class Felix(Bot):
         self.last_errors = []
 
     async def start(self, *args, **kwargs):
-        self.session = ClientSession()
+        self.session = ClientSession(timeout=ClientTimeout(total=10))
         await super().start(self.config["bot_key"], *args, **kwargs)
 
     async def close(self):

@@ -26,7 +26,6 @@ from inspect import getsourcelines
 from datetime import datetime as dt
 from urllib.parse import quote_plus
 
-import aiohttp
 from discord.ext import commands, tasks
 from discord import Embed, DMChannel, Member
 
@@ -728,8 +727,7 @@ class General(commands.Cog, name='General'):
 
         async with self.client.session.get(
                 url,
-                headers={"User-Agent": "curl/7.68.0"},
-                timeout=aiohttp.ClientTimeout(total=10),
+                headers={"User-Agent": "curl/7.68.0"}
         ) as response:
             result = ansi_re.sub("", await response.text()).translate(escape_tt)
 
