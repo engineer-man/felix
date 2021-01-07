@@ -29,7 +29,6 @@ from urllib.parse import quote_plus
 import aiohttp
 from discord.ext import commands, tasks
 from discord import Embed, DMChannel, Member
-from discord.ext.commands import Context
 
 
 class General(commands.Cog, name='General'):
@@ -714,13 +713,11 @@ class General(commands.Cog, name='General'):
         return description
 
     @commands.command(
-        usage="cheat <language> <search terms>",
         name="cheat",
         aliases=("cht.sh", "cheatsheet", "cheat-sheet", "cht"),
     )
-    @commands.cooldown(3, 10, commands.BucketType.user)
     async def cheat_sheet(
-            self, ctx: Context, language: str, *search_terms: str
+            self, ctx, language: str, *search_terms: str
     ) -> None:
         """Search cheat.sh."""
         url = f'https://cheat.sh/{quote_plus(language)}/{quote_plus(" ".join(search_terms))}'
