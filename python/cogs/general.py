@@ -24,7 +24,7 @@ import random
 import typing
 from inspect import getsourcelines
 from datetime import datetime as dt
-from urllib.parse import quote, quote_plus
+from urllib.parse import quote_plus
 
 import aiohttp
 from discord.ext import commands, tasks
@@ -195,7 +195,7 @@ class General(commands.Cog, name='General'):
         """Post a duckduckgo search link"""
         await ctx.trigger_typing()
         await ctx.send(
-            f'here you go! <https://duckduckgo.com/?q={quote(search_text)}>'
+            f'here you go! <https://duckduckgo.com/?q={quote_plus(search_text)}>'
         )
     # ------------------------------------------------------------------------
 
@@ -207,7 +207,7 @@ class General(commands.Cog, name='General'):
         """Post a stackoverflow search link"""
         await ctx.trigger_typing()
         await ctx.send(
-            f'here you go! <https://stackoverflow.com/search?q={quote(search_text)}>'
+            f'here you go! <https://stackoverflow.com/search?q={quote_plus(search_text)}>'
         )
 
     @commands.group(
@@ -476,7 +476,7 @@ class General(commands.Cog, name='General'):
         """Ask Felix a question"""
         await ctx.trigger_typing()
         url = 'https://api.wolframalpha.com/v1/result?i=' + \
-            f'{quote(question)}&appid={self.client.config["wolfram_key"]}'
+            f'{quote_plus(question)}&appid={self.client.config["wolfram_key"]}'
         async with self.client.session.get(url) as response:
             answer = await response.text()
         if 'did not understand' in answer:
@@ -491,7 +491,7 @@ class General(commands.Cog, name='General'):
     async def urbandictionary(self, ctx, *, term):
         """Ask urbandictionary
         Get the definition of a word from Urbandictionary"""
-        url = f'http://api.urbandictionary.com/v0/define?term={quote(term)}'
+        url = f'http://api.urbandictionary.com/v0/define?term={quote_plus(term)}'
         async with self.client.session.get(url) as response:
             answer = await response.json()
         if not answer['list']:
@@ -509,7 +509,7 @@ class General(commands.Cog, name='General'):
         )
         embed = Embed(
             title=f'"**{term}**" according to urbandictionary.com',
-            url=f'https://urbandictionary.com/define.php?term={quote(term)}',
+            url=f'https://urbandictionary.com/define.php?term={quote_plus(term)}',
             description=response.replace('[', '').replace(']', ''),
             color=random.randint(0, 0xFFFFFF)
         )
