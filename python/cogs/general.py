@@ -720,7 +720,9 @@ class General(commands.Cog, name='General'):
             self, ctx, language: str, *search_terms: str
     ) -> None:
         """Search cheat.sh."""
-        url = f'https://cheat.sh/{quote_plus(language)}/{quote_plus(" ".join(search_terms))}'
+        url = f'https://cheat.sh/{quote_plus(language)}'
+        if search_terms:
+            url += f'/{quote_plus(" ".join(search_terms))}'
         escape_tt = str.maketrans({"`": "\\`"})
         ansi_re = re.compile(r"\x1b\[.*?m")
 
