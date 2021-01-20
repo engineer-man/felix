@@ -20,57 +20,57 @@ class Connect4Engine:
     DRAW = 5
 
     def __init__(self, player1, player2):
-        self.player1 = player1
-        self.player2 = player2
-        self.state = [0] * 6 * 7
+        self._player1 = player1
+        self._player2 = player2
+        self._state = [0] * 6 * 7
 
     @property
-    def next_turn(self):
-        return self.player1 if self.state.count(0) % 2 == 0 else self.player2
+    def _next_up(self):
+        return self._player1 if self._state.count(0) % 2 == 0 else self._player2
 
     def print_state(self):
         for i in range(6):
-            print(self.state[i * 7:(i + 1) * 7])
+            print(self._state[i * 7:(i + 1) * 7])
 
-    def play_move(self, player, column):
+    def _play_move(self, player, column):
         # Wrong player
-        if self.next_turn != player:
-            return Connect4Engine.WRONG_PLAYER
+        if self._next_up != player:
+            return self.WRONG_PLAYER
 
         # Invalid Column
         if not 1 <= column <= 7:
-            return Connect4Engine.INVALID_MOVE
+            return self.INVALID_MOVE
 
         # Column full
-        if self.state[column - 1]:
-            return Connect4Engine.INVALID_MOVE
+        if self._state[column - 1]:
+            return self.INVALID_MOVE
 
-        return self.apply_move(player, column)
+        return self._apply_move(player, column)
 
-    def apply_move(self, player, column):
-        next_empty = self.find_next_empty(column)
-        self.state[next_empty] = 1 if player == self.player1 else 2
-        winning_move = self.check_4_in_a_row(next_empty)
+    def _apply_move(self, player, column):
+        next_empty = self._find_next_empty(column)
+        self._state[next_empty] = 1 if player == self._player1 else 2
+        winning_move = self._check_4_in_a_row(next_empty)
         # self.print_state()
         if winning_move:
-            if player == self.player1:
-                return Connect4Engine.PLAYER1_WINNER
+            if player == self._player1:
+                return self.PLAYER1_WINNER
             else:
-                return Connect4Engine.PLAYER2_WINNER
+                return self.PLAYER2_WINNER
         else:
-            if self.state.count(0) == 0:
-                return Connect4Engine.DRAW
+            if self._state.count(0) == 0:
+                return self.DRAW
             else:
-                return Connect4Engine.MOVE_ACCEPTED
+                return self.MOVE_ACCEPTED
 
-    def check_4_in_a_row(self, last_added):
-        target_value = self.state[last_added]
+    def _check_4_in_a_row(self, last_added):
+        target_value = self._state[last_added]
         for direction in [1, 6, 7, 8]:
             in_a_row = 1
 
             current = last_added + direction
             while 0 <= current <= 41:
-                if self.state[current] != target_value:
+                if self._state[current] != target_value:
                     break
                 in_a_row += 1
                 current += direction
@@ -78,7 +78,7 @@ class Connect4Engine:
             direction *= -1
             current = last_added + direction
             while 0 <= current <= 41:
-                if self.state[current] != target_value:
+                if self._state[current] != target_value:
                     break
                 in_a_row += 1
                 current += direction
@@ -88,25 +88,18 @@ class Connect4Engine:
 
         return False
 
-    def find_next_empty(self, column):
+    def _find_next_empty(self, column):
         current = column - 1
         while True:
             if current + 7 > 41:
                 break
-            if self.state[current + 7]:
+            if self._state[current + 7]:
                 break
             current += 7
         return current
 
 
-class Connect4Game():
-    MOVE_ACCEPTED = 0
-    PLAYER1_WINNER = 1
-    PLAYER2_WINNER = 2
-    INVALID_MOVE = 3
-    WRONG_PLAYER = 4
-    DRAW = 5
-
+class Connect4Game(Connect4Engine):
     def __init__(self, player1: Member, player2: Member, p1_token: str, p2_token: str):
         self.player1 = player1
         self.player2 = player2
@@ -115,18 +108,20 @@ class Connect4Game():
         if p2_token not in TOKENS:
             raise TypeError('Unknown Player token received: {p2_token}')
         self.tokens = (BACKGROUND, p1_token, p2_token)
-        self.engine = Connect4Engine(player1.id, player2.id)
-
-    @property
-    def next_turn(self):
-        return self.engine.next_turn
+        super().__init__(player1.id, player2.id)
 
     def play_move(self, player, column):
-        return self.engine.play_move(player.id, column)
+        return self._play_move(player.id, column)
+
+    @property
+    def next_up(self):
+        return self.player1 if self._next_up == self.player1.id else self.player2
+
+    @property
+    def state(self):
+        return self._state
 
     def get_embed(self, custom_footer=False):
-        next_up = self.player1 if self.next_turn == self.player1.id else self.player2
-
         title = (
             f'Connect 4: {self.player1.display_name} ({self.tokens[1]}) '
             f'VS {self.player2.display_name} ({self.tokens[2]})'
@@ -134,7 +129,7 @@ class Connect4Game():
         content = ''
 
         for line in range(6):
-            line_state = self.engine.state[line*7:(line+1)*7]
+            line_state = self.state[line*7:(line+1)*7]
             content += ''.join(self.tokens[x] for x in line_state) + '\n'
 
         content += ''.join(COLUMN_EMOJI)
@@ -147,8 +142,8 @@ class Connect4Game():
         if custom_footer:
             e.set_footer(text=custom_footer)
         else:
-            color = self.tokens[1] if next_up == self.player1 else self.tokens[2]
-            e.set_footer(text=f'Next Up: {next_up.display_name} ({color})')
+            color = self.tokens[1] if self.next_up == self.player1 else self.tokens[2]
+            e.set_footer(text=f'Next Up: {self.next_up.display_name} ({color})')
 
         return e
 
@@ -253,8 +248,7 @@ class Connect4(commands.Cog, name='Connect4'):
 
         elif reaction.message.id in self.active_games:
             game, message = self.active_games[reaction.message.id]
-            next_up = game.next_turn
-            if next_up != user.id or reaction.emoji not in (*COLUMN_EMOJI, CANCEL_EMOJI):
+            if game.next_up != user or reaction.emoji not in (*COLUMN_EMOJI, CANCEL_EMOJI):
                 await message.remove_reaction(reaction.emoji, user)
                 return
 
