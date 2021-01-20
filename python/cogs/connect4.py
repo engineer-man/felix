@@ -8,15 +8,7 @@ from discord import Member, Embed, Message
 COLUMN_EMOJI = ('1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣')
 CANCEL_EMOJI = '🚪'
 BACKGROUND = '⚫'
-TOKEN = {
-    '🟡': 'yellow',
-    '🔴': 'red',
-    '🟠': 'orange',
-    '🟣': 'purple',
-    '🟤': 'brown',
-    '🔵': 'blue',
-    '⚪': 'white'
-}
+TOKENS = ('🟡','🔴','🟠','🟣','🟤','🔵','⚪')
 
 
 class Connect4Engine:
@@ -115,17 +107,16 @@ class Connect4Game():
     WRONG_PLAYER = 4
     DRAW = 5
 
-    def __init__(self, player1: Member, player2: Member, p1_color: str, p2_color: str):
+    def __init__(self, player1: Member, player2: Member, p1_token: str, p2_token: str):
         self.player1 = player1
         self.player2 = player2
-        if p1_color not in TOKEN.values():
-            raise TypeError('Unknown Player color received: {p1_color}')
-        if p2_color not in TOKEN.values():
-            raise TypeError('Unknown Player color received: {p2_color}')
-        self.p1_color = p1_color
-        self.p2_color = p2_color
-        REV_TOKEN = {v: k for k, v in TOKEN.items()}
-        self.token = (BACKGROUND, REV_TOKEN[p1_color], REV_TOKEN[p2_color])
+        if p1_token not in TOKENS:
+            raise TypeError('Unknown Player token received: {p1_token}')
+        if p2_token not in TOKENS:
+            raise TypeError('Unknown Player token received: {p2_token}')
+        self.p1_token = p1_token
+        self.p2_token = p2_token
+        self.token = (BACKGROUND, p1_token, p2_token)
         self.engine = Connect4Engine(player1.id, player2.id)
 
     @property
@@ -156,7 +147,7 @@ class Connect4Game():
         if custom_footer:
             e.set_footer(text=custom_footer)
         else:
-            color = self.p1_color if next_up == self.player1 else self.p2_color
+            color = self.token[1] if next_up == self.player1 else self.token[2]
             e.set_footer(text=f'Next Up: {next_up.display_name} ({color})')
 
         return e
@@ -174,15 +165,14 @@ class Connect4(commands.Cog, name='Connect4'):
             f'{ctx.author.display_name} wants to start a game of Connect 4\n'
             f'Waiting for {ctx.author.display_name} to pick a color!'
         )
-        for emoji in TOKEN.keys():
+        for emoji in TOKENS:
             await message.add_reaction(emoji)
         await message.add_reaction(CANCEL_EMOJI)
         self.waiting_games[message.id] = (message, ctx.author, None)
 
-    async def p1_color_pick(self, message, token):
-        message, player1, p1_color = self.waiting_games[message.id]
-        p1_color = TOKEN[token]
-        self.waiting_games[message.id] = (message, player1, p1_color)
+    async def p1_token_pick(self, message, token):
+        message, player1, _ = self.waiting_games[message.id]
+        self.waiting_games[message.id] = (message, player1, token)
         await message.clear_reaction(token)
         content = message.content.split('\n')[0]
         await message.edit(
@@ -241,22 +231,22 @@ class Connect4(commands.Cog, name='Connect4'):
         if user.id == self.client.user.id:
             return
         if reaction.message.id in self.waiting_games:
-            message, player1, p1_color = self.waiting_games[reaction.message.id]
+            message, player1, p1_token = self.waiting_games[reaction.message.id]
 
             if user.id == player1.id:
                 if reaction.emoji == CANCEL_EMOJI:
                     await self.cancel_invite(message)
                     return
-                if reaction.emoji in TOKEN.keys():
-                    if p1_color is None:
-                        await self.p1_color_pick(message, reaction.emoji)
+                if reaction.emoji in TOKENS:
+                    if p1_token is None:
+                        await self.p1_token_pick(message, reaction.emoji)
 
-            elif p1_color:
-                if reaction.emoji in TOKEN.keys():
+            elif p1_token:
+                if reaction.emoji in TOKENS:
                     player2 = user
-                    p2_color = TOKEN[reaction.emoji]
+                    p2_token = reaction.emoji
                     del self.waiting_games[reaction.message.id]
-                    await self.start_game(player1, player2, p1_color, p2_color, message)
+                    await self.start_game(player1, player2, p1_token, p2_token, message)
                     return
 
             await message.remove_reaction(reaction.emoji, user)
