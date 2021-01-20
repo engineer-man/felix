@@ -9,6 +9,8 @@ COLUMN_EMOJI = ('1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣'
 CANCEL_EMOJI = '🚪'
 BACKGROUND = '⚫'
 TOKENS = ('🟡', '🔴', '🟠', '🟣', '🟤', '🔵', '⚪')
+LAST_COLUMN_INDICATOR = '⬇️'
+FILLER = '➖' # ⬛
 
 
 class Connect4Engine:
@@ -112,9 +114,11 @@ class Connect4Game(Connect4Engine):
         if p2_token not in TOKENS:
             raise TypeError('Unknown Player token received: {p2_token}')
         self.tokens = (BACKGROUND, p1_token, p2_token)
+        self.last_column = None
         super().__init__(player1.id, player2.id)
 
     def play_move(self, player, column):
+        self.last_column = column
         return self._play_move(player.id, column)
 
     @property
@@ -130,7 +134,8 @@ class Connect4Game(Connect4Engine):
             f'Connect 4: {self.player1.display_name} ({self.tokens[1]}) '
             f'VS {self.player2.display_name} ({self.tokens[2]})'
         )
-        content = ''
+        c = self.last_column
+        content = (FILLER*(c-1) + LAST_COLUMN_INDICATOR + (FILLER*(7-c)) + '\n') if c else ''
 
         for line in range(6):
             line_state = self.state[line*7:(line+1)*7]
