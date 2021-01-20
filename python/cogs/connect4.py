@@ -11,6 +11,8 @@ TOKEN = {
     1: '🔴',
     2: '⚪',
 }
+JOIN_EMOJI = '🆗'
+CANCEL_EMOJI = '🚪'
 P1_COLOR = 'red'
 P2_COLOR = 'white'
 
@@ -158,6 +160,7 @@ class Connect4(commands.Cog, name='Connect4'):
         await message.edit(content='Loading ....')
         for emoji in COLUMN_EMOJI:
             await message.add_reaction(emoji)
+        await message.add_reaction(CANCEL_EMOJI)
         game = Connect4Game(player1, player2)
         self.active_games[message.id] = (game, message)
         await message.edit(content=None, embed=game.get_embed())
@@ -174,18 +177,30 @@ class Connect4(commands.Cog, name='Connect4'):
         await message.edit(embed=game.get_embed(custom_footer=footer))
         del self.active_games[message.id]
 
+    async def cancel_invite(self, message):
+        await message.delete()
+        del self.waiting_games[message.id]
+
+    async def cancel_game(self, game, message, user):
+        await message.clear_reactions()
+        footer = f'The game has been cancelled by {user.display_name}'
+        await message.edit(embed=game.get_embed(custom_footer=footer))
+        del self.active_games[message.id]
+
     @commands.command(
         name='connect4',
         aliases=['c4'],
     )
     async def connect4(self, ctx):
         """Start a game of Connect 4"""
-        msg = await ctx.send(
+        await ctx.message.delete()
+        message = await ctx.send(
             f'{ctx.author.display_name} wants to start a game of Connect 4\n'
-            'react with 🆗 to join!'
+            f'react with {JOIN_EMOJI} to join!'
             )
-        await msg.add_reaction('🆗')
-        self.waiting_games[msg.id] = (msg, ctx.author)
+        await message.add_reaction(JOIN_EMOJI)
+        await message.add_reaction(CANCEL_EMOJI)
+        self.waiting_games[message.id] = (message, ctx.author)
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
@@ -193,7 +208,12 @@ class Connect4(commands.Cog, name='Connect4'):
             return
         if reaction.message.id in self.waiting_games:
             message, player1 = self.waiting_games[reaction.message.id]
-            if reaction.emoji != '🆗' or user.id == player1.id:
+
+            if user.id == player1.id and reaction.emoji == CANCEL_EMOJI:
+                await self.cancel_invite(message)
+                return
+
+            if reaction.emoji != JOIN_EMOJI or user.id == player1.id:
                 await message.remove_reaction(reaction.emoji, user)
                 return
 
@@ -205,8 +225,12 @@ class Connect4(commands.Cog, name='Connect4'):
         elif reaction.message.id in self.active_games:
             game, message = self.active_games[reaction.message.id]
             next_up = game.next_turn
-            if next_up != user.id:
+            if next_up != user.id or reaction.emoji not in (*COLUMN_EMOJI, CANCEL_EMOJI):
                 await message.remove_reaction(reaction.emoji, user)
+                return
+
+            if reaction.emoji == CANCEL_EMOJI:
+                await self.cancel_game(game, message, user)
                 return
 
             result = game.play_move(user, COLUMN_EMOJI.index(reaction.emoji) + 1)
