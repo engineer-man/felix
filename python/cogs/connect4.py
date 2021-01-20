@@ -65,28 +65,32 @@ class Connect4Engine:
 
     def _check_4_in_a_row(self, last_added):
         target_value = self._state[last_added]
-        for direction in [1, 6, 7, 8]:
-            in_a_row = 1
 
-            current = last_added + direction
-            while 0 <= current <= 41:
-                if self._state[current] != target_value:
-                    break
-                in_a_row += 1
+        space_right = 6-last_added % 7
+        space_left = last_added % 7
+        space_down = 5 - last_added // 7
+        space_up = last_added // 7
+        directions = {
+            1: space_right,
+            -1: space_left,
+            7: space_down,
+            -7: space_up,
+            6: min(space_down, space_left),
+            -6: min(space_up, space_right),
+            8: min(space_down, space_right),
+            -8: min(space_up, space_left),
+        }
+
+        in_a_row = dict()
+        for direction, distance in directions.items():
+            distance = min(distance, 3)
+            current = last_added
+            while distance > 0:
                 current += direction
-
-            direction *= -1
-            current = last_added + direction
-            while 0 <= current <= 41:
-                if self._state[current] != target_value:
-                    break
-                in_a_row += 1
-                current += direction
-
-            if in_a_row >= 4:
-                return True
-
-        return False
+                if self._state[current] == target_value:
+                    in_a_row[abs(direction)] = in_a_row.get(abs(direction), 1) + 1
+                distance -= 1
+        return any(x >= 4 for x in in_a_row.values())
 
     def _find_next_empty(self, column):
         current = column - 1
