@@ -8,7 +8,7 @@ from discord import Member, Embed, Message
 COLUMN_EMOJI = ('1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣')
 CANCEL_EMOJI = '🚪'
 BACKGROUND = '⚫'
-TOKENS = ('🟡','🔴','🟠','🟣','🟤','🔵','⚪')
+TOKENS = ('🟡', '🔴', '🟠', '🟣', '🟤', '🔵', '⚪')
 
 
 class Connect4Engine:
@@ -114,9 +114,7 @@ class Connect4Game():
             raise TypeError('Unknown Player token received: {p1_token}')
         if p2_token not in TOKENS:
             raise TypeError('Unknown Player token received: {p2_token}')
-        self.p1_token = p1_token
-        self.p2_token = p2_token
-        self.token = (BACKGROUND, p1_token, p2_token)
+        self.tokens = (BACKGROUND, p1_token, p2_token)
         self.engine = Connect4Engine(player1.id, player2.id)
 
     @property
@@ -129,13 +127,15 @@ class Connect4Game():
     def get_embed(self, custom_footer=False):
         next_up = self.player1 if self.next_turn == self.player1.id else self.player2
 
-        title = f'Connect 4: {self.player1.display_name} ({self.token[1]}) VS {self.player2.display_name} ({self.token[2]})'
-        # content = ''.join(COLUMN_EMOJI) + '\n'
+        title = (
+            f'Connect 4: {self.player1.display_name} ({self.tokens[1]}) '
+            f'VS {self.player2.display_name} ({self.tokens[2]})'
+        )
         content = ''
 
         for line in range(6):
             line_state = self.engine.state[line*7:(line+1)*7]
-            content += ''.join(self.token[x] for x in line_state) + '\n'
+            content += ''.join(self.tokens[x] for x in line_state) + '\n'
 
         content += ''.join(COLUMN_EMOJI)
 
@@ -147,7 +147,7 @@ class Connect4Game():
         if custom_footer:
             e.set_footer(text=custom_footer)
         else:
-            color = self.token[1] if next_up == self.player1 else self.token[2]
+            color = self.tokens[1] if next_up == self.player1 else self.tokens[2]
             e.set_footer(text=f'Next Up: {next_up.display_name} ({color})')
 
         return e
