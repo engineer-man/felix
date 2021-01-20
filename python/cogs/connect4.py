@@ -138,12 +138,15 @@ class Connect4Game():
     def get_embed(self, custom_footer=False):
         next_up = self.player1 if self.next_turn == self.player1.id else self.player2
 
-        title = f'Connect 4: {self.player1.display_name} ({self.p1_color}) VS {self.player2.display_name} ({self.p2_color})'
-        content = ''.join(COLUMN_EMOJI) + '\n'
+        title = f'Connect 4: {self.player1.display_name} ({self.token[1]}) VS {self.player2.display_name} ({self.token[2]})'
+        # content = ''.join(COLUMN_EMOJI) + '\n'
+        content = ''
 
         for line in range(6):
             line_state = self.engine.state[line*7:(line+1)*7]
             content += ''.join(self.token[x] for x in line_state) + '\n'
+
+        content += ''.join(COLUMN_EMOJI)
 
         e = Embed(
             title=title,
@@ -275,7 +278,7 @@ class Connect4(commands.Cog, name='Connect4'):
             elif result == 0:
                 await message.edit(embed=game.get_embed())
 
-        await message.remove_reaction(reaction.emoji, user)
+        await reaction.message.remove_reaction(reaction.emoji, user)
 
 
 def setup(client):
