@@ -160,10 +160,10 @@ class Connect4(commands.Cog, name='Connect4'):
             f'{ctx.author.display_name} wants to start a game of Connect 4\n'
             f'Waiting for {ctx.author.display_name} to pick a color!'
         )
+        self.waiting_games[message.id] = (message, ctx.author, None)
         for emoji in TOKENS:
             await message.add_reaction(emoji)
         await message.add_reaction(CANCEL_EMOJI)
-        self.waiting_games[message.id] = (message, ctx.author, None)
 
     async def p1_token_pick(self, message, token):
         message, player1, _ = self.waiting_games[message.id]
@@ -262,7 +262,7 @@ class Connect4(commands.Cog, name='Connect4'):
             elif result == 0:
                 await message.edit(embed=game.get_embed())
 
-        await reaction.message.remove_reaction(reaction.emoji, user)
+            await message.remove_reaction(reaction.emoji, user)
 
 
 def setup(client):
