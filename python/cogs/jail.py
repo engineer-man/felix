@@ -15,17 +15,16 @@ Commands:
 Only users that have an admin role can use the commands.
 """
 
-import asyncio
 import json
 import time
 from collections import deque
 from dataclasses import dataclass, field
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord import Member, DMChannel, Embed, NotFound
+#pylint: disable=E1101
 
 
 # SETTINGS:
-# TODO: Ideally these settings sould also come from the config.json file
 # TODO: Implement the clear_naughy list task using the new task api
 # TODO: Use a deque instead of a list to keep track of user messages
 # Users will receive a warning if they send more than
@@ -70,7 +69,7 @@ class Jail(commands.Cog, name='Jail'):
         self.already_reported = False
         # Task that will remove users from the naughty list if they behaved for
         # 15 minutes - will also clear self.history to not let it get too big
-        self.my_task = self.client.loop.create_task(self.clear_naughty_list())
+        self.clear_naughty_list.start()
         self.acceptance_pending = dict()
 
     async def cog_check(self, ctx):
@@ -203,9 +202,9 @@ class Jail(commands.Cog, name='Jail'):
                     # Warn the user and add him to the naughty list
                     # If he is not on the naughty list yet
                     await msg.channel.send(
-                        f'Hey {member.mention}, you are sending too many ' +
-                        'messages. This is a warning! If you keep ' +
-                        'this up you will be jailed.'
+                        f'Hey {member.mention}, you are sending too many '
+                        + 'messages. This is a warning! If you keep '
+                        + 'this up you will be jailed.'
                     )
                     self.naughty[uid] = now
                     # "Reset" his history so he doesn't get jailed immediately
@@ -267,11 +266,10 @@ class Jail(commands.Cog, name='Jail'):
         if not pending.users:
             del self.acceptance_pending[msg.id]
 
-
-
     # ----------------------------------------------
     # Cog Commands
     # ----------------------------------------------
+
     @commands.group(
         invoke_without_command=True,
         name='flood',
@@ -377,29 +375,22 @@ class Jail(commands.Cog, name='Jail'):
         if results:
             await ctx.send('```\n'+'\n'.join(results)+'```')
 
-
-
     # ----------------------------------------------
     # Cog Tasks
     # ----------------------------------------------
+
+    @tasks.loop(seconds=SPAM_NAUGHTY_CHECK_INTERVAL)
     async def clear_naughty_list(self):
-        await self.client.wait_until_ready()
-        await asyncio.sleep(5)
-        try:
-            while not self.client.is_closed():
-                now = time.time()
-                newdict = {}
-                for k, v in self.naughty.items():
-                    if now - v < SPAM_NAUGHTY_DURATION:
-                        newdict[k] = v
-                self.naughty = newdict
-                self.history = {}
-                await asyncio.sleep(SPAM_NAUGHTY_CHECK_INTERVAL)
-        except asyncio.CancelledError:
-            pass
+        now = time.time()
+        newdict = {}
+        for k, v in self.naughty.items():
+            if now - v < SPAM_NAUGHTY_DURATION:
+                newdict[k] = v
+        self.naughty = newdict
+        self.history = {}
 
     def cog_unload(self):
-        self.my_task.cancel()
+        self.clear_naughty_list.cancel()
 
 
 def setup(client):
