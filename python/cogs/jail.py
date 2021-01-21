@@ -25,8 +25,6 @@ from discord import Member, DMChannel, Embed, NotFound
 
 
 # SETTINGS:
-# TODO: Implement the clear_naughy list task using the new task api
-# TODO: Use a deque instead of a list to keep track of user messages
 # Users will receive a warning if they send more than
 SPAM_NUM_MSG = 7  # Messages
 # Within
@@ -182,13 +180,13 @@ class Jail(commands.Cog, name='Jail'):
             return
         now = time.time()
         uid = str(member.id)
-        user_history = self.history.get(uid, [])
+        user_history = self.history.get(uid, deque())
         # Add timestamp of current message to list of known timestamps of user
         user_history.append(now)
         if len(user_history) == SPAM_NUM_MSG:
             # When we know enough message timestamps (SPAM_NUM_MSG)
             # Pop the oldest message
-            oldest = user_history.pop(0)
+            oldest = user_history.popleft()
             if now - oldest < SPAM_TIME:
                 # If the oldest message was sent less than SPAM_TIME seconds ago
                 if uid in self.naughty:
