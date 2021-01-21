@@ -24,6 +24,7 @@ class Felix(Bot):
     def __init__(self, *args, **options):
         super().__init__(*args, **options)
         self.session = None
+        self.flood_mode = False
         with open('../config.json') as conffile:
             self.config = json.load(conffile)
         self.last_errors = []

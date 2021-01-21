@@ -52,6 +52,9 @@ class Management(commands.Cog, name='Management'):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        if self.client.flood_mode:
+            return
+
         await self.client.main_guild.system_channel.send(
             f'Welcome to the Engineer Man Discord Server, {member.mention}\n'
             'I\'m Felix, the server smart assistant. You can learn more about '
