@@ -192,8 +192,8 @@ class Connect4(commands.Cog, name='Connect4'):
         message: Message
     ):
         await message.clear_reactions()
-        await player1.send(
-            f'{player2.display_name} has joined your connect4 game. {message.jump_url}'
+        notification = await message.channel.send(
+            f'Hey {player1.mention} - {player2.display_name} has joined your game!'
         )
         await message.edit(content='Loading ....')
         for emoji in COLUMN_EMOJI:
@@ -202,6 +202,7 @@ class Connect4(commands.Cog, name='Connect4'):
         game = Connect4Game(player1, player2, p1_color, p2_color)
         self.active_games[message.id] = (game, message)
         await message.edit(content=None, embed=game.get_embed())
+        await notification.delete()
 
     async def finish_game(self, game, message, result):
         await message.clear_reactions()
