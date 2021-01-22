@@ -10,7 +10,7 @@ CANCEL_EMOJI = '🚪'
 BACKGROUND = '⚫'
 TOKENS = ('🟡', '🔴', '🟠', '🟣', '🟤', '🔵', '⚪')
 LAST_COLUMN_INDICATOR = '⬇️'
-FILLER = '➖' # ⬛
+FILLER = '➖'  # ⬛
 
 
 class Connect4Engine:
@@ -192,6 +192,9 @@ class Connect4(commands.Cog, name='Connect4'):
         message: Message
     ):
         await message.clear_reactions()
+        await player1.send(
+            f'{player2.display_name} has joined your connect4 game. {message.jump_url}'
+        )
         await message.edit(content='Loading ....')
         for emoji in COLUMN_EMOJI:
             await message.add_reaction(emoji)
