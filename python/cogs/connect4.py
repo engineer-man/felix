@@ -133,7 +133,7 @@ class Connect4Game(Connect4Engine):
 
         for line in range(6):
             line_state = self.state[line*7:(line+1)*7]
-            content += ''.join(self.tokens[x] for x in line_state) + '\n'
+            content += ''.join(str(self.tokens[x]) for x in line_state) + '\n'
 
         content += ''.join(COLUMN_EMOJI)
 
@@ -145,8 +145,8 @@ class Connect4Game(Connect4Engine):
         if custom_footer:
             e.set_footer(text=custom_footer)
         else:
-            color = self.tokens[1] if self.next_up == self.player1 else self.tokens[2]
-            e.set_footer(text=f'Next Up: {self.next_up.display_name} ({color})')
+            token = self.tokens[1] if self.next_up == self.player1 else self.tokens[2]
+            e.set_footer(text=f'Next Up: {self.next_up.display_name} ({token})')
 
         return e
 
@@ -174,15 +174,15 @@ class Connect4(commands.Cog, name='Connect4'):
         await message.clear_reaction(token)
         content = message.content.split('\n')[0]
         await message.edit(
-            content=content + f' - They have chosen {token}\nPick a token color to join'
+            content=content + f' - They have chosen {token}\nPick a color to join'
         )
 
     async def start_game(
         self,
         player1: Member,
         player2: Member,
-        p1_color: str,
-        p2_color: str,
+        p1_token: str,
+        p2_token: str,
         message: Message
     ):
         await message.clear_reactions()
@@ -193,7 +193,7 @@ class Connect4(commands.Cog, name='Connect4'):
         for emoji in COLUMN_EMOJI:
             await message.add_reaction(emoji)
         await message.add_reaction(CANCEL_EMOJI)
-        game = Connect4Game(player1, player2, p1_color, p2_color)
+        game = Connect4Game(player1, player2, p1_token, p2_token)
         self.active_games[message.id] = (game, message)
         await message.edit(content=None, embed=game.get_embed())
         await notification.delete()
@@ -236,15 +236,17 @@ class Connect4(commands.Cog, name='Connect4'):
             message, player1, p1_token = self.waiting_games[reaction.message.id]
 
             if user.id == player1.id:
-                if reaction.emoji == CANCEL_EMOJI:
+                emoji = reaction.emoji
+                if emoji == CANCEL_EMOJI:
                     await self.cancel_invite(message)
                     return
-                if reaction.emoji not in BOARD_EMOJI:
+                if emoji not in BOARD_EMOJI and isinstance(emoji, str):
                     if p1_token is None:
-                        await self.p1_token_pick(message, reaction.emoji)
+                        await self.p1_token_pick(message, emoji)
 
             elif p1_token:
-                if reaction.emoji not in BOARD_EMOJI:
+                emoji = reaction.emoji
+                if emoji not in BOARD_EMOJI and emoji != p1_token and isinstance(emoji, str):
                     player2 = user
                     p2_token = reaction.emoji
                     del self.waiting_games[reaction.message.id]
