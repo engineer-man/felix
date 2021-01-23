@@ -408,7 +408,6 @@ class Jail(commands.Cog, name='Jail'):
 
     @tasks.loop(seconds=SPAM_NAUGHTY_CHECK_INTERVAL)
     async def clear_naughty_list(self):
-        print('running task')
         now = time.time()
         newdict = {}
         for k, v in self.naughty.items():

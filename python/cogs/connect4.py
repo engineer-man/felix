@@ -30,10 +30,6 @@ class Connect4Engine:
     def _next_up(self):
         return self._player1 if self._state.count(0) % 2 == 0 else self._player2
 
-    def print_state(self):
-        for i in range(6):
-            print(self._state[i * 7:(i + 1) * 7])
-
     def _play_move(self, player, column):
         # Wrong player
         if self._next_up != player:
@@ -53,7 +49,6 @@ class Connect4Engine:
         next_empty = self._find_next_empty(column)
         self._state[next_empty] = 1 if player == self._player1 else 2
         winning_move = self._check_4_in_a_row(next_empty)
-        # self.print_state()
         if winning_move:
             if player == self._player1:
                 return self.PLAYER1_WINNER
@@ -91,7 +86,9 @@ class Connect4Engine:
                 current += direction
                 if self._state[current] == target_value:
                     in_a_row[abs(direction)] = in_a_row.get(abs(direction), 1) + 1
-                distance -= 1
+                    distance -= 1
+                else:
+                    break
         return any(x >= 4 for x in in_a_row.values())
 
     def _find_next_empty(self, column):
