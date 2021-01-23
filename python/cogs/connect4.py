@@ -11,6 +11,7 @@ BACKGROUND = '⚫'
 TOKENS = ('🟡', '🔴', '🟠', '🟣', '🟤', '🔵', '⚪')
 LAST_COLUMN_INDICATOR = '⬇️'
 FILLER = '➖'  # ⬛
+BOARD_EMOJI = COLUMN_EMOJI + CANCEL_EMOJI + BACKGROUND + LAST_COLUMN_INDICATOR + FILLER
 
 
 class Connect4Engine:
@@ -106,10 +107,6 @@ class Connect4Game(Connect4Engine):
     def __init__(self, player1: Member, player2: Member, p1_token: str, p2_token: str):
         self.player1 = player1
         self.player2 = player2
-        if p1_token not in TOKENS:
-            raise TypeError('Unknown Player token received: {p1_token}')
-        if p2_token not in TOKENS:
-            raise TypeError('Unknown Player token received: {p2_token}')
         self.tokens = (BACKGROUND, p1_token, p2_token)
         self.last_column = None
         super().__init__(player1.id, player2.id)
@@ -242,12 +239,12 @@ class Connect4(commands.Cog, name='Connect4'):
                 if reaction.emoji == CANCEL_EMOJI:
                     await self.cancel_invite(message)
                     return
-                if reaction.emoji in TOKENS:
+                if reaction.emoji not in BOARD_EMOJI:
                     if p1_token is None:
                         await self.p1_token_pick(message, reaction.emoji)
 
             elif p1_token:
-                if reaction.emoji in TOKENS:
+                if reaction.emoji not in BOARD_EMOJI:
                     player2 = user
                     p2_token = reaction.emoji
                     del self.waiting_games[reaction.message.id]
