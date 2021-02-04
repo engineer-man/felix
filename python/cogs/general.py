@@ -557,16 +557,17 @@ class General(commands.Cog, name='General'):
 
         if not to_send:
             response = 'Sorry, no videos found for: ' + term
-        elif len(to_send) == 1:
-            response = 'I found a good video: https://www.youtube.com/watch?v='\
-                + to_send[0]['id']
+            await ctx.send(response)
         else:
             to_send = to_send[:5]
-            response = ['I found several videos:'] +\
-                ['https://www.youtube.com/watch?v=' + v['id'] for v in to_send]
-            response = '\n'.join(response)
+            description = [f'[{v["title"]}](https://www.youtube.com/watch?v={v["id"]})' for v in to_send]
+            description = '\n'.join(description)
+            e = Embed(
+                title='Search Results',
+                description = description
+            )
+            await ctx.send(embed=e)
 
-        await ctx.send(response)
     # ------------------------------------------------------------------------
 
     @commands.command(
