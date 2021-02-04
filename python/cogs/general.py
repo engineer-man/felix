@@ -553,18 +553,20 @@ class General(commands.Cog, name='General'):
 
             page_token = videos['nextPageToken']
 
-        to_send = [v for v in video_list if term.lower() in v['title'].lower()]
+        to_send = [v for v in video_list if all(
+            keyword in v['title'].lower() for keyword in term.lower().split())]
 
         if not to_send:
             response = 'Sorry, no videos found for: ' + term
             await ctx.send(response)
         else:
             to_send = to_send[:5]
-            description = [f'[{v["title"]}](https://www.youtube.com/watch?v={v["id"]})' for v in to_send]
+            description = [
+                f'[{v["title"]}](https://www.youtube.com/watch?v={v["id"]})' for v in to_send]
             description = '\n'.join(description)
             e = Embed(
                 title='Search Results',
-                description = description
+                description=description
             )
             await ctx.send(embed=e)
 
