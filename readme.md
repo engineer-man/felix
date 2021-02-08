@@ -27,23 +27,6 @@ Using Docker
 ```
 docker-compose up
 ```
-Using Pipenv
-```py
-# Install pipenv
-pip install pipenv
-
-# This will install the development and project dependencies.
-pipenv sync --dev
-
-# This will install the pre-commit hooks.
-pipenv run precommit
-
-# Optionally: run pre-commit hooks to initialize them.
-pipenv run lint
-
-# Run the bot
-pipenv run start
-```
 
 ### Creating your own python bot extension (cog)
 This bot uses the `discord.py API wrapper` (https://discordpy.readthedocs.io/en/latest/)
