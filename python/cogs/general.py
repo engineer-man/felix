@@ -24,16 +24,18 @@ import random
 import typing
 from inspect import getsourcelines
 from datetime import datetime as dt
-from urllib.parse import quote
+from urllib.parse import quote_plus
+
 from discord.ext import commands, tasks
 from discord import Embed, DMChannel, Member
+
+#pylint: disable=E1101
 
 
 class General(commands.Cog, name='General'):
     def __init__(self, client):
         self.client = client
         self.load_http_codes.start()
-
 
     @tasks.loop(count=1)
     async def load_http_codes(self):
@@ -46,7 +48,6 @@ class General(commands.Cog, name='General'):
         async with self.client.session.get('https://httpstatusdogs.com/') as response:
             text = await response.text()
             http_codes_dog = re.findall(r'<a href=\"(\d{3})-[^\"]*\"', text)
-            #http_codes.append(0)  # No Easter egg code :(
             self.http_codes_dog = [int(x) for x in http_codes_dog]
 
     # ----------------------------------------------
@@ -61,12 +62,12 @@ class General(commands.Cog, name='General'):
 
     async def gif_url(self, terms):
         url = (
-            f'http://api.giphy.com/v1/gifs/search' +
-            f'?api_key={self.client.config["giphy_key"]}' +
-            f'&q={terms}' +
-            f'&limit=20' +
-            f'&rating=R' +
-            f'&lang=en'
+            f'http://api.giphy.com/v1/gifs/search'
+            + f'?api_key={self.client.config["giphy_key"]}'
+            + f'&q={terms}'
+            + f'&limit=20'
+            + f'&rating=R'
+            + f'&lang=en'
         )
         async with self.client.session.get(url) as response:
             gifs = await response.json()
@@ -100,8 +101,8 @@ class General(commands.Cog, name='General'):
             await msg.channel.send('` - directed by M. Night Shyamalan.`')
 
         if re.search(
-            r'(?i)(?:the|this) (?:current )?year is ' +
-            r'(?:almost |basically )?(?:over|done|finished)',
+            r'(?i)(?:the|this) (?:current )?year is '
+            + r'(?:almost |basically )?(?:over|done|finished)',
             msg.content
         ):
             await msg.channel.send(self.get_year_string())
@@ -192,7 +193,7 @@ class General(commands.Cog, name='General'):
         """Post a duckduckgo search link"""
         await ctx.trigger_typing()
         await ctx.send(
-            f'here you go! <https://duckduckgo.com/?q={quote(search_text)}>'
+            f'here you go! <https://duckduckgo.com/?q={quote_plus(search_text)}>'
         )
     # ------------------------------------------------------------------------
 
@@ -204,7 +205,7 @@ class General(commands.Cog, name='General'):
         """Post a stackoverflow search link"""
         await ctx.trigger_typing()
         await ctx.send(
-            f'here you go! <https://stackoverflow.com/search?q={quote(search_text)}>'
+            f'here you go! <https://stackoverflow.com/search?q={quote_plus(search_text)}>'
         )
 
     @commands.group(
@@ -337,20 +338,20 @@ class General(commands.Cog, name='General'):
     async def links(self, ctx):
         """Show links to all things EngineerMan"""
         links = (
-            '• Youtube: <https://www.youtube.com/engineerman>' +
-            '\n• Discord: <https://engineerman.org/discord>' +
-            '\n• EMKC: <https://emkc.org/>' +
-            '\n• EMKC Snippets: <https://emkc.org/snippets>' +
-            '\n• EMKC Challenges: <https://emkc.org/challenges>' +
-            '\n• Github Youtube: <https://github.com/engineer-man/youtube-code>' +
-            '\n• Github EMKC: <https://github.com/engineer-man/emkc>' +
-            '\n• Github Felix: <https://github.com/engineer-man/felix>' +
-            '\n• Github Piston: <https://github.com/engineer-man/piston>' +
-            '\n• Github Piston-Bot: <https://github.com/engineer-man/piston-bot>' +
-            '\n• Twitter: <https://twitter.com/_EngineerMan>' +
-            '\n• Facebook: <https://www.facebook.com/engineermanyt>' +
-            '\n• Reddit: <https://www.reddit.com/r/engineerman/>' +
-            '\n• Reddit Resources: <https://www.reddit.com/r/engineerman/search/?q=flair%3AResource&restrict_sr=1>'
+            '• Youtube: <https://www.youtube.com/engineerman>'
+            + '\n• Discord: <https://engineerman.org/discord>'
+            + '\n• EMKC: <https://emkc.org/>'
+            + '\n• EMKC Snippets: <https://emkc.org/snippets>'
+            + '\n• EMKC Challenges: <https://emkc.org/challenges>'
+            + '\n• Github Youtube: <https://github.com/engineer-man/youtube-code>'
+            + '\n• Github EMKC: <https://github.com/engineer-man/emkc>'
+            + '\n• Github Felix: <https://github.com/engineer-man/felix>'
+            + '\n• Github Piston: <https://github.com/engineer-man/piston>'
+            + '\n• Github Piston-Bot: <https://github.com/engineer-man/piston-bot>'
+            + '\n• Twitter: <https://twitter.com/_EngineerMan>'
+            + '\n• Facebook: <https://www.facebook.com/engineermanyt>'
+            + '\n• Reddit: <https://www.reddit.com/r/engineerman/>'
+            + '\n• Reddit Resources: <https://www.reddit.com/r/engineerman/search/?q=flair%3AResource&restrict_sr=1>'
         )
         e = Embed(
             title='Links',
@@ -443,8 +444,8 @@ class General(commands.Cog, name='General'):
             'Flagged:': 'True'
             if 484183734686318613 in (i.id for i in member.roles) else 'False',
             'Current activities:':
-            '\n'.join(i.name for i in member.activities if i.name) or
-            'No current activities'
+            '\n'.join(i.name for i in member.activities if i.name)
+            or 'No current activities'
         }
         for name, value in fields.items():
             embed.add_field(
@@ -473,7 +474,7 @@ class General(commands.Cog, name='General'):
         """Ask Felix a question"""
         await ctx.trigger_typing()
         url = 'https://api.wolframalpha.com/v1/result?i=' + \
-            f'{quote(question)}&appid={self.client.config["wolfram_key"]}'
+            f'{quote_plus(question)}&appid={self.client.config["wolfram_key"]}'
         async with self.client.session.get(url) as response:
             answer = await response.text()
         if 'did not understand' in answer:
@@ -488,7 +489,7 @@ class General(commands.Cog, name='General'):
     async def urbandictionary(self, ctx, *, term):
         """Ask urbandictionary
         Get the definition of a word from Urbandictionary"""
-        url = f'http://api.urbandictionary.com/v0/define?term={quote(term)}'
+        url = f'http://api.urbandictionary.com/v0/define?term={quote_plus(term)}'
         async with self.client.session.get(url) as response:
             answer = await response.json()
         if not answer['list']:
@@ -506,7 +507,7 @@ class General(commands.Cog, name='General'):
         )
         embed = Embed(
             title=f'"**{term}**" according to urbandictionary.com',
-            url=f'https://urbandictionary.com/define.php?term={quote(term)}',
+            url=f'https://urbandictionary.com/define.php?term={quote_plus(term)}',
             description=response.replace('[', '').replace(']', ''),
             color=random.randint(0, 0xFFFFFF)
         )
@@ -552,20 +553,23 @@ class General(commands.Cog, name='General'):
 
             page_token = videos['nextPageToken']
 
-        to_send = [v for v in video_list if term.lower() in v['title'].lower()]
+        to_send = [v for v in video_list if all(
+            keyword in v['title'].lower() for keyword in term.lower().split())]
 
         if not to_send:
             response = 'Sorry, no videos found for: ' + term
-        elif len(to_send) == 1:
-            response = 'I found a good video: https://www.youtube.com/watch?v='\
-                + to_send[0]['id']
+            await ctx.send(response)
         else:
             to_send = to_send[:5]
-            response = ['I found several videos:'] +\
-                ['https://www.youtube.com/watch?v=' + v['id'] for v in to_send]
-            response = '\n'.join(response)
+            description = [
+                f'[{v["title"]}](https://www.youtube.com/watch?v={v["id"]})' for v in to_send]
+            description = '\n'.join(description)
+            e = Embed(
+                title='Search Results',
+                description=description
+            )
+            await ctx.send(embed=e)
 
-        await ctx.send(response)
     # ------------------------------------------------------------------------
 
     @commands.command(
@@ -670,9 +674,8 @@ class General(commands.Cog, name='General'):
 
         embed = Embed()
         embed.set_image(url=f'https://http.cat/{code}.jpg')
-        embed.set_footer(text=f"Provided by: https://http.cat")
+        embed.set_footer(text=f'Provided by: https://http.cat')
         await ctx.send(embed=embed)
-
 
     @commands.command(
         name='statusdog',
@@ -692,8 +695,47 @@ class General(commands.Cog, name='General'):
 
         embed = Embed()
         embed.set_image(url=f'https://httpstatusdogs.com/img/{code}.jpg')
-        embed.set_footer(text=f"Provided by: https://httpstatusdogs.com/")
+        embed.set_footer(text=f'Provided by: https://httpstatusdogs.com/')
         await ctx.send(embed=embed)
+
+    # ------------------------------------------------------------------------
+
+    @staticmethod
+    def result_fmt(url: str, language: str, body_text: str) -> str:
+        """Format Result."""
+        body_space = min(1992 - len(language) - len(url), 1000)
+
+        if len(body_text) > body_space:
+            description = (
+                f'**Result Of cht.sh**\n```{language}\n{body_text[:body_space - 20]}'
+                + f'\n... (truncated - too many lines)```\nFull results: {url} '
+            )
+            return description
+
+        description = f'**Result Of cht.sh**\n```{language}\n{body_text}```\n{url}'
+        return description
+
+    @commands.command(
+        name='cheat',
+        aliases=('cht.sh', 'cheatsheet', 'cheat-sheet', 'cht'),
+    )
+    async def cheat_sheet(
+            self, ctx, language: str, *search_terms: str
+    ) -> None:
+        """Search cheat.sh."""
+        url = f'https://cheat.sh/{quote_plus(language)}'
+        if search_terms:
+            url += f'/{quote_plus(" ".join(search_terms))}'
+        escape_tt = str.maketrans({'`': '\\`'})
+        ansi_re = re.compile(r'\x1b\[.*?m')
+
+        async with self.client.session.get(
+                url,
+                headers={'User-Agent': 'curl/7.68.0'}
+        ) as response:
+            result = ansi_re.sub('', await response.text()).translate(escape_tt)
+
+        await ctx.send(self.result_fmt(url, language, result))
 
 
 def setup(client):

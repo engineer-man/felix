@@ -3,6 +3,9 @@
         123123123123123
     ],
     "main_guild": 123123123123123,
+    "bot_key": "",
+
+
     "jail_roles": [
         123123123123123
     ],
@@ -10,14 +13,18 @@
         123123123123123
     ],
     "ignore_role": 123123123123123,
+    "report_role": 123123123123123,
+    "team_role": 123123123123123,
+
+
     "report_channel": 123123123123123,
     "jail_channel" : 123123123123123,
-    "report_role": 123123123123123,
-    "newcomer_role": 123123123123123,
-    "team_role": 123123123123123,
-    "bot_key": "",
+
+
     "giphy_key": "",
     "yt_key": "",
     "emkc_key": "",
-    "wolfram_key" : ""
+    "wolfram_key" : "",
+    "github_key" : "",
+    "aoc_key" : ""
 }

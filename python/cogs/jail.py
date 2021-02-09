@@ -15,19 +15,16 @@ Commands:
 Only users that have an admin role can use the commands.
 """
 
-import asyncio
 import json
 import time
 from collections import deque
 from dataclasses import dataclass, field
-from discord.ext import commands
-from discord import Member, DMChannel, Embed, NotFound
+from discord.ext import commands, tasks
+from discord import Member, DMChannel, Embed, NotFound, VerificationLevel
+#pylint: disable=E1101
 
 
 # SETTINGS:
-# TODO: Ideally these settings sould also come from the config.json file
-# TODO: Implement the clear_naughy list task using the new task api
-# TODO: Use a deque instead of a list to keep track of user messages
 # Users will receive a warning if they send more than
 SPAM_NUM_MSG = 7  # Messages
 # Within
@@ -42,6 +39,11 @@ SPAM_NAUGHTY_CHECK_INTERVAL = 300  # seconds
 FLOOD_JOIN_NUM = 10  # Users join
 # Within
 FLOOD_JOIN_TIME = 10  # Seconds
+# And the servers verification level will be changed to
+# available options: none, medium, high, extreme
+FLOOD_VERIFICATION_LEVEL = VerificationLevel.extreme
+# The default verification level is
+DEFAULT_VERIFICATION_LEVEL = VerificationLevel.medium
 
 
 @dataclass
@@ -67,10 +69,9 @@ class Jail(commands.Cog, name='Jail'):
             FLOOD_JOIN_NUM
         )
         self.suspected_flooders = set()
-        self.already_reported = False
         # Task that will remove users from the naughty list if they behaved for
         # 15 minutes - will also clear self.history to not let it get too big
-        self.my_task = self.client.loop.create_task(self.clear_naughty_list())
+        self.clear_naughty_list.start()
         self.acceptance_pending = dict()
 
     async def cog_check(self, ctx):
@@ -83,9 +84,12 @@ class Jail(commands.Cog, name='Jail'):
         target = self.client.get_channel(self.REPORT_CHANNEL_ID)
         description = (
             f'More than {FLOOD_JOIN_NUM} users joined within {FLOOD_JOIN_TIME} '
-            'seconds. Type `felix flood list` to see their usernames, '
-            '`felix flood jailall` to jail them all or `felix flood clear` to '
-            'clear the list and rearm the system.'
+            'seconds.\n**I have disabled welcome messages and set the verification '
+            f'level to "highest"**.\n'
+            'Options:\n • `felix flood list` to see the usernames\n'
+            '• `felix flood jailall` to jail them all (please only run once)\n'
+            '• `felix flood clear` to clear the list, enable welcome messages '
+            'and reset the verification level to "medium".'
         )
         embed = Embed(
             title='Warning!',
@@ -93,6 +97,18 @@ class Jail(commands.Cog, name='Jail'):
             color=0xFF0000
         )
         await target.send(f'<@&{self.TEAM_ROLE}>', embed=embed)
+
+    async def enable_flood_mode(self):
+        await self.client.main_guild.edit(
+            verification_level=FLOOD_VERIFICATION_LEVEL
+        )
+        self.client.flood_mode = True
+
+    async def disable_flood_mode(self):
+        await self.client.main_guild.edit(
+            verification_level=DEFAULT_VERIFICATION_LEVEL
+        )
+        self.client.flood_mode = False
 
     def load_state(self):
         with open("../state.json", "r") as statefile:
@@ -183,13 +199,13 @@ class Jail(commands.Cog, name='Jail'):
             return
         now = time.time()
         uid = str(member.id)
-        user_history = self.history.get(uid, [])
+        user_history = self.history.get(uid, deque())
         # Add timestamp of current message to list of known timestamps of user
         user_history.append(now)
         if len(user_history) == SPAM_NUM_MSG:
             # When we know enough message timestamps (SPAM_NUM_MSG)
             # Pop the oldest message
-            oldest = user_history.pop(0)
+            oldest = user_history.popleft()
             if now - oldest < SPAM_TIME:
                 # If the oldest message was sent less than SPAM_TIME seconds ago
                 if uid in self.naughty:
@@ -203,9 +219,9 @@ class Jail(commands.Cog, name='Jail'):
                     # Warn the user and add him to the naughty list
                     # If he is not on the naughty list yet
                     await msg.channel.send(
-                        f'Hey {member.mention}, you are sending too many ' +
-                        'messages. This is a warning! If you keep ' +
-                        'this up you will be jailed.'
+                        f'Hey {member.mention}, you are sending too many '
+                        + 'messages. This is a warning! If you keep '
+                        + 'this up you will be jailed.'
                     )
                     self.naughty[uid] = now
                     # "Reset" his history so he doesn't get jailed immediately
@@ -232,9 +248,9 @@ class Jail(commands.Cog, name='Jail'):
             self.suspected_flooders.update(
                 member for _, member in self.member_history
             )
-            if not self.already_reported:
+            if not self.client.flood_mode:
                 await self.report_flood()
-                self.already_reported = True
+                await self.enable_flood_mode()
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
@@ -267,11 +283,10 @@ class Jail(commands.Cog, name='Jail'):
         if not pending.users:
             del self.acceptance_pending[msg.id]
 
-
-
     # ----------------------------------------------
     # Cog Commands
     # ----------------------------------------------
+
     @commands.group(
         invoke_without_command=True,
         name='flood',
@@ -288,10 +303,11 @@ class Jail(commands.Cog, name='Jail'):
         """Show a list of suspected flooders"""
         if not self.suspected_flooders:
             return await ctx.send('List is empty.')
-        members = '\n'.join(str(m) for m in self.suspected_flooders)
-        if len(members) > 1980:
-            members = f'{members[:1980]}...'
-        await ctx.send(f'```\n{members}\n```')
+        members = [(str(m) for m in self.suspected_flooders)]
+        # Print 50 members at a time
+        for page in range(len(members) // 50 + 1):
+            to_print = '\n'.join(members[page*50:(page+1)*50])
+            await ctx.send(f'```\n{to_print}\n```')
 
     @flood.command(
         name='clear',
@@ -300,8 +316,8 @@ class Jail(commands.Cog, name='Jail'):
     async def flood_clear(self, ctx):
         """Clears the reported member set"""
         self.suspected_flooders.clear()
+        await self.disable_flood_mode()
         await ctx.send('`Cleared`')
-        self.already_reported = False
 
     @flood.command(
         name='jailall',
@@ -310,14 +326,23 @@ class Jail(commands.Cog, name='Jail'):
         """Jails all members in the reported member set"""
         if not self.suspected_flooders:
             return await ctx.send('No members to jail.')
+        await ctx.send(f'`Jailing {len(self.suspected_flooders)} users (might take a while)`')
         jailed = []
         for i in self.suspected_flooders:
             status = await self.send_to_jail(i, reason='Server flooding')
             jailed.append(status)
-        message = '\n'.join(jailed)
-        if len(message) > 1980:
-            message = message[:1980]
-        await ctx.send(f'```\n{message}...\n```')
+
+        # Print 20 jail confirmations at a time
+        for page in range(len(jailed) // 20 + 1):
+            to_print = '\n'.join(jailed[page*20:(page+1)*20])
+            await ctx.send(f'```\n{to_print}\n```')
+
+    @flood.command(
+        name='simulate'
+    )
+    async def flood_simulate(self, cty):
+        await self.report_flood()
+        await self.enable_flood_mode()
     # ------------------------------------------------------
 
     @commands.command(
@@ -377,29 +402,29 @@ class Jail(commands.Cog, name='Jail'):
         if results:
             await ctx.send('```\n'+'\n'.join(results)+'```')
 
-
-
     # ----------------------------------------------
     # Cog Tasks
     # ----------------------------------------------
+
+    @tasks.loop(seconds=SPAM_NAUGHTY_CHECK_INTERVAL)
     async def clear_naughty_list(self):
-        await self.client.wait_until_ready()
-        await asyncio.sleep(5)
-        try:
-            while not self.client.is_closed():
-                now = time.time()
-                newdict = {}
-                for k, v in self.naughty.items():
-                    if now - v < SPAM_NAUGHTY_DURATION:
-                        newdict[k] = v
-                self.naughty = newdict
-                self.history = {}
-                await asyncio.sleep(SPAM_NAUGHTY_CHECK_INTERVAL)
-        except asyncio.CancelledError:
-            pass
+        now = time.time()
+        newdict = {}
+        for k, v in self.naughty.items():
+            if now - v < SPAM_NAUGHTY_DURATION:
+                newdict[k] = v
+        self.naughty = newdict
+        self.history = {}
+
+        if self.client.flood_mode:
+            target = self.client.get_channel(self.REPORT_CHANNEL_ID)
+            await target.send(
+                f'<@&{self.TEAM_ROLE}> Flood mode is currently enabled.\n'
+                'If the flood is over please run `felix flood clear`'
+            )
 
     def cog_unload(self):
-        self.my_task.cancel()
+        self.clear_naughty_list.cancel()
 
 
 def setup(client):

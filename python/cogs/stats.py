@@ -21,7 +21,6 @@ class Stats(commands.Cog, name='Stats'):
     def __init__(self, client):
         self.client = client
         self.last_time = self.load_stats()
-        self.NEWCOMER_ROLE = self.client.config['newcomer_role']
 
     async def cog_check(self, ctx):
         return self.client.user_is_admin(ctx.author)
@@ -59,7 +58,6 @@ class Stats(commands.Cog, name='Stats'):
         vids = int(statistics['videoCount'])
         views = int(statistics['viewCount'])
         disc_members = ctx.channel.guild.member_count
-        newcomers = len(ctx.guild.get_role(self.NEWCOMER_ROLE).members)
 
         time_diff, disc_diff, subs_diff, vids_diff, views_diff = -1, 0, 0, 0, 0
         if self.last_time:
@@ -78,7 +76,6 @@ class Stats(commands.Cog, name='Stats'):
             f'\nDiscord members: [{disc_members}] ',
             f'{"+ " if disc_diff > 0 else ""}',
             f'{str(disc_diff).replace("-", "- ") * bool(disc_diff)}',
-            f'\nNewcomers:       [{newcomers}] ',
             f'\nYouTube subs:    [{subs}] ',
             f'{"+ " if subs_diff > 0 else ""}',
             f'{str(subs_diff).replace("-", "- ") * bool(subs_diff)}',
