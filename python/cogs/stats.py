@@ -65,14 +65,19 @@ class Stats(commands.Cog, name='Stats'):
         yesterday = (datetime.now()-timedelta(seconds=60 * 60 * 24)).isoformat()
         piston_url = f'https://emkc.org/api/v1/stats/piston/usage?start={yesterday}&end={now}'
         async with self.client.session.get(piston_url) as response:
-            run_count = (await response.json()).get('count', 0)
+            piston_count = (await response.json()).get('count', 0)
+
+        piston_url += '&category=bot'
+        async with self.client.session.get(piston_url) as response:
+            piston_bot_count = (await response.json()).get('count', 0)
 
         time_diff = int((time.time() - self.last_time.get('time', -1)) // 60)
         disc_diff = disc_members - self.last_time.get('disc', 0)
         subs_diff = subs - self.last_time.get('subs', 0)
         vids_diff = vids - self.last_time.get('vids', 0)
         views_diff = views - self.last_time.get('views', 0)
-        run_diff = run_count - self.last_time.get('run_count', 0)
+        piston_diff = piston_count - self.last_time.get('piston_count', 0)
+        bot_diff = piston_bot_count - self.last_time.get('piston_bot_count', 0)
 
         self.last_time = {
             'time': time.time(),
@@ -80,28 +85,32 @@ class Stats(commands.Cog, name='Stats'):
             'subs': subs,
             'vids': vids,
             'views': views,
-            'run_count': run_count
+            'piston_count': piston_count,
+            'piston_bot_count': piston_bot_count,
         }
         self.save_stats(self.last_time)
 
-        # What an abomination
         response = [
             '```css',
-            f'\nDiscord members:   [{disc_members}] ',
+            f'\nDiscord members: [{disc_members}] ',
             f'{"+ " if disc_diff > 0 else ""}',
             f'{str(disc_diff).replace("-", "- ") * bool(disc_diff)}',
-            f'\nYouTube subs:      [{subs}] ',
+            f'\nYouTube subs:    [{subs}] ',
             f'{"+ " if subs_diff > 0 else ""}',
             f'{str(subs_diff).replace("-", "- ") * bool(subs_diff)}',
-            f'\nYouTube videos:    [{vids}] ',
+            f'\nYouTube videos:  [{vids}] ',
             f'{"+ " if vids_diff > 0 else ""}',
             f'{str(vids_diff).replace("-", "- ") * bool(vids_diff)}',
-            f'\nYouTube views:     [{views}] '
+            f'\nYouTube views:   [{views}] '
             f'{"+ " if views_diff > 0 else ""}',
             f'{str(views_diff).replace("-", "- ") * bool(views_diff)}',
-            f'\nPiston runs / day: [{run_count}] '
-            f'{"+ " if run_diff > 0 else ""}',
-            f'{str(run_diff).replace("-", "- ") * bool(run_diff)}',
+            '\n\nPiston stats:'
+            f'\nIRunCode calls/day: [{piston_bot_count}] '
+            f'{"+ " if bot_diff > 0 else ""}',
+            f'{str(bot_diff).replace("-", "- ") * bool(bot_diff)}',
+            f'\nTotal calls/day:    [{piston_count}] '
+            f'{"+ " if piston_diff > 0 else ""}',
+            f'{str(piston_diff).replace("-", "- ") * bool(piston_diff)}',
             f'````last run: ',
             f'{(str(time_diff) + " minutes ago") if time_diff >= 0 else "N/A"}`'
         ]
