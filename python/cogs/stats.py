@@ -31,7 +31,10 @@ class Stats(commands.Cog, name='Stats'):
 
     def load_stats(self):
         state = self.load_state()
-        return state.get('stats', [])
+        stats = state.get('stats', dict())
+        if not isinstance(stats, dict):
+            stats = dict()
+        return stats
 
     def save_stats(self, stats):
         state = self.load_state()
@@ -43,7 +46,6 @@ class Stats(commands.Cog, name='Stats'):
         invoke_without_command=True,
         hidden=True,
     )
-    # @commands.cooldown(1, 300, commands.BucketType.user)
     async def stats(self, ctx):
         """Print member numbers"""
         await ctx.trigger_typing()
@@ -59,15 +61,19 @@ class Stats(commands.Cog, name='Stats'):
         views = int(statistics['viewCount'])
         disc_members = ctx.channel.guild.member_count
 
-        time_diff, disc_diff, subs_diff, vids_diff, views_diff = -1, 0, 0, 0, 0
-        if self.last_time:
-            time_diff = int((time.time() - self.last_time[0]) // 60)
-            disc_diff = disc_members - self.last_time[1]
-            subs_diff = subs - self.last_time[2]
-            vids_diff = vids - self.last_time[3]
-            views_diff = views - self.last_time[4]
+        time_diff = int((time.time() - self.last_time.get('time', -1)) // 60)
+        disc_diff = disc_members - self.last_time.get('disc', 0)
+        subs_diff = subs - self.last_time.get('subs', 0)
+        vids_diff = vids - self.last_time.get('vids', 0)
+        views_diff = views - self.last_time.get('views', 0)
 
-        self.last_time = [time.time(), disc_members, subs, vids, views]
+        self.last_time = {
+            'time': time.time(),
+            'disc': disc_members,
+            'subs': subs,
+            'vids': vids,
+            'views': views
+        }
         self.save_stats(self.last_time)
 
         # What an abomination
