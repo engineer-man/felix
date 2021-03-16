@@ -17,6 +17,7 @@ Commands:
     inspect         print source code of a command
     statuscat       Commands that gives the requested HTTP statuses described and visualized by cats."
     statusdog       Commands that gives the requested HTTP statuses described and visualized by dogs."
+    chucknorris     Shows a random chuck norris fun fact
 """
 
 import re
@@ -49,6 +50,7 @@ class General(commands.Cog, name='General'):
             text = await response.text()
             http_codes_dog = re.findall(r'<a href=\"(\d{3})-[^\"]*\"', text)
             self.http_codes_dog = [int(x) for x in http_codes_dog]
+
 
     # ----------------------------------------------
     # Helper Functions
@@ -657,6 +659,24 @@ class General(commands.Cog, name='General'):
     # ------------------------------------------------------------------------
 
     @commands.command(
+        name='chucknorris',
+        aliases=['chuck','cn']
+    )
+    async def chucknorris(self, ctx):
+        async with self.client.session.get('https://api.icndb.com/jokes/random/?exclude=[explicit]') as response:
+            chuck = await response.json()
+            chuck = chuck['value']['joke']
+            chuck = re.sub('&quot;', '"', chuck)
+
+        e = Embed(
+            title='Chuck Norris fun fact...',
+            description=chuck
+        )
+        await ctx.send(embed=e)
+
+    # ------------------------------------------------------------------------
+
+    @commands.command(
         name='statuscat',
         aliases=['cat']
     )
@@ -740,3 +760,4 @@ class General(commands.Cog, name='General'):
 
 def setup(client):
     client.add_cog(General(client))
+
