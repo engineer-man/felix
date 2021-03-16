@@ -23,10 +23,8 @@ Commands:
 import re
 import random
 import typing
-import json
 from inspect import getsourcelines
 from datetime import datetime as dt
-from urllib.request import urlopen
 from urllib.parse import quote_plus
 
 from discord.ext import commands, tasks
@@ -52,6 +50,7 @@ class General(commands.Cog, name='General'):
             text = await response.text()
             http_codes_dog = re.findall(r'<a href=\"(\d{3})-[^\"]*\"', text)
             self.http_codes_dog = [int(x) for x in http_codes_dog]
+
 
     # ----------------------------------------------
     # Helper Functions
@@ -664,13 +663,14 @@ class General(commands.Cog, name='General'):
         aliases=['chuck','cn']
     )
     async def chucknorris(self, ctx):
-        """Chuck Norris random fun fact..."""
-        chuck = urlopen('http://api.icndb.com/jokes/random/?escape=javascript')
-        chuck = json.loads(chuck.read().decode('utf-8'))
+        async with self.client.session.get('https://api.icndb.com/jokes/random/?exclude=[explicit]') as response:
+            chuck = await response.json()
+            chuck = chuck['value']['joke']
+            chuck = re.sub('&quot;', '"', chuck)
 
         e = Embed(
             title='Chuck Norris fun fact...',
-            description=chuck['value']['joke']
+            description=chuck
         )
         await ctx.send(embed=e)
 
