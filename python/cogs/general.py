@@ -17,13 +17,16 @@ Commands:
     inspect         print source code of a command
     statuscat       Commands that gives the requested HTTP statuses described and visualized by cats."
     statusdog       Commands that gives the requested HTTP statuses described and visualized by dogs."
+    chucknorris     Shows a random chuck norris fun fact
 """
 
 import re
 import random
 import typing
+import json
 from inspect import getsourcelines
 from datetime import datetime as dt
+from urllib.request import urlopen
 from urllib.parse import quote_plus
 
 from discord.ext import commands, tasks
@@ -657,6 +660,23 @@ class General(commands.Cog, name='General'):
     # ------------------------------------------------------------------------
 
     @commands.command(
+        name='chucknorris',
+        aliases=['chuck','cn']
+    )
+    async def chucknorris(self, ctx):
+        """Chuck Norris random fun fact..."""
+        chuck = urlopen('http://api.icndb.com/jokes/random/?escape=javascript')
+        chuck = json.loads(chuck.read().decode('utf-8'))
+
+        e = Embed(
+            title='Chuck Norris fun fact...',
+            description=chuck['value']['joke']
+        )
+        await ctx.send(embed=e)
+
+    # ------------------------------------------------------------------------
+
+    @commands.command(
         name='statuscat',
         aliases=['cat']
     )
@@ -740,3 +760,4 @@ class General(commands.Cog, name='General'):
 
 def setup(client):
     client.add_cog(General(client))
+
