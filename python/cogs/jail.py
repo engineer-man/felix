@@ -303,7 +303,7 @@ class Jail(commands.Cog, name='Jail'):
         """Show a list of suspected flooders"""
         if not self.suspected_flooders:
             return await ctx.send('List is empty.')
-        members = [(str(m) for m in self.suspected_flooders)]
+        members = [str(m) for m in self.suspected_flooders]
         # Print 50 members at a time
         for page in range(len(members) // 50 + 1):
             to_print = '\n'.join(members[page*50:(page+1)*50])
@@ -319,23 +319,23 @@ class Jail(commands.Cog, name='Jail'):
         await self.disable_flood_mode()
         await ctx.send('`Cleared`')
 
-    @flood.command(
-        name='jailall',
-    )
-    async def flood_jailall(self, ctx):
-        """Jails all members in the reported member set"""
-        if not self.suspected_flooders:
-            return await ctx.send('No members to jail.')
-        await ctx.send(f'`Jailing {len(self.suspected_flooders)} users (might take a while)`')
-        jailed = []
-        for i in self.suspected_flooders:
-            status = await self.send_to_jail(i, reason='Server flooding')
-            jailed.append(status)
+    # @flood.command(
+    #     name='jailall',
+    # )
+    # async def flood_jailall(self, ctx):
+    #     """Jails all members in the reported member set"""
+    #     if not self.suspected_flooders:
+    #         return await ctx.send('No members to jail.')
+    #     await ctx.send(f'`Jailing {len(self.suspected_flooders)} users (might take a while)`')
+    #     jailed = []
+    #     for i in self.suspected_flooders:
+    #         status = await self.send_to_jail(i, reason='Server flooding')
+    #         jailed.append(status)
 
-        # Print 20 jail confirmations at a time
-        for page in range(len(jailed) // 20 + 1):
-            to_print = '\n'.join(jailed[page*20:(page+1)*20])
-            await ctx.send(f'```\n{to_print}\n```')
+    #     # Print 20 jail confirmations at a time
+    #     for page in range(len(jailed) // 20 + 1):
+    #         to_print = '\n'.join(jailed[page*20:(page+1)*20])
+    #         await ctx.send(f'```\n{to_print}\n```')
 
     @flood.command(
         name='simulate'
