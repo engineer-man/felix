@@ -12,7 +12,6 @@ from .utils.converters import OffTopicName
 from .utils.pagination import LinePaginator
 
 PATH = Path("resources", "off_topic_names.txt")
-OT_SUGGESTION_WEBHOOK = 821323459618668574
 EMOJIS = {
     1: "1\u20e3",
     2: "2\u20e3",
@@ -250,7 +249,7 @@ class OffTopicNames(Cog):
     @otname_group.command(name='suggest')
     async def suggest_command(self, ctx, *, name: OffTopicName) -> None:
         """Suggest a Off Topic Channel Name."""
-        webhook = await self.client.fetch_webhook(OT_SUGGESTION_WEBHOOK)
+        webhook = await self.client.fetch_webhook(self.client.config["otname_suggestion_webhook"])
         embed = Embed(
             description=f"**Suggestion:** {name}\n"
         )
