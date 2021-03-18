@@ -55,6 +55,17 @@ class Felix(Bot):
             return True
         return False
 
+    def user_is_hero(self, user):
+        try:
+            user_roles = [role.id for role in user.roles]
+        except AttributeError:
+            return False
+        community_hero_role = self.config['admin_roles']
+        return (
+                any(role == community_hero_role for role in user_roles)
+                or self.user_is_admin(user)
+        )
+
 
 intents = Intents.default()
 intents.members = True

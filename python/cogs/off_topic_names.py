@@ -31,8 +31,7 @@ async def update_names(client, channel_id) -> None:
     """Background updater task that performs the daily channel name update."""
     while True:
         today_at_midnight = datetime.utcnow().replace(microsecond=0, second=0, minute=0, hour=0)
-        # await sleep_until(today_at_midnight + timedelta(days=1))
-        await sleep_until(datetime.utcnow() + timedelta(seconds=20))
+        await sleep_until(today_at_midnight + timedelta(days=1))
 
         channel = client.get_channel(channel_id)
         with PATH.open(encoding="utf8") as f:
@@ -54,16 +53,17 @@ async def update_names(client, channel_id) -> None:
         for react_emoji in EMOJIS.values():
             await poll_msg.add_reaction(react_emoji)
 
-        # await sleep_until(datetime.utcnow() + timedelta(minutes=10))
-        await sleep_until(datetime.utcnow() + timedelta(seconds=20))
+        await sleep_until(datetime.utcnow() + timedelta(minutes=10))
         poll_msg_updated = await channel.fetch_message(poll_id)
 
         top_vote = 0
-        for emoji in poll_msg_updated.reactions:
-            if int(emoji.count) > top_vote:
-                top_vote = int(emoji.count)
+        top_emoji_index = 1
+        for index, reaction in enumerate(poll_msg_updated.reactions, start=1):
+            if int(reaction.count) > top_vote:
+                top_vote = int(reaction.count)
+                top_emoji_index = index
 
-        channel_name = poll_choices[top_vote]
+        channel_name = poll_choices[top_emoji_index]
         await channel.edit(name=f'ot-{channel_name}')
 
 
@@ -119,8 +119,7 @@ class OffTopicNames(Cog):
     @group(
         name='otname',
         aliases=('otn',),
-        invoke_without_command=True,
-        hidden=True,
+        invoke_without_command=True
     )
     async def otname_group(self, ctx) -> None:
         """Commands related to managing the off-topic category channel names."""
@@ -132,6 +131,9 @@ class OffTopicNames(Cog):
         Adds a new off-topic name to the rotation.
         The name is not added if it is too similar to an existing name.
         """
+        if not self.client.user_is_hero(ctx.author):
+            return
+
         with PATH.open(encoding="utf8") as f:
             existing_names = [n for n in f.read().splitlines()]
         close_match = difflib.get_close_matches(str(name), existing_names, n=1, cutoff=0.8)
@@ -147,9 +149,13 @@ class OffTopicNames(Cog):
     @otname_group.command(name='forceadd', aliases=('fa',), hidden=True)
     async def force_add_command(self, ctx, *, name: OffTopicName) -> None:
         """Forcefully adds a new off-topic name to the rotation."""
+        if not self.client.user_is_hero(ctx.author):
+            return
+
         await self._add_name(ctx, str(name))
 
-    async def _add_name(self, ctx, name: str) -> None:
+    @staticmethod
+    async def _add_name(ctx, name: str) -> None:
         """Adds an off-topic channel name to the site storage."""
         with PATH.open("a+", encoding="utf8") as f:
             f.write(f"{name}\n")
@@ -159,6 +165,9 @@ class OffTopicNames(Cog):
     @otname_group.command(name='delete', aliases=('remove', 'rm', 'del'), hidden=True)
     async def delete_command(self, ctx, *, name: OffTopicName) -> None:
         """Removes a off-topic name from the list."""
+        if not self.client.user_is_hero(ctx.author):
+            return
+
         f = open(PATH, "r")
         lines = f.readlines()
         f.close()
@@ -223,6 +232,9 @@ class OffTopicNames(Cog):
     @otname_group.command(name='set', hidden=True)
     async def set_command(self, ctx, *, name: OffTopicName = None) -> None:
         """Updates the ot channel name to a random name."""
+        if not self.client.user_is_hero(ctx.author):
+            return
+
         with PATH.open(encoding="utf8") as f:
             result = [n for n in f.read().splitlines()]
 
