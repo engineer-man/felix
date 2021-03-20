@@ -60,7 +60,7 @@ class Felix(Bot):
             user_roles = [role.id for role in user.roles]
         except AttributeError:
             return False
-        community_hero_role = self.config['admin_roles']
+        community_hero_role = self.config['hero_role']
         return (
                 any(role == community_hero_role for role in user_roles)
                 or self.user_is_admin(user)
