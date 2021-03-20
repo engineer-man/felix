@@ -663,18 +663,22 @@ class General(commands.Cog, name='General'):
         aliases=['chuck','cn']
     )
     async def chucknorris(self, ctx):
-        async with self.client.session.get('https://api.icndb.com/jokes/random/?exclude=[explicit]') as response:
-            chuck = await response.json()
-            chuck = chuck['value']['joke']
-            chuck = re.sub('&quot;', '"', chuck)
+        try:
+            async with self.client.session.get('https://api.icndb.com/jokes/random/?exclude=[explicit]') as response:
+                chuck = await response.json()
+                chuck = chuck['value']['joke']
+                chuck = re.sub('&quot;', '"', chuck)
 
-        e = Embed(
-            title='Chuck Norris fun fact...',
-            description=chuck
-        )
-        await ctx.send(embed=e)
+                e = Embed(
+                    title='Chuck Norris fun fact...',
+                    description=chuck
+                    )
+                await ctx.send(embed=e)
+        except:
+            raise commands.BadArgument('Chuck not found, currently evading GPS in Texas!')
 
-    # ------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------
 
     @commands.command(
         name='statuscat',
