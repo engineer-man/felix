@@ -331,7 +331,7 @@ class Stream(commands.Cog, name='Stream'):
             if not msg_type in ('textMessageEvent', 'superChatEvent'):
                 continue
             message_date_str = msg['snippet']['publishedAt']
-            message_date = datetime.fromisoformat(message_date_str[:-1])
+            message_date = datetime.fromisoformat(message_date_str)
             if message_date <= self.check_date:
                 continue
             self.check_date = message_date
