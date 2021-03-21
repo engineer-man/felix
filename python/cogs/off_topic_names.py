@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from discord import Colour, Embed
-from discord.ext.commands import Cog, group
+from discord.ext.commands import Cog, group, check
 from discord.utils import sleep_until
 
 from .utils.converters import OffTopicName
@@ -24,6 +24,13 @@ EMOJIS = {
 
 # Global variable for storing poll message for ot channel names
 poll_id = None
+
+
+def is_hero():
+    async def predicate(ctx):
+        return ctx.bot.user_is_hero(ctx.author)
+
+    return check(predicate)
 
 
 async def update_names(client, channel_id) -> None:
@@ -124,15 +131,13 @@ class OffTopicNames(Cog):
         """Commands related to managing the off-topic category channel names."""
         await ctx.send_help(ctx.command)
 
+    @is_hero()
     @otname_group.command(name='add', aliases=('a',), hidden=True)
     async def add_command(self, ctx, *, name: OffTopicName) -> None:
         """
         Adds a new off-topic name to the rotation.
         The name is not added if it is too similar to an existing name.
         """
-        if not self.client.user_is_hero(ctx.author):
-            return
-
         with PATH.open(encoding="utf8") as f:
             existing_names = [n for n in f.read().splitlines()]
         close_match = difflib.get_close_matches(str(name), existing_names, n=1, cutoff=0.8)
@@ -145,12 +150,10 @@ class OffTopicNames(Cog):
             return
         await self._add_name(ctx, str(name))
 
+    @is_hero()
     @otname_group.command(name='forceadd', aliases=('fa',), hidden=True)
     async def force_add_command(self, ctx, *, name: OffTopicName) -> None:
         """Forcefully adds a new off-topic name to the rotation."""
-        if not self.client.user_is_hero(ctx.author):
-            return
-
         await self._add_name(ctx, str(name))
 
     @staticmethod
@@ -161,12 +164,10 @@ class OffTopicNames(Cog):
 
         await ctx.send(f":ok_hand: Added `{name}` to the names list.")
 
+    @is_hero()
     @otname_group.command(name='delete', aliases=('remove', 'rm', 'del'), hidden=True)
     async def delete_command(self, ctx, *, name: OffTopicName) -> None:
         """Removes a off-topic name from the list."""
-        if not self.client.user_is_hero(ctx.author):
-            return
-
         f = open(PATH, "r")
         lines = f.readlines()
         f.close()
@@ -178,7 +179,7 @@ class OffTopicNames(Cog):
 
         await ctx.send(f":ok_hand: Removed `{name}` from the list.")
 
-    @otname_group.command(name='list', aliases=('l', 'ls'), hidden=True)
+    @otname_group.command(name='list', aliases=('l', 'ls'))
     async def list_command(self, ctx) -> None:
         """
         Lists all currently known off-topic channel names in a paginator.
@@ -199,7 +200,7 @@ class OffTopicNames(Cog):
         embed.description = "Nothing here \U0001f626."
         await ctx.send(embed=embed)
 
-    @otname_group.command(name='search', aliases=('s',), hidden=True)
+    @otname_group.command(name='search', aliases=('s',))
     async def search_command(self, ctx, *, query: OffTopicName) -> None:
         """Search for an off-topic name."""
         query = OffTopicName.translate_name(str(query), from_unicode=False).lower()
@@ -228,12 +229,10 @@ class OffTopicNames(Cog):
         embed.description = "Nothing found."
         await ctx.send(embed=embed)
 
+    @is_hero()
     @otname_group.command(name='set', hidden=True)
     async def set_command(self, ctx, *, name: OffTopicName = None) -> None:
         """Updates the ot channel name to a random name."""
-        if not self.client.user_is_hero(ctx.author):
-            return
-
         with PATH.open(encoding="utf8") as f:
             result = [n for n in f.read().splitlines()]
 
