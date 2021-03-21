@@ -664,25 +664,27 @@ class General(commands.Cog, name='General'):
     )
     async def chucknorris(self, ctx):
         try:
-            async with self.client.session.get('https://api.chucknorris.io/jokes/random') as response:
+            categories = ['animal','career','celebrity','dev','fashion','food','history','money',
+                    'movie','music','political','religion','science','sport','travel']
+            category = categories[random.randint(0, len(categories)-1)]
+            async with self.client.session.get(f'https://api.chucknorris.io/jokes/random?category={category}') as response:
                 chuck = await response.json()
                 chuck = chuck['value']
-                #chuck = re.sub('&quot;', '"', chuck)
 
-                #e = Embed(
-                #    title='Chuck Norris fun fact...',
-                #    description=chuck
-                #    )
-                #await ctx.send(embed=e)
-                embed = embed()
-                embed.set_image(url=f'https://assets.chucknorris.host/img/avatar/chuck-norris.png')
+                embed = Embed(
+                    description=chuck,
+                    color=random.randint(0, 0xFFFFFF))
+                embed.set_author(
+                        name='Chuck Norris fun fact...', 
+                        icon_url=f'https://assets.chucknorris.host/img/avatar/chuck-norris.png'
+                        )
                 embed.set_footer(text=f'Provided by: https://api.chucknorris.io')
                 await ctx.send(embed=embed)
         except:
             raise commands.BadArgument('Chuck not found, currently evading GPS in Texas!')
 
 
-# ------------------------------------------------------------------------
+    # ------------------------------------------------------------------------
 
     @commands.command(
         name='statuscat',
