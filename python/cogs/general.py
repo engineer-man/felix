@@ -664,16 +664,20 @@ class General(commands.Cog, name='General'):
     )
     async def chucknorris(self, ctx):
         try:
-            async with self.client.session.get('https://api.icndb.com/jokes/random/?exclude=[explicit]') as response:
+            async with self.client.session.get('https://api.chucknorris.io/jokes/random') as response:
                 chuck = await response.json()
-                chuck = chuck['value']['joke']
-                chuck = re.sub('&quot;', '"', chuck)
+                chuck = chuck['value']
+                #chuck = re.sub('&quot;', '"', chuck)
 
-                e = Embed(
-                    title='Chuck Norris fun fact...',
-                    description=chuck
-                    )
-                await ctx.send(embed=e)
+                #e = Embed(
+                #    title='Chuck Norris fun fact...',
+                #    description=chuck
+                #    )
+                #await ctx.send(embed=e)
+                embed = embed()
+                embed.set_image(url=f'https://assets.chucknorris.host/img/avatar/chuck-norris.png')
+                embed.set_footer(text=f'Provided by: https://api.chucknorris.io')
+                await ctx.send(embed=embed)
         except:
             raise commands.BadArgument('Chuck not found, currently evading GPS in Texas!')
 
@@ -764,4 +768,3 @@ class General(commands.Cog, name='General'):
 
 def setup(client):
     client.add_cog(General(client))
-
