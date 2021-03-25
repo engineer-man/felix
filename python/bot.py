@@ -30,7 +30,7 @@ class Felix(Bot):
         self.last_errors = []
 
     async def start(self, *args, **kwargs):
-        self.session = ClientSession(timeout=ClientTimeout(total=10))
+        self.session = ClientSession(timeout=ClientTimeout(total=30))
         await super().start(self.config["bot_key"], *args, **kwargs)
 
     async def close(self):
