@@ -56,8 +56,7 @@ class Felix(Bot):
         return False
 
 
-intents = Intents.default()
-intents.members = True
+intents = Intents.all()
 
 client = Felix(
     command_prefix=when_mentioned_or('felix ', 'Felix '),
