@@ -160,7 +160,16 @@ class General(commands.Cog, name='General'):
             msg.content
         ):
             await msg.channel.send('ฅ^•ﻌ•^ฅ')
-
+        
+        if re.search(
+            r'(?i)^(?<!gnu.)linux(?!.gnu)',
+            msg.content
+        ):
+            if random.random() >= 0.95:
+                interjection = open("cogs/interjection.txt", "r")
+                response = interjection.read()
+                interjection.close()
+            await msg.channel.send(response)
     # ----------------------------------------------
     # Cog Commands
     # ----------------------------------------------
