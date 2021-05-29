@@ -163,7 +163,8 @@ class General(commands.Cog, name='General'):
         
         if re.search(
             r'(?i)^(?<!gnu.)linux(?!.gnu)',
-            msg.content
+            msg.content,
+            re.IGNORECASE
         ):
             if random.random() >= 0.95:
                 interjection = open("cogs/interjection.txt", "r")
