@@ -23,6 +23,7 @@ Commands:
 import re
 import random
 import typing
+import hashlib
 from inspect import getsourcelines
 from datetime import datetime as dt
 from urllib.parse import quote_plus
@@ -52,8 +53,8 @@ class General(commands.Cog, name='General'):
             self.http_codes_dog = [int(x) for x in http_codes_dog]
 
         async with self.client.session.get('https://api.chucknorris.io/jokes/categories') as response:
-            text = await response.json()
-            self.chuck_categories = [x for x in text if x != 'explicit']
+            categories = await response.json()
+            self.chuck_categories = [x for x in categories if x != 'explicit']
 
     # ----------------------------------------------
     # Helper Functions
@@ -675,10 +676,14 @@ class General(commands.Cog, name='General'):
             category = random.choice(self.chuck_categories)
         else:
             if category not in self.chuck_categories:
-                raise commands.BadArgument(f'Invalid or filtered chuck category: **{category}**')
-        
+                raise commands.BadArgument(
+                    f'Invalid category - please pick from:\n{", ".join(self.chuck_categories)}'
+                )
+
         try:
-            async with self.client.session.get(f'https://api.chucknorris.io/jokes/random?category={category}') as response:
+            async with self.client.session.get(
+                f'https://api.chucknorris.io/jokes/random?category={category}'
+            ) as response:
                 chuck = await response.json()
                 chuck = chuck['value']
 
@@ -686,15 +691,21 @@ class General(commands.Cog, name='General'):
                     description=chuck,
                     color=random.randint(0, 0xFFFFFF))
                 embed.set_author(
-                        name='Chuck Norris fun fact...', 
-                        icon_url=f'https://assets.chucknorris.host/img/avatar/chuck-norris.png'
-                        )
-                embed.set_footer(text=f'Provided by: https://api.chucknorris.io')
+                    name='Chuck Norris fun fact...',
+                    icon_url=f'https://assets.chucknorris.host/img/avatar/chuck-norris.png'
+                )
+                embed.set_footer(text=f'Category: {category} - https://api.chucknorris.io')
                 await ctx.send(embed=embed)
 
         except:
             raise commands.BadArgument('Chuck not found, currently evading GPS in Texas!')
 
+    # ------------------------------------------------------------------------
+
+    @commands.command()
+    async def ctf(self, ctx, s):
+        if hashlib.sha1(s.encode()).digest().startswith(b'felix'):
+            await ctx.author.send(self.client.config["ctf"])
 
     # ------------------------------------------------------------------------
 
