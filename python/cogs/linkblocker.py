@@ -78,8 +78,7 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
                         return True
                 await msg.channel.send(
                     f'Sorry {msg.author.mention}. ' +
-                    'Posting links to other servers is not allowed.\n' +
-                    'You can ask permission from an engineer-man team member!'
+                    'Posting links to other servers is not allowed.'
                 )
                 self.naughty_list[str(msg.author.id)] = time.time()
             return True
