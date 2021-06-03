@@ -51,6 +51,9 @@ class General(commands.Cog, name='General'):
             http_codes_dog = re.findall(r'<a href=\"(\d{3})-[^\"]*\"', text)
             self.http_codes_dog = [int(x) for x in http_codes_dog]
 
+        async with self.client.session.get('https://api.chucknorris.io/jokes/categories') as response:
+            text = await response.json()
+            self.chuck_categories = [x for x in text if x != 'explicit']
 
     # ----------------------------------------------
     # Helper Functions
@@ -660,13 +663,21 @@ class General(commands.Cog, name='General'):
 
     @commands.command(
         name='chucknorris',
-        aliases=['chuck','cn']
+        aliases=['chuck', 'cn']
     )
-    async def chucknorris(self, ctx):
+    async def chucknorris(self, ctx, category: str = None):
+        """ Collects a random chuck norris joke, or collect a random joke
+            by specifying a specific category of joke. """
+        if not hasattr(self, 'chuck_categories'):
+            raise commands.BadArgument('Hold up partner, still locating Chuck!')
+
+        if category is None:
+            category = random.choice(self.chuck_categories)
+        else:
+            if category not in self.chuck_categories:
+                raise commands.BadArgument(f'Invalid or filtered chuck category: **{category}**')
+        
         try:
-            categories = ['animal','career','celebrity','dev','fashion','food','history','money',
-                    'movie','music','political','religion','science','sport','travel']
-            category = categories[random.randint(0, len(categories)-1)]
             async with self.client.session.get(f'https://api.chucknorris.io/jokes/random?category={category}') as response:
                 chuck = await response.json()
                 chuck = chuck['value']
@@ -680,6 +691,7 @@ class General(commands.Cog, name='General'):
                         )
                 embed.set_footer(text=f'Provided by: https://api.chucknorris.io')
                 await ctx.send(embed=embed)
+
         except:
             raise commands.BadArgument('Chuck not found, currently evading GPS in Texas!')
 
