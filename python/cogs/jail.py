@@ -347,7 +347,7 @@ class Jail(commands.Cog, name='Jail'):
 
     @commands.command(
         name='jail',
-        aliases=['silence', 'yeet'],
+        aliases=['silence', 'yeet', 'rm'],
         hidden=True,
     )
     async def jail(self, ctx, members: commands.Greedy[Member]):
