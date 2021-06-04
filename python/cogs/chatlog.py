@@ -39,7 +39,6 @@ class ChatLog(commands.Cog, name='Chat Log'):
         self.logfile.write('|'.join(paginator[:-1]) + '\n')
         self.logfile.flush()
 
-
         # send chat message to emkc
         if not msg.channel.guild.id == 473161189120147456:
             # prevent querying the emkc api if it's not felix

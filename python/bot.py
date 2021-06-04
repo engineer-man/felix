@@ -49,20 +49,11 @@ class Felix(Bot):
         superusers = self.config['superusers']
         return user.id in superusers
 
-    def user_is_ignored(self, user):
-        user_roles = [role.id for role in user.roles]
-        if self.config['ignore_role'] in user_roles:
-            return True
-        return False
-
-
-intents = Intents.all()
-
 client = Felix(
     command_prefix=when_mentioned_or('felix ', 'Felix '),
     description='Hi I am Felix!',
     max_messages=15000,
-    intents=intents,
+    intents=Intents.all(),
     allowed_mentions=AllowedMentions(everyone=False, users=True, roles=True)
 )
 
@@ -118,9 +109,8 @@ async def on_error(event_method, *args, **kwargs):
 
 @client.event
 async def on_message(msg):
+    # Ignore DMs
     if isinstance(msg.channel, DMChannel):
-        return
-    if client.user_is_ignored(msg.author):
         return
     await client.process_commands(msg)
 

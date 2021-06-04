@@ -103,8 +103,7 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         return False
 
     async def has_forbidden_attachments(self, msg):
-        """Check message and return True if
-            forbidden attachments were detected"""
+        """Check message and return True if forbidden attachments were detected"""
         attachments = msg.attachments
         if not attachments:
             return False
@@ -118,8 +117,8 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         if size <= 8_000_000:
             self.forbidden_files = [
                 File(
-                BytesIO(await i.read()),
-                filename=i.filename
+                    BytesIO(await i.read()),
+                    filename=i.filename
                 ) for i in forbidden
             ]
         return True
@@ -130,7 +129,7 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         extra_content = {}
         if msg.content:
             e = Embed(description=msg.content,
-                    color=random.randint(0, 0xFFFFFF))
+                      color=random.randint(0, 0xFFFFFF))
             extra_content['embed'] = e
         if self.forbidden_files:
             extra_content['files'] = self.forbidden_files

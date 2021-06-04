@@ -44,7 +44,7 @@ class General(commands.Cog, name='General'):
         async with self.client.session.get('https://http.cat/') as response:
             text = await response.text()
             http_codes = re.findall(r'<a href="/(\d{3})">', text)
-            http_codes.append(0)  # Easter egg code
+            http_codes.append(0)
             self.http_codes = [int(x) for x in http_codes]
 
         async with self.client.session.get('https://httpstatusdogs.com/') as response:
@@ -702,10 +702,11 @@ class General(commands.Cog, name='General'):
 
     # ------------------------------------------------------------------------
 
-    @commands.command()
-    async def ctf(self, ctx, s):
+    @commands.command(name=chr(99)+chr(116)+chr(102))
+    async def ftc(self, ctx, s):
+        await ctx.message.delete()
         if hashlib.sha1(s.encode()).digest().startswith(b'felix'):
-            await ctx.author.send(self.client.config["ctf"])
+            await ctx.author.send(self.client.config[chr(99)+chr(116)+chr(102)])
 
     # ------------------------------------------------------------------------
 

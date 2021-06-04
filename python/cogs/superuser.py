@@ -106,7 +106,7 @@ class Superuser(commands.Cog, name='Superuser'):
         hidden=True
     )
     async def shutdown(self, ctx):
-        """Stop/Restart the bot"""
+        """Stop/Restart the bot (requires the docker container to auto restart)"""
         await self.client.close()
 
 

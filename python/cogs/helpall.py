@@ -16,6 +16,7 @@ from discord.ext.commands import HelpCommand, DefaultHelpCommand
 
 #pylint: disable=E1101
 
+
 class myHelpCommand(HelpCommand):
     def __init__(self, **options):
         super().__init__(**options)
