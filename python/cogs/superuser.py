@@ -83,7 +83,7 @@ class Superuser(commands.Cog, name='Superuser'):
         name='setting',
         hidden=True,
     )
-    async def setting(self, ctx, setting_name: str, setting_value):
+    async def setting(self, ctx, setting_name: str, *, setting_value):
         """Change a setting
 
         Be careful with this one, as it could overwrite the bot_key or similar settings"""
