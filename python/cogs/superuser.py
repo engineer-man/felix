@@ -81,6 +81,7 @@ class Superuser(commands.Cog, name='Superuser'):
     # ----------------------------------------------
     @commands.command(
         name='setting',
+        aliases=['settings'],
         hidden=True,
     )
     async def setting(self, ctx, setting_name: str, *, setting_value):

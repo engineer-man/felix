@@ -27,6 +27,7 @@ import hashlib
 from inspect import getsourcelines
 from datetime import datetime as dt
 from urllib.parse import quote_plus
+import discord
 
 from discord.ext import commands, tasks
 from discord import Embed, DMChannel, Member
@@ -37,21 +38,27 @@ from discord import Embed, DMChannel, Member
 class General(commands.Cog, name='General'):
     def __init__(self, client):
         self.client = client
-        self.load_http_codes.start()
+        self.load_cat_http_codes.start()
+        self.load_dog_http_codes.start()
+        self.load_chuck_http_codes.start()
 
     @tasks.loop(count=1)
-    async def load_http_codes(self):
+    async def load_cat_http_codes(self):
         async with self.client.session.get('https://http.cat/') as response:
             text = await response.text()
             http_codes = re.findall(r'<a href="/(\d{3})">', text)
             http_codes.append(0)
             self.http_codes = [int(x) for x in http_codes]
 
+    @tasks.loop(count=1)
+    async def load_dog_http_codes(self):
         async with self.client.session.get('https://httpstatusdogs.com/') as response:
             text = await response.text()
             http_codes_dog = re.findall(r'<a href=\"(\d{3})-[^\"]*\"', text)
             self.http_codes_dog = [int(x) for x in http_codes_dog]
 
+    @tasks.loop(count=1)
+    async def load_chuck_http_codes(self):
         async with self.client.session.get('https://api.chucknorris.io/jokes/categories') as response:
             categories = await response.json()
             self.chuck_categories = [x for x in categories if x != 'explicit']
@@ -98,9 +105,6 @@ class General(commands.Cog, name='General'):
 
         # Ignore DM
         if isinstance(msg.channel, DMChannel):
-            return
-
-        if self.client.user_is_ignored(msg.author):
             return
 
         if re.search(r'(?i).*what a twist.*', msg.content):
@@ -308,32 +312,6 @@ class General(commands.Cog, name='General'):
         e = Embed(title='Font Formatting',
                   url=link,
                   description=font_instructions,
-                  color=0x2ECC71)
-        await ctx.send(embed=e)
-
-    @howto.command(
-        name='sticker',
-        aliases=['stickers', 'apply-stickers']
-    )
-    async def sticker(self, ctx):
-        """Show help with applying stickers"""
-        sticker_instructions = (
-            "To ensure your sticker will hold on for a while, we have to"
-            " prepare the surface of the device. Get a paper towel or rag and "
-            "rubbing alcohol or glass cleaner. Apply a bit of your cleaner of your "
-            "choice and clean of any dust, fingerprints and smudges. Then grab new "
-            "paper towel any dry the surface. \n"
-            "Get your sticker and **peel off the back the side**, line your sticker "
-            "and press the sticker against the surface. Try to get air pockers out "
-            "sticker. Now peel off the front side carefully while checking no letters"
-            " have sticked on the front peel. \n And boom, you are done."
-            "\n\n**Getting EM stickers**\n"
-            "EngineerMan\'s stickers are limited edition, he usually announces when "
-            "new batch is coming out. Stay tuned for more stickers coming out soon."
-
-        )
-        e = Embed(title='Applying stickers',
-                  description=sticker_instructions,
                   color=0x2ECC71)
         await ctx.send(embed=e)
 
@@ -662,52 +640,14 @@ class General(commands.Cog, name='General'):
 
     # ------------------------------------------------------------------------
 
-    @commands.command(
-        name='chucknorris',
-        aliases=['chuck', 'cn']
-    )
-    async def chucknorris(self, ctx, category: str = None):
-        """ Collects a random chuck norris joke, or collect a random joke
-            by specifying a specific category of joke. """
-        if not hasattr(self, 'chuck_categories'):
-            raise commands.BadArgument('Hold up partner, still locating Chuck!')
-
-        if category is None:
-            category = random.choice(self.chuck_categories)
-        else:
-            if category not in self.chuck_categories:
-                raise commands.BadArgument(
-                    f'Invalid category - please pick from:\n{", ".join(self.chuck_categories)}'
-                )
-
-        try:
-            async with self.client.session.get(
-                f'https://api.chucknorris.io/jokes/random?category={category}'
-            ) as response:
-                chuck = await response.json()
-                chuck = chuck['value']
-
-                embed = Embed(
-                    description=chuck,
-                    color=random.randint(0, 0xFFFFFF))
-                embed.set_author(
-                    name='Chuck Norris fun fact...',
-                    icon_url=f'https://assets.chucknorris.host/img/avatar/chuck-norris.png'
-                )
-                embed.set_footer(text=f'Category: {category} - https://api.chucknorris.io')
-                await ctx.send(embed=embed)
-
-        except:
-            raise commands.BadArgument('Chuck not found, currently evading GPS in Texas!')
-
-    # ------------------------------------------------------------------------
-
-    @commands.command(name=chr(99)+chr(116)+chr(102))
+    @commands.command(name=chr(99)+chr(116)+chr(102), hidden=True)
     async def ftc(self, ctx, s):
         await ctx.message.delete()
         if hashlib.sha1(s.encode()).digest().startswith(b'felix'):
-            await ctx.author.send(self.client.config[chr(99)+chr(116)+chr(102)])
-
+            try:
+                await ctx.author.send(self.client.config[chr(99)+chr(116)+chr(102)])
+            except discord.errors.Forbidden:
+                return
     # ------------------------------------------------------------------------
 
     @commands.command(
@@ -751,6 +691,44 @@ class General(commands.Cog, name='General'):
         embed.set_image(url=f'https://httpstatusdogs.com/img/{code}.jpg')
         embed.set_footer(text=f'Provided by: https://httpstatusdogs.com/')
         await ctx.send(embed=embed)
+
+    @commands.command(
+        name='chucknorris',
+        aliases=['chuck', 'cn']
+    )
+    async def chucknorris(self, ctx, category: str = None):
+        """ Collects a random chuck norris joke, or collect a random joke
+            by specifying a specific category of joke. """
+        if not hasattr(self, 'chuck_categories'):
+            raise commands.BadArgument('Hold up partner, still locating Chuck!')
+
+        if category is None:
+            category = random.choice(self.chuck_categories)
+        else:
+            if category not in self.chuck_categories:
+                raise commands.BadArgument(
+                    f'Invalid category - please pick from:\n{", ".join(self.chuck_categories)}'
+                )
+
+        try:
+            async with self.client.session.get(
+                f'https://api.chucknorris.io/jokes/random?category={category}'
+            ) as response:
+                chuck = await response.json()
+                chuck = chuck['value']
+
+                embed = Embed(
+                    description=chuck,
+                    color=random.randint(0, 0xFFFFFF))
+                embed.set_author(
+                    name='Chuck Norris fun fact...',
+                    icon_url=f'https://assets.chucknorris.host/img/avatar/chuck-norris.png'
+                )
+                embed.set_footer(text=f'Category: {category} - https://api.chucknorris.io')
+                await ctx.send(embed=embed)
+
+        except:
+            raise commands.BadArgument('Chuck not found, currently evading GPS in Texas!')
 
     # ------------------------------------------------------------------------
 
