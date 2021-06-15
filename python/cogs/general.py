@@ -18,6 +18,8 @@ Commands:
     statuscat       Commands that gives the requested HTTP statuses described and visualized by cats."
     statusdog       Commands that gives the requested HTTP statuses described and visualized by dogs."
     chucknorris     Shows a random chuck norris fun fact
+    nasa            NASA's Astronomy Picture of the Day
+     └ date         Astronomy for date YYYY-MM-DD (Statring Jun 16, 1995) 
 """
 
 import re
@@ -729,6 +731,44 @@ class General(commands.Cog, name='General'):
 
         except:
             raise commands.BadArgument('Chuck not found, currently evading GPS in Texas!')
+
+    # ------------------------------------------------------------------------
+
+    @commands.command(name='nasa',
+    aliases=['apod', 'space']
+    )
+    async def apod_day(self, ctx, date: str = ''):
+        """Show todays APOD picture/video link if no date selected"""
+        async with self.client.session.get(
+            'https://api.nasa.gov/planetary/apod'
+            + f'?api_key={self.client.config["nasa_key"]}&date={date}'
+        ) as response:
+
+            apod_data = await response.json()
+            if apod_data.get('code', 200) != 200:
+                raise commands.BadArgument(apod_data.get('msg', 'Error'))
+            embed = Embed(description=apod_data['explanation'],
+                          color=random.randint(0, 0xFFFFFF))
+
+            if apod_data['media_type'] == 'image':
+                embed.set_image(url=apod_data['hdurl'])
+            else:
+                embed.add_field(name='Video URI', value=apod_data['url'])
+            embed.set_author(
+                name=apod_data['title'],
+                icon_url='https://api.nasa.gov/assets/img/favicons/favicon-192.png')
+
+            if 'copyright' in apod_data:
+                embed.set_footer(
+                    text=f'Copyright: {apod_data["copyright"]}\n'
+                    + f'Date: {apod_data["date"]}\n'
+                    + 'Provided By: https://api.nasa.gov/')
+            else:
+                embed.set_footer(
+                    text=f'Date: {apod_data["date"]}\n'
+                    + 'Provided By: https://api.nasa.gov/')
+
+            await ctx.send(embed=embed)
 
     # ------------------------------------------------------------------------
 
