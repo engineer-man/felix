@@ -26,5 +26,6 @@
     "emkc_key": "",
     "wolfram_key" : "",
     "github_key" : "",
-    "aoc_key" : ""
+    "aoc_key" : "",
+    "nasa_key": "DEMO_KEY"
 }
