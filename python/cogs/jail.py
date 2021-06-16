@@ -87,7 +87,6 @@ class Jail(commands.Cog, name='Jail'):
             'seconds.\n**I have disabled welcome messages and set the verification '
             f'level to "highest"**.\n'
             'Options:\n • `felix flood list` to see the usernames\n'
-            '• `felix flood jailall` to jail them all (please only run once)\n'
             '• `felix flood clear` to clear the list, enable welcome messages '
             'and reset the verification level to "medium".'
         )
