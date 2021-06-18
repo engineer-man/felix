@@ -19,7 +19,7 @@ Commands:
     statusdog       Commands that gives the requested HTTP statuses described and visualized by dogs."
     chucknorris     Shows a random chuck norris fun fact
     nasa            NASA's Astronomy Picture of the Day
-     └ date         Astronomy for date YYYY-MM-DD (Statring Jun 16, 1995) 
+     └ date         Astronomy for date YYYY-MM-DD or DD MonthName YYYY (Starting Jun 16, 1995)
 """
 
 import re
@@ -737,8 +737,38 @@ class General(commands.Cog, name='General'):
     @commands.command(name='nasa',
     aliases=['apod', 'space']
     )
-    async def apod_day(self, ctx, date: str = ''):
+    async def apod_day(self, ctx, *date: str):
         """Show todays APOD picture/video link if no date selected"""
+        date = ' '.join(date)
+        
+        if re.match('\d{4}-\d{1,2}-\d{1,2}', date):
+            year, month, day = date.split('-')
+        elif re.match('\d{1,2}\s\w{1,}\s\d{4}', date):
+            months = 'january-february-march-april-may-june-july-august-september-october-november-december'.split('-')
+            day, month, year = date.split()
+            month = month.lower()
+            if month not in months:
+                raise commands.BadArgument(f'{month} is not a month.')
+            month = months.index(month) + 1
+            date = f'{year}-{month}-{day}'
+        elif date == '':
+            pass
+        else:
+            raise commands.BadArgument('Incorrect date format, must be YYYY-MM-DD or DD MonthName YYYY.')
+
+        try:
+            dt(int(year), int(month), int(day))
+        except ValueError as e:
+            raise commands.BadArgument(f'Incorrect date, change {str(e).split()[0]}.')
+        except UnboundLocalError:
+            date = ''
+        try:
+            if not 1995 <= int(year) <= 2021 or not 1 <= int(month) <= 12 or not 1 <= int(day) <= 31:
+                raise commands.BadArgument(f'Date must be between Jun 16, 1995 and Jun 18, 2021.')
+        except UnboundLocalError:
+            pass
+        
+
         async with self.client.session.get(
             'https://api.nasa.gov/planetary/apod'
             + f'?api_key={self.client.config["nasa_key"]}&date={date}'
