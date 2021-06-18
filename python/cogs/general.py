@@ -19,7 +19,6 @@ Commands:
     statusdog       Commands that gives the requested HTTP statuses described and visualized by dogs."
     chucknorris     Shows a random chuck norris fun fact
     nasa            NASA's Astronomy Picture of the Day
-     └ date         Astronomy for date YYYY-MM-DD (Statring Jun 16, 1995) 
 """
 
 import re
@@ -34,7 +33,7 @@ import discord
 from discord.ext import commands, tasks
 from discord import Embed, DMChannel, Member
 
-#pylint: disable=E1101
+# pylint: disable=E1101
 
 
 class General(commands.Cog, name='General'):
@@ -734,20 +733,24 @@ class General(commands.Cog, name='General'):
 
     # ------------------------------------------------------------------------
 
-    @commands.command(name='nasa',
-    aliases=['apod', 'space']
+    @commands.command(
+        name='nasa',
+        aliases=['apod', 'space']
     )
     async def apod_day(self, ctx, date: str = ''):
-        """Show todays APOD picture/video link if no date selected"""
+        """ Show "Astronomy Picture of the Day" of specified date (YYYY-MM-DD)
+            Show today's picture if no date is provided"""
+        if '-' not in date and date.isnumeric() and len(date) == 8:
+            date = '-'.join((date[:4], date[4:6], date[6:8]))
         async with self.client.session.get(
             'https://api.nasa.gov/planetary/apod'
             + f'?api_key={self.client.config["nasa_key"]}&date={date}'
         ) as response:
 
-            apod_data = await response.json()
+            apod_data=await response.json()
             if apod_data.get('code', 200) != 200:
                 raise commands.BadArgument(apod_data.get('msg', 'Error'))
-            embed = Embed(description=apod_data['explanation'],
+            embed=Embed(description=apod_data['explanation'],
                           color=random.randint(0, 0xFFFFFF))
 
             if apod_data['media_type'] == 'image':
@@ -772,22 +775,22 @@ class General(commands.Cog, name='General'):
 
     # ------------------------------------------------------------------------
 
-    @staticmethod
+    @ staticmethod
     def result_fmt(url: str, language: str, body_text: str) -> str:
         """Format Result."""
-        body_space = min(1992 - len(language) - len(url), 1000)
+        body_space=min(1992 - len(language) - len(url), 1000)
 
         if len(body_text) > body_space:
-            description = (
+            description=(
                 f'**Result Of cht.sh**\n```{language}\n{body_text[:body_space - 20]}'
                 + f'\n... (truncated - too many lines)```\nFull results: {url} '
             )
             return description
 
-        description = f'**Result Of cht.sh**\n```{language}\n{body_text}```\n{url}'
+        description=f'**Result Of cht.sh**\n```{language}\n{body_text}```\n{url}'
         return description
 
-    @commands.command(
+    @ commands.command(
         name='cheat',
         aliases=('cht.sh', 'cheatsheet', 'cheat-sheet', 'cht'),
     )
@@ -795,17 +798,17 @@ class General(commands.Cog, name='General'):
             self, ctx, language: str, *search_terms: str
     ) -> None:
         """Search cheat.sh."""
-        url = f'https://cheat.sh/{quote_plus(language)}'
+        url=f'https://cheat.sh/{quote_plus(language)}'
         if search_terms:
             url += f'/{quote_plus(" ".join(search_terms))}'
-        escape_tt = str.maketrans({'`': '\\`'})
-        ansi_re = re.compile(r'\x1b\[.*?m')
+        escape_tt=str.maketrans({'`': '\\`'})
+        ansi_re=re.compile(r'\x1b\[.*?m')
 
         async with self.client.session.get(
                 url,
                 headers={'User-Agent': 'curl/7.68.0'}
         ) as response:
-            result = ansi_re.sub('', await response.text()).translate(escape_tt)
+            result=ansi_re.sub('', await response.text()).translate(escape_tt)
 
         await ctx.send(self.result_fmt(url, language, result))
 
