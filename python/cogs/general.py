@@ -764,7 +764,7 @@ class General(commands.Cog, name='General'):
             date = ''
         try:
             if not 1995 <= int(year) <= 2021 or not 1 <= int(month) <= 12 or not 1 <= int(day) <= 31:
-                raise commands.BadArgument(f'Date must be between Jun 16, 1995 and Jun 18, 2021.')
+                raise commands.BadArgument(f'Date must be between Jun 16, 1995 and Today.')
         except UnboundLocalError:
             pass
         
