@@ -26,7 +26,7 @@ class Stream(commands.Cog, name='Stream'):
         self.forwarded_questions = dict()
         self.reaction_in_progress = set()
         self.youtube_api = None
-        self.check_date = datetime(2000, 1, 1)
+        self.check_date = datetime.fromisoformat('2021-01-01T00:00:00.000000+00:00')
 
     async def cog_check(self, ctx):
         return self.client.user_is_superuser(ctx.author)
@@ -364,7 +364,6 @@ class Stream(commands.Cog, name='Stream'):
                     break
             if not prefix_len:
                 continue
-
             await self.stage_question(
                 message_text[prefix_len:],
                 author_name,
