@@ -42,7 +42,7 @@ class General(commands.Cog, name='General'):
         self.load_cat_http_codes.start()
         self.load_dog_http_codes.start()
         self.load_chuck_http_codes.start()
-        self.conversion_regex = re.compile(r'(?i)(?P<num>[0-9]*\.?[0-9]+)\s*(?P<unit>[a-zA-Z°]*)')
+        self.re_converter = re.compile(r'(?i)(?P<num>[0-9]*(?:\.[0-9]*)?)\s*(?P<unit>[a-zA-Z°]+)')
 
     @tasks.loop(count=1)
     async def load_cat_http_codes(self):
@@ -171,7 +171,7 @@ class General(commands.Cog, name='General'):
         ):
             await msg.channel.send('ฅ^•ﻌ•^ฅ')
 
-        if match := self.conversion_regex.search(msg.content):
+        if match := self.re_converter.search(msg.content):
             unit_map = {
                 'miles' : 'miles',
                 'mile' : 'miles',
