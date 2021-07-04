@@ -42,6 +42,7 @@ class General(commands.Cog, name='General'):
         self.load_cat_http_codes.start()
         self.load_dog_http_codes.start()
         self.load_chuck_http_codes.start()
+        self.conversion_regex = re.compile(r'(?i)(?P<num>[0-9]*\.?[0-9]+)\s*(?P<unit>[a-zA-Z°]*)')
 
     @tasks.loop(count=1)
     async def load_cat_http_codes(self):
@@ -169,6 +170,36 @@ class General(commands.Cog, name='General'):
             msg.content
         ):
             await msg.channel.send('ฅ^•ﻌ•^ฅ')
+
+        if match := self.conversion_regex.search(msg.content):
+            unit_map = {
+                'miles' : 'miles',
+                'mile' : 'miles',
+                'km' : 'km',
+                'kilometer' : 'km',
+                'kilometers' : 'km',
+                'kilometre' : 'km',
+                'kilometres' : 'km',
+                '°f' : '°F',
+                'fahrenheit' : '°F',
+                '°fahrenheit' : '°F',
+                '°c' : '°C',
+                'celsius' : '°C',
+                '°celsius' : '°C',
+            }
+            conversions = {
+                'miles': (lambda x:x*1.609344, 'km'),
+                'km': (lambda x:x*0.6213712, 'miles'),
+                '°F': (lambda x:(x-32)/1.8, '°C'),
+                '°C': (lambda x:x*1.8+32, '°F'),
+            }
+            n, unit = match.groups()
+            if unit.lower() not in unit_map:
+                return
+            unit = unit_map[unit.lower()]
+            n = float(n)
+            converter, new = conversions[unit]
+            await msg.channel.send(f'{round(n, 2)} {unit} = {round(converter(n), 2)} {new}')
 
     # ----------------------------------------------
     # Cog Commands
@@ -775,7 +806,7 @@ class General(commands.Cog, name='General'):
 
     # ------------------------------------------------------------------------
 
-    @ staticmethod
+    @staticmethod
     def result_fmt(url: str, language: str, body_text: str) -> str:
         """Format Result."""
         body_space=min(1992 - len(language) - len(url), 1000)
