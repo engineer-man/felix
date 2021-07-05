@@ -152,6 +152,8 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         )
         # ignore spoiler tags
         my_msg.content = my_msg.content.replace('||', '')
+        if msg.author.bot:
+            return False
         if self.is_dm(my_msg):
             return False
         if self.is_allowed(my_msg):
