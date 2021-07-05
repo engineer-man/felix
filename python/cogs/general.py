@@ -172,31 +172,29 @@ class General(commands.Cog, name='General'):
             await msg.channel.send('ฅ^•ﻌ•^ฅ')
 
         if match := self.re_converter.search(msg.content):
-            unit_map = {
-                'miles' : 'miles',
+            unit_aliases = {
                 'mile' : 'miles',
-                'km' : 'km',
                 'kilometer' : 'km',
                 'kilometers' : 'km',
                 'kilometre' : 'km',
                 'kilometres' : 'km',
-                '°f' : '°F',
-                'fahrenheit' : '°F',
-                '°fahrenheit' : '°F',
-                '°c' : '°C',
-                'celsius' : '°C',
-                '°celsius' : '°C',
+                'fahrenheit' : '°f',
+                '°fahrenheit' : '°f',
+                'celsius' : '°c',
+                '°celsius' : '°c',
             }
             conversions = {
                 'miles': (lambda x:x*1.609344, 'km'),
                 'km': (lambda x:x*0.6213712, 'miles'),
-                '°F': (lambda x:(x-32)/1.8, '°C'),
-                '°C': (lambda x:x*1.8+32, '°F'),
+                '°f': (lambda x:(x-32)/1.8, '°C'),
+                '°c': (lambda x:x*1.8+32, '°F'),
+                'lb': (lambda x:x*0.4535924, 'kg'),
+                'kg': (lambda x:x*2.204623, 'lb'),
             }
             n, unit = match.groups()
-            if unit.lower() not in unit_map:
+            if unit.lower() not in unit_aliases | conversions:
                 return
-            unit = unit_map[unit.lower()]
+            unit = unit_aliases.get(unit.lower(), unit)
             n = float(n)
             converter, new = conversions[unit]
             await msg.channel.send(f'{round(n, 2)} {unit} = {round(converter(n), 2)} {new}')
