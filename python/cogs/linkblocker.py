@@ -76,10 +76,11 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
                         self.naughty_list.pop(str(msg.author.id))
                     else:
                         return True
-                await msg.channel.send(
-                    f'Sorry {msg.author.mention}. ' +
-                    'Posting links to other servers is not allowed.'
-                )
+                if not msg.author.bot:
+                    await msg.channel.send(
+                        f'Sorry {msg.author.mention}. ' +
+                        'Posting links to other servers is not allowed.'
+                    )
                 self.naughty_list[str(msg.author.id)] = time.time()
             return True
         return False
@@ -152,8 +153,6 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         )
         # ignore spoiler tags
         my_msg.content = my_msg.content.replace('||', '')
-        if msg.author.bot:
-            return False
         if self.is_dm(my_msg):
             return False
         if self.is_allowed(my_msg):
@@ -173,13 +172,15 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
     async def on_message(self, msg):
         if await self.check_message(msg):
             await msg.delete()
-            await self.post_report(msg)
+            if not msg.author.bot:
+                await self.post_report(msg)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
         if await self.check_message(after):
             await after.delete()
-            await self.post_report(after)
+            if not after.author.bot:
+                await self.post_report(after)
 
     # ----------------------------------------------
     # Command to allow 1 discord.gg link
