@@ -65,7 +65,7 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
 
     async def has_discord_link(self, msg):
         """Check message and return True if a discord link was detected"""
-        if len(re.findall(r'(?i)(discord\.(gg|io|me|com\/invite)\/\S+)', msg.content)):
+        if len(re.findall(r'(?i)(discord(app)?\.(gg|io|me|co|com\/invite)\/\S+)', msg.content)):
             if msg.author.id in self.allowed_once:
                 self.allowed_once.remove(msg.author.id)
                 return False
@@ -155,8 +155,8 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         my_msg.content = my_msg.content.replace('||', '')
         if self.is_dm(my_msg):
             return False
-        if self.is_allowed(my_msg):
-            return False
+        # if self.is_allowed(my_msg):
+            # return False
         if await self.has_discord_link(my_msg):
             return True
         if await self.has_forbidden_text(my_msg):
