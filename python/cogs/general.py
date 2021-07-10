@@ -352,20 +352,20 @@ class General(commands.Cog, name='General'):
     async def links(self, ctx):
         """Show links to all things EngineerMan"""
         links = (
-            '• Youtube: <https://www.youtube.com/engineerman>'
-            + '\n• Discord: <https://engineerman.org/discord>'
-            + '\n• EMKC: <https://emkc.org/>'
-            + '\n• EMKC Snippets: <https://emkc.org/snippets>'
-            + '\n• EMKC Challenges: <https://emkc.org/challenges>'
-            + '\n• Github Youtube: <https://github.com/engineer-man/youtube-code>'
-            + '\n• Github EMKC: <https://github.com/engineer-man/emkc>'
-            + '\n• Github Felix: <https://github.com/engineer-man/felix>'
-            + '\n• Github Piston: <https://github.com/engineer-man/piston>'
-            + '\n• Github Piston-Bot: <https://github.com/engineer-man/piston-bot>'
-            + '\n• Twitter: <https://twitter.com/_EngineerMan>'
-            + '\n• Facebook: <https://www.facebook.com/engineermanyt>'
-            + '\n• Reddit: <https://www.reddit.com/r/engineerman/>'
-            + '\n• Reddit Resources: <https://www.reddit.com/r/engineerman/search/?q=flair%3AResource&restrict_sr=1>'
+            '• [Youtube](https://www.youtube.com/engineerman)'
+            + '\n• [Discord](https://engineerman.org/discord)'
+            + '\n• [EMKC](https://emkc.org/)'
+            + '\n• [EMKC Snippets](https://emkc.org/snippets)'
+            + '\n• [EMKC Challenges](https://emkc.org/challenges)'
+            + '\n• [Github Youtube](https://github.com/engineer-man/youtube-code)'
+            + '\n• [Github EMKC](https://github.com/engineer-man/emkc)'
+            + '\n• [Github Felix](https://github.com/engineer-man/felix)'
+            + '\n• [Github Piston](https://github.com/engineer-man/piston)'
+            + '\n• [Github Piston-Bot](https://github.com/engineer-man/piston-bot)'
+            + '\n• [Twitter](https://twitter.com/_EngineerMan)'
+            + '\n• [Facebook](https://www.facebook.com/engineermanyt)'
+            + '\n• [Reddit](https://www.reddit.com/r/engineerman/)'
+            + '\n• [Reddit Resources](https://www.reddit.com/r/engineerman/search/?q=flair%3AResource&restrict_sr=1)'
         )
         e = Embed(
             title='Links',
