@@ -155,8 +155,8 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         my_msg.content = my_msg.content.replace('||', '')
         if self.is_dm(my_msg):
             return False
-        # if self.is_allowed(my_msg):
-            # return False
+        if self.is_allowed(my_msg):
+            return False
         if await self.has_discord_link(my_msg):
             return True
         if await self.has_forbidden_text(my_msg):
