@@ -616,6 +616,7 @@ class General(commands.Cog, name='General'):
             location = f"{location} {units}"
             units = "m"
         location = location.replace('.png', '')
+        location = location.replace('`', '')
         moon = location.startswith('moon')
         url = (
             'https://wttr.in/'
