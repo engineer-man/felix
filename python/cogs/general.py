@@ -173,30 +173,30 @@ class General(commands.Cog, name='General'):
 
         if match := self.re_converter.search(msg.content):
             unit_aliases = {
-                'mile' : 'miles',
-                'kilometer' : 'km',
-                'kilometers' : 'km',
-                'kilometre' : 'km',
-                'kilometres' : 'km',
-                'fahrenheit' : '°f',
-                '°fahrenheit' : '°f',
-                'celsius' : '°c',
-                '°celsius' : '°c',
+                'mile': 'miles',
+                'kilometer': 'km',
+                'kilometers': 'km',
+                'kilometre': 'km',
+                'kilometres': 'km',
+                'fahrenheit': '°f',
+                '°fahrenheit': '°f',
+                'celsius': '°c',
+                '°celsius': '°c',
             }
             conversions = {
-                'miles': (lambda x:x*1.609344, 'km'),
-                'km': (lambda x:x*0.6213712, 'miles'),
-                '°f': (lambda x:(x-32)/1.8, '°C'),
-                '°c': (lambda x:x*1.8+32, '°F'),
-                'lb': (lambda x:x*0.4535924, 'kg'),
-                'kg': (lambda x:x*2.204623, 'lb'),
+                'miles': (lambda x: x*1.609344, 'km'),
+                'km': (lambda x: x*0.6213712, 'miles'),
+                '°f': (lambda x: (x-32)/1.8, '°C'),
+                '°c': (lambda x: x*1.8+32, '°F'),
+                'lb': (lambda x: x*0.4535924, 'kg'),
+                'kg': (lambda x: x*2.204623, 'lb'),
             }
             n, unit = match.groups()
             if unit.lower() not in unit_aliases | conversions:
                 return
             unit = unit_aliases.get(unit.lower(), unit)
             n = float(n)
-            converter, new = conversions[unit]
+            converter, new = conversions[unit.lower()]
             await msg.channel.send(f'{round(n, 2)} {unit} = {round(converter(n), 2)} {new}')
 
     # ----------------------------------------------
@@ -777,10 +777,10 @@ class General(commands.Cog, name='General'):
             + f'?api_key={self.client.config["nasa_key"]}&date={date}'
         ) as response:
 
-            apod_data=await response.json()
+            apod_data = await response.json()
             if apod_data.get('code', 200) != 200:
                 raise commands.BadArgument(apod_data.get('msg', 'Error'))
-            embed=Embed(description=apod_data['explanation'],
+            embed = Embed(description=apod_data['explanation'],
                           color=random.randint(0, 0xFFFFFF))
 
             if apod_data['media_type'] == 'image':
@@ -808,16 +808,16 @@ class General(commands.Cog, name='General'):
     @staticmethod
     def result_fmt(url: str, language: str, body_text: str) -> str:
         """Format Result."""
-        body_space=min(1992 - len(language) - len(url), 1000)
+        body_space = min(1992 - len(language) - len(url), 1000)
 
         if len(body_text) > body_space:
-            description=(
+            description = (
                 f'**Result Of cht.sh**\n```{language}\n{body_text[:body_space - 20]}'
                 + f'\n... (truncated - too many lines)```\nFull results: {url} '
             )
             return description
 
-        description=f'**Result Of cht.sh**\n```{language}\n{body_text}```\n{url}'
+        description = f'**Result Of cht.sh**\n```{language}\n{body_text}```\n{url}'
         return description
 
     @ commands.command(
@@ -828,17 +828,17 @@ class General(commands.Cog, name='General'):
             self, ctx, language: str, *search_terms: str
     ) -> None:
         """Search cheat.sh."""
-        url=f'https://cheat.sh/{quote_plus(language)}'
+        url = f'https://cheat.sh/{quote_plus(language)}'
         if search_terms:
             url += f'/{quote_plus(" ".join(search_terms))}'
-        escape_tt=str.maketrans({'`': '\\`'})
-        ansi_re=re.compile(r'\x1b\[.*?m')
+        escape_tt = str.maketrans({'`': '\\`'})
+        ansi_re = re.compile(r'\x1b\[.*?m')
 
         async with self.client.session.get(
                 url,
                 headers={'User-Agent': 'curl/7.68.0'}
         ) as response:
-            result=ansi_re.sub('', await response.text()).translate(escape_tt)
+            result = ansi_re.sub('', await response.text()).translate(escape_tt)
 
         await ctx.send(self.result_fmt(url, language, result))
 
