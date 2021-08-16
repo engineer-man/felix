@@ -61,33 +61,14 @@ class Purge(commands.Cog, name='Purge'):
     @commands.command(
         name='purge_user',
         hidden=True,
-        aliases=['purgeu', 'purgeuser'],
+        aliases=['purgeuser'],
     )
     async def purge_user(
         self, ctx,
         user: User,
-        num_messages: typing.Optional[int] = 100,
-    ):
-        """Clear all messagges of <User> withing the last [n=100] messages"""
-        channel = ctx.message.channel
-
-        def check(msg):
-            return msg.author.id == user.id
-
-        await ctx.message.delete()
-        await channel.purge(limit=num_messages, check=check, before=None)
-
-    @commands.command(
-        name='purge_user_time',
-        hidden=True,
-        aliases=['purgeut', 'purgeusertime'],
-    )
-    async def purge_user_time(
-        self, ctx,
-        user: User,
         num_minutes: typing.Optional[int] = 5,
     ):
-        """Clear all messages of <User> in every channel withing the last [n=5] minutes"""
+        """Clear all messages of <User> in every channel within the last [n=5] minutes"""
         after = ctx.message.created_at - timedelta(minutes=num_minutes)
 
         def check(msg):
