@@ -8,10 +8,10 @@ Commands:
 
 Only users that have an admin role can use the commands.
 """
-
 import typing
+from datetime import timedelta
 from discord.ext import commands
-from discord import User, errors
+from discord import User, errors, TextChannel, Forbidden
 
 
 class Purge(commands.Cog, name='Purge'):
@@ -76,6 +76,30 @@ class Purge(commands.Cog, name='Purge'):
 
         await ctx.message.delete()
         await channel.purge(limit=num_messages, check=check, before=None)
+
+    @commands.command(
+        name='purge_user_time',
+        hidden=True,
+        aliases=['purgeut', 'purgeusertime'],
+    )
+    async def purge_user_time(
+        self, ctx,
+        user: User,
+        num_minutes: typing.Optional[int] = 5,
+    ):
+        """Clear all messages of <User> in every channel withing the last [n=5] minutes"""
+        after = ctx.message.created_at - timedelta(minutes=num_minutes)
+
+        def check(msg):
+            return msg.author.id == user.id
+
+        await ctx.message.delete()
+        for channel in await ctx.guild.fetch_channels():
+            if type(channel) is TextChannel:
+                try:
+                    await channel.purge(limit=10*num_minutes, check=check, after=after)
+                except Forbidden:
+                    continue
 
 
 def setup(client):
