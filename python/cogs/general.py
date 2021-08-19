@@ -41,6 +41,7 @@ class General(commands.Cog, name='General'):
         self.client = client
         self.load_cat_http_codes.start()
         self.load_dog_http_codes.start()
+        self.load_duck_http_codes.start()
         self.load_chuck_http_codes.start()
         self.re_converter = re.compile(r'(?i)(?P<num>-?[0-9]+(?:\.[0-9]*)?)\s?(?P<unit>[a-zA-Z°]+)')
 
@@ -58,6 +59,12 @@ class General(commands.Cog, name='General'):
             text = await response.text()
             http_codes_dog = re.findall(r'<a href=\"(\d{3})-[^\"]*\"', text)
             self.http_codes_dog = [int(x) for x in http_codes_dog]
+
+    @tasks.loop(count=1)
+    async def load_duck_http_codes(self):
+        async with self.client.session.get('https://random-d.uk/api/v2/list') as response:
+            json = await response.json()
+            self.http_codes_duck = [int(re.findall("\d+", x)[0]) for x in json["http"]]
 
     @tasks.loop(count=1)
     async def load_chuck_http_codes(self):
@@ -227,7 +234,7 @@ class General(commands.Cog, name='General'):
 
     @commands.command(
         name='search',
-        aliases=['lmgtfy', 'duck', 'duckduckgo', 'google']
+        aliases=['lmgtfy', 'duckduckgo', 'google']
     )
     async def search(self, ctx, *, search_text):
         """Post a duckduckgo search link"""
@@ -721,6 +728,27 @@ class General(commands.Cog, name='General'):
         embed = Embed()
         embed.set_image(url=f'https://httpstatusdogs.com/img/{code}.jpg')
         embed.set_footer(text=f'Provided by: https://httpstatusdogs.com/')
+        await ctx.send(embed=embed)
+
+    @commands.command(
+        name='statusduck',
+        aliases=['duck', 'quack']
+    )
+    async def statusduck(self, ctx, code: int = None):
+        """Sends an embed with an image of a duck, portraying the status code.
+           If no status code is given it will return a random status duck."""
+        if not hasattr(self, 'http_codes_duck'):
+            raise commands.BadArgument('HTTP ducks codes not loaded yet')
+
+        if code is None:
+            code = random.choice(self.http_codes_duck)
+        else:
+            if code not in self.http_codes_duck:
+                raise commands.BadArgument(f'Invalid status code: **{code}**')
+
+        embed = Embed()
+        embed.set_image(url=f'https://random-d.uk/api/v2/http/{code}')
+        embed.set_footer(text=f'Provided by: https://random-d.uk/')
         await ctx.send(embed=embed)
 
     @commands.command(
