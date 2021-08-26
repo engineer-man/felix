@@ -1,7 +1,7 @@
 """This is a cog for a discord.py bot.
 It will provide commands to jail users
 and auto jail users for excessive messaging.
-It also includes aommands to handle server flooding.
+It also includes commands to handle server flooding.
 
 Commands:
     flood       print flood help message
