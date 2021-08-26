@@ -171,6 +171,12 @@ class General(commands.Cog, name='General'):
         ):
             await msg.channel.send('ฅ^•ﻌ•^ฅ')
 
+        if re.search(
+            r'(?i)^felix what(?:\'s| is) the answer to life,? the universe and everything',
+            msg.content
+        ):
+            await msg.channel.send('42')
+
         if match := self.re_converter.search(msg.content):
             unit_aliases = {
                 'mile': 'miles',
