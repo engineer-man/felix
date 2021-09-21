@@ -21,6 +21,7 @@ HOLIDAY_DICT = {
     "0704": "watching freedom fireworks 🎇",
     "0817": "playing it's my Birthday 🎂",
     "1003": "watching people being united 🍺",
+    "1031": "out drinking with my skeleton buddies ☠️,
     "1109": "watching walls crumble 🧱",
     "1111": "observing those who sacrificed 🎖️",
     "1224": "watching christmas trees 🎄",
