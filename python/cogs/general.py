@@ -177,12 +177,6 @@ class General(commands.Cog, name='General'):
         ):
             await msg.channel.send('42')
             
-        if re.search(
-            r'(?!)^felix what do you eat\?',
-            msg.content
-        ):
-            await msg.channel.send('I eat Python code like a true Chad.')
-
         if match := self.re_converter.search(msg.content):
             unit_aliases = {
                 'mile': 'miles',
