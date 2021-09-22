@@ -14,19 +14,20 @@ from discord import Activity
 #pylint: disable=E1101
 
 # dict's keys are months and days combined (month|day)
+# Please note! All the statuses have to start with one of the 4 predefined words for statuses playing, watching, listening (to), [streaming](probably won't work)
 HOLIDAY_DICT = {
     "0101": "watching a new year emerge 🥂",
-    "0126": "having a bbq & beers with my aussie mates 🇦🇺",
+    "0126": "playing beer pong and having a bbq whilst having beers with my aussie mates 🇦🇺",
     "0317": "playing in a pub ☘️",
     "0704": "watching freedom fireworks 🎇",
     "0817": "playing it's my Birthday 🎂",
     "1003": "watching people being united 🍺",
-    "1031": "out drinking with my skeleton buddies ☠️",
+    "1031": "playing drinking games with my skeleton buddies ☠️",
     "1109": "watching walls crumble 🧱",
-    "1111": "observing those who sacrificed 🎖️",
+    "1111": "watching those who sacrificed 🎖️",
     "1224": "watching christmas trees 🎄",
     "1225": "watching christmas trees 🎄",
-    "1226": "having beers for boxing day 🥊",
+    "1226": "watching comedy shows and beers for boxing day 🥊",
     "1231": "watching fireworks 🎆",
 }
 
