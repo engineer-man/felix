@@ -27,5 +27,9 @@
     "wolfram_key" : "",
     "github_key" : "",
     "aoc_key" : "",
-    "nasa_key": "DEMO_KEY"
+    "nasa_key": "DEMO_KEY",
+
+    "spam": [
+        "free nitro!",
+    ]
 }

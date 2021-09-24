@@ -17,6 +17,7 @@ Only users that have an admin role can use the commands.
 
 import json
 import time
+import re
 from collections import deque
 from dataclasses import dataclass, field
 from discord.ext import commands, tasks
@@ -184,6 +185,10 @@ class Jail(commands.Cog, name='Jail'):
         )
         return True
 
+    async def del_last_msg(self, msg):
+        """Delete spam message"""
+        pass
+
     # ----------------------------------------------
     # Cog Event listeners
     # ----------------------------------------------
@@ -193,9 +198,20 @@ class Jail(commands.Cog, name='Jail'):
         if member == self.client.user:
             # Don't run on the bots own messages
             return
+
         if isinstance(msg.channel, DMChannel):
             # Ignore DM
             return
+
+        # Scammer Spam blocker
+        for spam in self.client.config['spam']:
+            is_spam = re.compile(spam, re.IGNORECASE)
+            checker = is_spam.findall(msg.content)
+            if checker:
+                await self.send_to_jail(member, reason='Spaming scammer links')
+                await self.post_report(msg)
+                await msg.delete(delay=3)
+        
         now = time.time()
         uid = str(member.id)
         user_history = self.history.get(uid, deque())
