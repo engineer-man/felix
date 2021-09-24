@@ -95,6 +95,50 @@ class General(commands.Cog, name='General'):
             return None
         gif = random.choice(gifs['data'])['images']['original']['url']
         return gif
+    
+    async def duck_call(self, ctx, query=None):
+
+        if query is None:
+            return
+        
+        query = '+'.join(query.split())
+
+        async with self.client.session.get(
+            'https://api.duckduckgo.com/?format=json&t=felixdiscordbot&q='
+            + f'{query}'
+        ) as response:
+
+            answer = await response.json(content_type="application/x-javascript")
+
+            if answer.get('code', 200) != 200:
+                raise commands.BadArgument(answer.get('msg', 'Error'))
+            
+            if not answer['AbstractText']:
+                await ctx.send(
+                    'Couldn\'t find anything, here\'s duckduckgo link '
+                    + f'<https://duckduckgo.com/?q={quote_plus(query)}>'
+                )
+                return
+
+            embed = Embed(
+                description=answer['AbstractText'],
+                color=0x2ECC71
+            )
+
+            if answer['Image']:
+                embed.set_image(url=f'https://api.duckduckgo.com{answer["Image"]}')
+
+            embed.set_author(
+                name=answer['Heading'],
+                icon_url='https://api.duckduckgo.com/favicon.ico'
+            )
+
+            embed.set_footer(
+                text=f'Info from {answer["AbstractSource"]}\n'
+                + f'at {answer["AbstractURL"]}\n'
+                + 'Provided By: https://api.duckduckgo.com'
+            )
+            await ctx.send(embed=embed)
 
     # ----------------------------------------------
     # Cog Event listeners
@@ -230,7 +274,7 @@ class General(commands.Cog, name='General'):
 
             await ctx.send(embed=e)
     # ------------------------------------------------------------------------
-
+    
     @commands.command(
         name='search',
         aliases=['lmgtfy', 'duck', 'duckduckgo', 'google']
@@ -497,8 +541,10 @@ class General(commands.Cog, name='General'):
             f'{quote_plus(question)}&appid={self.client.config["wolfram_key"]}'
         async with self.client.session.get(url) as response:
             answer = await response.text()
-        if 'did not understand' in answer:
-            answer = 'Sorry, I did not understand that'
+        if 'did not understand' in answer or 'No short answer' in answer:
+            await self.duck_call(ctx, question)
+            return
+
         await ctx.send(answer)
     # ------------------------------------------------------------------------
 
