@@ -9,12 +9,17 @@ Commands:
     ├ jailall   jail all suspected flooders
     └ clear     clear the suspected flooder list
 
-    jail                Jail a @user
-    unjail              Release a @user from jail
+    jail        Jail a @user
+    unjail      Release a @user from jail
+
+    spam        add known bad spam link to jail a user if posted
+    rmspam      remove incorrectly added spam link
+    spamlist    show list of all spam links in spam
 
 Only users that have an admin role can use the commands.
 """
 
+import re
 import json
 import time
 from collections import deque
@@ -123,6 +128,20 @@ class Jail(commands.Cog, name='Jail'):
         with open("../state.json", "w") as statefile:
             return json.dump(state, statefile, indent=1)
 
+    def load_perma_spam(self):
+        state = self.load_state()
+        return state.get('spam', [])
+
+    def save_perma_spam(self, perma_spam):
+        state = self.load_state()
+        state['spam'] = perma_spam
+        with open("../state.json", "w") as statefile:
+            return json.dump(state, statefile, indent=1)
+
+    def spam_checker(self):
+        is_spam = '|'.join(x for x in self.load_perma_spam())
+        return re.compile(is_spam, re.IGNORECASE)
+
     async def send_to_jail(self, member, reason=None, permanent=True):
         """Jail a user
 
@@ -184,6 +203,27 @@ class Jail(commands.Cog, name='Jail'):
         )
         return True
 
+    async def send_to_spam(self, spam):
+        status = f'{spam} successfully added to spam list'
+        perma_spam = self.load_perma_spam()
+        if spam not in perma_spam:
+            perma_spam.append(spam)
+            self.save_perma_spam(perma_spam)
+        else:
+            status = f'{spam} is already in spam list'
+        return status
+
+    async def remove_from_spam(self, spam):
+        status = f'{spam} successfully removed from spam list'
+        perma_spam = self.load_perma_spam()
+        if spam in perma_spam:
+            perma_spam.remove(spam)
+            self.save_perma_spam(perma_spam)
+        else:
+            status = f'{spam} is not in spam list'
+        return status
+
+
     # ----------------------------------------------
     # Cog Event listeners
     # ----------------------------------------------
@@ -196,6 +236,17 @@ class Jail(commands.Cog, name='Jail'):
         if isinstance(msg.channel, DMChannel):
             # Ignore DM
             return
+        if self.client.user_is_admin(member):
+        # Dont jail friends on adding spam link
+            return
+
+        if self.load_perma_spam() != []:
+        # Only run spam checker if there is spam to check for
+            if self.spam_checker().findall(msg.content):
+                await self.send_to_jail(member, reason='Sent illegal spam')
+                await self.post_report(msg)
+                await msg.delete(delay=3)
+
         now = time.time()
         uid = str(member.id)
         user_history = self.history.get(uid, deque())
@@ -281,6 +332,57 @@ class Jail(commands.Cog, name='Jail'):
 
         if not pending.users:
             del self.acceptance_pending[msg.id]
+    '''
+    @commands.Cog.listener()
+    async def on_message_spam(self, msg):
+        member = msg.author
+        if member == self.client.user:
+            # Don't run on the bots own messages
+            return
+        if isinstance(msg.channel, DMChannel):
+            # Ignore DM
+            return
+        #if len(self.load_perma_spam()) > 1:
+        #    # Only run spam checker if there is spam to check for
+        if self.spam_checker().findall(msg.content):
+            await self.send_to_jail(member, reason='Sent bad link')
+            await self.post_report(msg)
+            await msg.delete(delay=2)
+        
+        
+        now = time.time()
+        uid = str(member.id)
+        user_history = self.history.get(uid, deque())
+        # Add timestamp of current message to list of known timestamps of user
+        user_history.append(now)
+        if len(user_history) == SPAM_NUM_MSG:
+            # When we know enough message timestamps (SPAM_NUM_MSG)
+            # Pop the oldest message
+            oldest = user_history.popleft()
+            if now - oldest < SPAM_TIME:
+                # If the oldest message was sent less than SPAM_TIME seconds ago
+                if uid in self.naughty:
+                    # Jail the user permanently
+                    # If he is already on the naughty list
+                    await self.send_to_jail(member,
+                                            reason='Excessive messaging')
+                    await msg.channel.send("Aaaand it's gone")
+                    await self.post_report(msg)
+                else:
+                    # Warn the user and add him to the naughty list
+                    # If he is not on the naughty list yet
+                    await msg.channel.send(
+                        f'Hey {member.mention}, you are sending too many '
+                        + 'messages. This is a warning! If you keep '
+                        + 'this up you will be jailed.'
+                    )
+                    self.naughty[uid] = now
+                    # "Reset" his history so he doesn't get jailed immediately
+                    # on the 11th message
+                    user_history = []
+        # Save the users history again (the oldest message was popped)
+        self.history[uid] = user_history
+        '''
 
     # ----------------------------------------------
     # Cog Commands
@@ -400,6 +502,43 @@ class Jail(commands.Cog, name='Jail'):
 
         if results:
             await ctx.send('```\n'+'\n'.join(results)+'```')
+
+    
+    @commands.command(
+        name='spam',
+        aliases=['spamadd'],
+        hidden=True,
+    )
+    async def add_spam(self, ctx, link: str):
+        """add spam link to automatically jails a user if posted"""
+        results = []
+        r = await self.send_to_spam(link)
+        results.append(r)
+        await ctx.send(f'```\n'+'\n'.join(results)+'```')
+
+
+    @commands.command(
+        name='rmspam',
+        aliases=['spamrm'],
+        hidden=True,
+    )
+    async def remove_spam(self, ctx, link: str):
+        """remove a spam link that automatically jails a user if posted"""
+        results = []
+        r = await self.remove_from_spam(link)
+        results.append(r)
+        await ctx.send(f'```\n'+'\n'.join(results)+'```')
+
+
+    @commands.command(
+        name='spamlist',
+        aliases=['spamls'],
+        hidden=True,
+    )
+    async def current_spam_list(self, ctx):
+        results = self.load_perma_spam()
+        await ctx.send(f'```\n'+'\n'.join(results)+'```')
+
 
     # ----------------------------------------------
     # Cog Tasks
