@@ -287,6 +287,7 @@ class Jail(commands.Cog, name='Jail'):
         # Save the users history again (the oldest message was popped)
         self.history[uid] = user_history
 
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         """Checks if a joining user is "perma-jailed"
@@ -308,6 +309,39 @@ class Jail(commands.Cog, name='Jail'):
             if not self.client.flood_mode:
                 await self.report_flood()
                 await self.enable_flood_mode()
+
+
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction, user):
+        if user.bot:
+            return
+
+        msg = reaction.message
+
+        if msg.id not in self.acceptance_pending:
+            return
+
+        pending = self.acceptance_pending[msg.id]
+        if not user.id in pending.users:
+            return
+
+        if not reaction.emoji == '✅':
+            return
+
+        await self.release_from_jail(user)
+
+        report_channel = self.client.get_channel(self.REPORT_CHANNEL_ID)
+        await report_channel.send(
+            f'<@&{self.REPORT_ROLE}>\n'
+            f'{user.mention} has been released from jail after agreeing to the following condition\n'
+            f'`{pending.condition}`\n'
+        )
+
+        pending.users.remove(user.id)
+
+        if not pending.users:
+            del self.acceptance_pending[msg.id]
+
 
     # ----------------------------------------------
     # Cog Commands
