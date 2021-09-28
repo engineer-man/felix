@@ -95,12 +95,12 @@ class General(commands.Cog, name='General'):
             return None
         gif = random.choice(gifs['data'])['images']['original']['url']
         return gif
-    
+
     async def duck_call(self, ctx, query=None):
 
         if query is None:
             return
-        
+
         query = '+'.join(query.split())
 
         async with self.client.session.get(
@@ -110,10 +110,7 @@ class General(commands.Cog, name='General'):
 
             answer = await response.json(content_type="application/x-javascript")
 
-            if answer.get('code', 200) != 200:
-                raise commands.BadArgument(answer.get('msg', 'Error'))
-            
-            if not answer['AbstractText']:
+            if (not answer) or (not answer['AbstractText']):
                 await ctx.send(
                     'Couldn\'t find anything, here\'s duckduckgo link '
                     + f'<https://duckduckgo.com/?q={quote_plus(query)}>'
@@ -274,7 +271,7 @@ class General(commands.Cog, name='General'):
 
             await ctx.send(embed=e)
     # ------------------------------------------------------------------------
-    
+
     @commands.command(
         name='search',
         aliases=['lmgtfy', 'duck', 'duckduckgo', 'google']
