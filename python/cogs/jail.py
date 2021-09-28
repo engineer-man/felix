@@ -9,12 +9,17 @@ Commands:
     ├ jailall   jail all suspected flooders
     └ clear     clear the suspected flooder list
 
-    jail                Jail a @user
-    unjail              Release a @user from jail
+    jail        Jail a @user
+    unjail      Release a @user from jail
+
+    spam        add known bad spam link to jail a user if posted
+    rmspam      remove incorrectly added spam link
+    spamlist    show list of all spam links in spam
 
 Only users that have an admin role can use the commands.
 """
 
+import re
 import json
 import time
 from collections import deque
@@ -73,9 +78,21 @@ class Jail(commands.Cog, name='Jail'):
         # 15 minutes - will also clear self.history to not let it get too big
         self.clear_naughty_list.start()
         self.acceptance_pending = dict()
+        # initalise a spam list
+        self._spam_list = None
+        # Compile initial spam list for regex if list available
+        self.is_spam = re.compile('|'.join(x for x in self.load_perma_spam()), re.IGNORECASE)
+
+    @property
+    def spam_list(self):
+        if self._spam_list is None:
+            self._spam_list = self.load_perma_spam()
+        return self._spam_list
+
 
     async def cog_check(self, ctx):
         return self.client.user_is_admin(ctx.author)
+
 
     # ----------------------------------------------
     # Helper Functions
@@ -120,6 +137,16 @@ class Jail(commands.Cog, name='Jail'):
     def save_perma_jail(self, perma_jail):
         state = self.load_state()
         state['jailed'] = perma_jail
+        with open("../state.json", "w") as statefile:
+            return json.dump(state, statefile, indent=1)
+
+    def load_perma_spam(self):
+        state = self.load_state()
+        return state.get('spam', [])
+
+    def save_perma_spam(self, perma_spam):
+        state = self.load_state()
+        state['spam'] = perma_spam
         with open("../state.json", "w") as statefile:
             return json.dump(state, statefile, indent=1)
 
@@ -184,6 +211,35 @@ class Jail(commands.Cog, name='Jail'):
         )
         return True
 
+    async def send_to_spam(self, spam):
+        status = f'{spam} successfully added to spam list'
+        perma_spam = self.load_perma_spam()
+        if spam not in perma_spam:
+            # add new spam link item to regex list
+            perma_spam.append(spam)
+            self.spam_list.append(spam)
+            self.is_spam = re.compile('|'.join(x for x in perma_spam), re.IGNORECASE)
+            # save new spam item to state file
+            self.save_perma_spam(perma_spam)
+        else:
+            status = f'{spam} is already in spam list'
+        return status
+
+    async def remove_from_spam(self, spam):
+        status = f'{spam} successfully removed from spam list'
+        perma_spam = self.load_perma_spam()
+        if spam in perma_spam:
+            # remove spam list item from regex list
+            perma_spam.remove(spam)
+            self.spam_list.remove(spam)
+            self.is_spam = re.compile('|'.join(x for x in perma_spam), re.IGNORECASE)
+            # remove old spam item and save state file
+            self.save_perma_spam(perma_spam)
+        else:
+            status = f'{spam} is not in spam list'
+        return status
+
+
     # ----------------------------------------------
     # Cog Event listeners
     # ----------------------------------------------
@@ -196,6 +252,18 @@ class Jail(commands.Cog, name='Jail'):
         if isinstance(msg.channel, DMChannel):
             # Ignore DM
             return
+        if self.client.user_is_admin(member):
+        # Dont jail friends on after adding a new spam link
+            return
+
+        if self.spam_list:
+            # Check we have a spam list available before using it
+            if self.is_spam.findall(msg.content):
+                await self.send_to_jail(member, reason='Sent illegal spam')
+                await self.post_report(msg)
+                # Clean up and remove message from channel after delay = seconds
+                await msg.delete(delay=3)
+
         now = time.time()
         uid = str(member.id)
         user_history = self.history.get(uid, deque())
@@ -229,6 +297,7 @@ class Jail(commands.Cog, name='Jail'):
         # Save the users history again (the oldest message was popped)
         self.history[uid] = user_history
 
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         """Checks if a joining user is "perma-jailed"
@@ -250,6 +319,7 @@ class Jail(commands.Cog, name='Jail'):
             if not self.client.flood_mode:
                 await self.report_flood()
                 await self.enable_flood_mode()
+
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
@@ -281,6 +351,7 @@ class Jail(commands.Cog, name='Jail'):
 
         if not pending.users:
             del self.acceptance_pending[msg.id]
+
 
     # ----------------------------------------------
     # Cog Commands
@@ -400,6 +471,42 @@ class Jail(commands.Cog, name='Jail'):
 
         if results:
             await ctx.send('```\n'+'\n'.join(results)+'```')
+
+    
+    @commands.command(
+        name='spam',
+        aliases=['spamadd'],
+        hidden=True,
+    )
+    async def add_spam(self, ctx, link: str):
+        """add spam link to automatically jails a user if posted"""
+        results = []
+        r = await self.send_to_spam(link)
+        results.append(r)
+        await ctx.send(f'```\n'+'\n'.join(results)+'```')
+
+
+    @commands.command(
+        name='rmspam',
+        aliases=['spamrm'],
+        hidden=True,
+    )
+    async def remove_spam(self, ctx, link: str):
+        """remove a spam link that automatically jails a user if posted"""
+        results = []
+        r = await self.remove_from_spam(link)
+        results.append(r)
+        await ctx.send(f'```\n'+'\n'.join(results)+'```')
+
+
+    @commands.command(
+        name='spamlist',
+        aliases=['spamls'],
+        hidden=True,
+    )
+    async def current_spam_list(self, ctx):
+        results = self.load_perma_spam()
+        await ctx.send(f'```\n'+'\n'.join(results)+'```')
 
     # ----------------------------------------------
     # Cog Tasks
