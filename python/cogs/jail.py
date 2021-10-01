@@ -505,8 +505,16 @@ class Jail(commands.Cog, name='Jail'):
         hidden=True,
     )
     async def current_spam_list(self, ctx):
-        results = self.load_perma_spam()
-        await ctx.send(f'```\n'+'\n'.join(results)+'```')
+        """show list of all spam links in spam"""
+        results = self.spam_list
+        NUM_SPAM = 25
+        NUM_LEN = 25
+        response = []
+        for _ in range(len(results)):
+            response.append('\n'.join(results[NUM_SPAM - NUM_LEN:NUM_SPAM]))
+            NUM_SPAM += NUM_LEN
+        for block in response:
+            await ctx.send(f'```{"".join(block)}```') if len(block) > 0 else None
 
     # ----------------------------------------------
     # Cog Tasks
