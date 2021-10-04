@@ -65,7 +65,10 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
 
     async def has_discord_link(self, msg):
         """Check message and return True if a discord link was detected"""
-        if len(re.findall(r'(?i)(discord(app)?\.(gg|io|me|co|com\/invite)\/\S+)', msg.content)):
+        found_links = [*re.findall(r'(?i)(discord(app)?\.(gg|io|me|co|com\/invite)\/\S+)', msg.content)]
+        if len(found_links):
+            if len(found_links) == 1 and "/engineerman" in found_links[0][0]:
+                return False
             if msg.author.id in self.allowed_once:
                 self.allowed_once.remove(msg.author.id)
                 return False
