@@ -188,7 +188,7 @@ class Management(commands.Cog, name='Management'):
         hidden=True,
     )
     async def version(self, ctx):
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         version, date = self.get_version_info()
         num_commits, remote_data = await self.get_remote_commits()
         status = "I am up to date with 'origin/master'"
@@ -391,7 +391,7 @@ class Management(commands.Cog, name='Management'):
         """Print the date a member joined"""
         if not members:
             raise commands.BadArgument('Please specify at least 1 member')
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         result = []
         now = datetime.utcnow()
         for member in members:

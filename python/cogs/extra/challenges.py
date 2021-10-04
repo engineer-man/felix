@@ -127,7 +127,7 @@ class Challenges(commands.Cog, name='Challenges'):
     )
     async def random(self, ctx):
         """Randomly choose a challenge"""
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         try:
             chal = self.pick_random_challenge()
             desc = self.format_challenge(chal)
@@ -147,7 +147,7 @@ class Challenges(commands.Cog, name='Challenges'):
         n: int
     ):
         """Choose a specific challenge"""
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         try:
             chal = self.pick_exact_challenge(n)
             desc = self.format_challenge(chal)
@@ -165,7 +165,7 @@ class Challenges(commands.Cog, name='Challenges'):
     )
     async def guide(self, ctx):
         """Print the guide"""
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         e = Embed(title='Guide',
                   description=self.guide,
                   color=0x2ECC71)
@@ -176,7 +176,7 @@ class Challenges(commands.Cog, name='Challenges'):
     )
     async def guide_extra(self, ctx):
         """Print the additional resources"""
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         e = Embed(title='Guide - additional resources',
                   description=self.guide_extra,
                   color=0x2ECC71)
@@ -188,7 +188,7 @@ class Challenges(commands.Cog, name='Challenges'):
     )
     async def difficulty(self, ctx, difficulty: str):
         """Choose by difficulty"""
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         try:
             chal = self.pick_difficulty_challenge(difficulty)
             desc = self.format_challenge(chal)

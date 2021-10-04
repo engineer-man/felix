@@ -145,7 +145,7 @@ class Graph(commands.Cog,
         """Print graph of top n users
         measured by the number of messages in the last [days] days
         """
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         days = clamp(days, 1, 30)
         n = clamp(n, 1, 10)
         if await self.create_graph_messages(days, n):
@@ -169,7 +169,7 @@ class Graph(commands.Cog,
         """
         if not members:
             raise commands.BadArgument('Please specify at least 1 member')
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         days = clamp(days, 1, 30)
         if await self.create_graph_messages(days, 0, members[:10]):
             with open('last_graph.png', 'rb') as g:
@@ -189,7 +189,7 @@ class Graph(commands.Cog,
     ):
         """Print server message activity graph
         Each plot point shows the number of messages since the previous one"""
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         url = 'https://emkc.org/api/v1/stats/discord/messages'
         num_messages = []
         for w in range(num_samples):

@@ -256,7 +256,7 @@ class General(commands.Cog, name='General'):
     async def gif_embed(self, ctx, *, gif_name):
         """Post a gif
         Displays a random gif for the specified search term"""
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         gif_url = await self.gif_url(gif_name)
         if gif_url is None:
             await ctx.send(f'Sorry {ctx.author.mention}, no gif found 😔')
@@ -278,7 +278,7 @@ class General(commands.Cog, name='General'):
     )
     async def search(self, ctx, *, search_text):
         """Post a duckduckgo search link"""
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         await ctx.send(
             f'here you go! <https://duckduckgo.com/?q={quote_plus(search_text)}>'
         )
@@ -290,7 +290,7 @@ class General(commands.Cog, name='General'):
     )
     async def stackoverflow(self, ctx, *, search_text):
         """Post a stackoverflow search link"""
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         await ctx.send(
             f'here you go! <https://stackoverflow.com/search?q={quote_plus(search_text)}>'
         )
@@ -533,7 +533,7 @@ class General(commands.Cog, name='General'):
     )
     async def question(self, ctx, *, question):
         """Ask Felix a question"""
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         url = 'https://api.wolframalpha.com/v1/result?i=' + \
             f'{quote_plus(question)}&appid={self.client.config["wolfram_key"]}'
         async with self.client.session.get(url) as response:

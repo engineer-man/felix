@@ -48,7 +48,7 @@ class Stats(commands.Cog, name='Stats'):
     )
     async def stats(self, ctx):
         """Print member numbers"""
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         url = ('https://www.googleapis.com/youtube/v3/channels'
                '?part=statistics'
                '&id=UCrUL8K81R4VBzm-KOYwrcxQ'
@@ -123,7 +123,7 @@ class Stats(commands.Cog, name='Stats'):
         n: typing.Optional[int] = 30
     ):
         """Show top users by messages for past n days"""
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         params = {
             'start': (datetime.utcnow() - timedelta(days=n)).isoformat(),
             'limit': 25,
@@ -148,7 +148,7 @@ class Stats(commands.Cog, name='Stats'):
         n: typing.Optional[int] = 30,
     ):
         """Show top channels by messages for past n days"""
-        await ctx.trigger_typing()
+        #await ctx.trigger_typing()
         try:
             params = {
                 'start': (datetime.utcnow() - timedelta(days=n)).isoformat(),
