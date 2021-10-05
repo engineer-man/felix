@@ -36,79 +36,81 @@ class Graph(commands.Cog,
 
     async def create_graph_messages(self, days, limit=0, users=None):
         url = 'https://emkc.org/api/v1/stats/discord/messages'
-        if not users:
-            # gets the top people of days and puts them in user_names
-            params = {
-                'start': (datetime.utcnow() - timedelta(days=days)).isoformat(),
-                'limit': limit
-            }
-            async with self.client.session.get(url, params=params) as response:
-                if response.status != 200:
-                    return False
-                api_data = await response.json()
-            if not api_data:
-                return False
-            user_names = {data['user']: data['discord_id']
-                          for data in api_data}
-            num_messages = {data['user']: data['messages']
-                            for data in api_data}
-        else:
-            # puts specific people in user_names
-            user_ids = [user.id for user in users]
-            params = [(
-                'start',
-                (datetime.utcnow() - timedelta(days=days)).isoformat()
-            )]
-            params += [('discord_id', user_id) for user_id in user_ids]
-            async with self.client.session.get(url, params=params) as response:
-                if response.status != 200:
-                    return False
-                api_data = await response.json()
-            if not api_data:
-                return False
 
-            unsorted_names = {data['user']: data['discord_id']
-                              for data in api_data}
-            num_messages = {data['user']: data['messages']
-                            for data in api_data}
-            user_names = dict()
-            for key, value in sorted(
-                unsorted_names.items(),
-                key=lambda x: num_messages[x[0]],
-                reverse=True
-            ):
-                user_names[key] = value
+        params = [
+            ('start', (datetime.utcnow() - timedelta(days=days)).isoformat())
+        ]
 
-        graph_data = {name: [[0, 0]] for name in user_names}
+        if limit > 0:
+            params.append((
+                'limit', limit
+            ))
+
+        if users is not None:
+            params += [
+                ('discord_id', user.id)
+                for user in users
+            ]
+
+        async with self.client.session.get(url, params=params) as response:
+            if response.status != 200:
+                return False
+            api_data = await response.json()
+
+        if not api_data:
+            return False
+
+        user_names = {data['discord_id']: data['user']
+                        for data in api_data}
+
+        num_messages = {data['discord_id']: data['messages']
+                        for data in api_data}
+
+        graph_data = {uid: [[0, 0]] for uid in user_names}
+
         for i in range(days):
             startdate = datetime.utcnow() - timedelta(days=days - i)
             enddate = datetime.utcnow() - timedelta(days=days - i - 1)
+
             params = [('start', (startdate).isoformat()),
                       ('end', (enddate).isoformat())]
-            params += [('discord_id', uid) for uid in user_names.values()]
+
+            params += [('discord_id', uid) for uid in user_names]
+
             async with self.client.session.get(url, params=params) as response:
                 if response.status != 200:
                     return False
                 api_data = await response.json()
-            retrieved_users = {x['user']: x for x in api_data}
-            for username, data in graph_data.items():
+
+            retrieved_users = {x['discord_id']: x for x in api_data}
+
+            for uid, data in graph_data.items():
                 if data:
                     current_msg = data[-1][1]
                 else:
                     current_msg = 0
-                if username not in retrieved_users:
+
+                if uid not in retrieved_users:
                     new_messages = current_msg
                 else:
-                    api_data = retrieved_users[username]
+                    api_data = retrieved_users[uid]
                     new_messages = current_msg + api_data['messages']
+                    user_names[uid] = api_data['user']
+
                 data.append([i+1, new_messages])
+
+
         if all([not x for x in graph_data.values()]):
             return False
-        for name, data in graph_data.items():
+
+
+        for uid, data in graph_data.items():
             xaxis = [i[0] for i in data]
             yaxis = [i[1] for i in data]
-            templabel = '{} {}'.format(name[:-5], num_messages[name])
+
+            templabel = '{} {}'.format(user_names[uid][:-5], num_messages[uid])
             plt.plot(xaxis, yaxis, label=templabel, marker='o', markersize=3)
+
         plt.legend()
         plt.ylabel('Messages')
         label_time = (datetime.utcnow() - timedelta(days=days)).isoformat()
@@ -119,6 +121,7 @@ class Graph(commands.Cog,
         )
         plt.savefig('last_graph.png', bbox_inches='tight')
         plt.cla()
+
         return True
 
     # ----------------------------------------------
