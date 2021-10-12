@@ -211,6 +211,21 @@ class Jail(commands.Cog, name='Jail'):
         )
         return True
 
+    async def post_spam_report(self, msg):
+        """Post spam report of auto jailing to report channel"""
+        target = self.client.get_channel(self.REPORT_CHANNEL_ID)
+        embed = Embed(
+            title='Phishing Link Detected!',
+            description=msg.content,
+            color=0xFFFFFF
+        )
+        await target.send(
+            f'<@&{self.REPORT_ROLE}> I jailed a user\n'
+            f'User {msg.author.mention} spammed in {msg.channel.mention}',
+            embed=embed
+        )
+        return True
+
     async def send_to_spam(self, spam):
         status = f'{spam} successfully added to spam list'
         perma_spam = self.load_perma_spam()
@@ -258,9 +273,10 @@ class Jail(commands.Cog, name='Jail'):
 
         if self.spam_list:
             # Check we have a spam list available before using it
-            if self.is_spam.findall(msg.content):
+            if self.is_spam.findall(msg.content) and msg.channel.id != self.JAIL_CHANNEL_ID:
+                # Ignore reporting if offender is already in jail for spam
                 await self.send_to_jail(member, reason='Sent illegal spam')
-                await self.post_report(msg)
+                await self.post_spam_report(msg)
                 # Clean up and remove message from channel after delay = seconds
                 await msg.delete(delay=3)
 
