@@ -261,14 +261,14 @@ class Jail(commands.Cog, name='Jail'):
     @commands.Cog.listener()
     async def on_message(self, msg):
         member = msg.author
-        if member == self.client.user:
-            # Don't run on the bots own messages
+        if msg.author.bot:
+            # Dont run on any bot messages
             return
         if isinstance(msg.channel, DMChannel):
             # Ignore DM
             return
         if self.client.user_is_admin(member):
-        # Dont jail friends on after adding a new spam link
+            # Dont jail friends on after adding a new spam link
             return
 
         if self.spam_list:
