@@ -1,4 +1,6 @@
-discord.py
+discord.py @ https://github.com/Rapptz/discord.py/archive/master.zip
 matplotlib
 google-api-python-client
 google-auth-oauthlib
+beautifulsoup4
+lxml
