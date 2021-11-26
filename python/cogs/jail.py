@@ -44,9 +44,8 @@ SPAM_NAUGHTY_CHECK_INTERVAL = 300  # seconds
 FLOOD_JOIN_NUM = 10  # Users join
 # Within
 FLOOD_JOIN_TIME = 10  # Seconds
-# And the servers verification level will be changed to
-# available options: none, medium, high, extreme
-FLOOD_VERIFICATION_LEVEL = VerificationLevel.extreme
+# And the servers verification level will be changed to the highest available
+FLOOD_VERIFICATION_LEVEL = VerificationLevel.highest
 # The default verification level is
 DEFAULT_VERIFICATION_LEVEL = VerificationLevel.medium
 

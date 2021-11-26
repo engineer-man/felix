@@ -35,7 +35,7 @@ class Purge(commands.Cog, name='Purge'):
         """Clear <n> messages from current channel"""
         channel = ctx.message.channel
         await ctx.message.delete()
-        await channel.purge(limit=num_messages, check=None, before=None)
+        await channel.purge(limit=num_messages)
         return True
 
     @commands.command(
