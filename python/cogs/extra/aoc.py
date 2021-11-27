@@ -194,23 +194,23 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
         Every day at `00:00 EST (05:00 UTC)` a new puzzle is released.
         When you log into the site you will be given a personalized puzzle input and every puzzle consists of 2 parts. The first part is usually a bit simpler - the second part often expands the problem so it can't simply be brute forced or guessed.
 
-        I encourage you to read more about it on [the official homepage](https://adventofcode.com/2020/about).
+        I encourage you to read more about it on [the official homepage](https://adventofcode.com/2021/about).
 
         **This channel** will be used to discuss the puzzles.
         I recommend you only come here once you have solved the puzzle for the day or if you really need help to figure it out.
 
         **Leaderboards**
-        There is a [global leaderboard](https://adventofcode.com/2020/leaderboard) which will reward the first person to solve a given puzzle part with 100 points. The second fastest will get 99 and so on.
+        There is a [global leaderboard](https://adventofcode.com/2021/leaderboard) which will reward the first person to solve a given puzzle part with 100 points. The second fastest will get 99 and so on.
         This global Leaderboard is usually very competitive and rather hard to get placed on.
         (Most of the time, all points for a puzzle will be gone after 5-30 minutes).
-        This is why i have created a [private leaderboard](https://adventofcode.com/2020/leaderboard/private/view/208847).
+        This is why we have created a [private leaderboard](https://adventofcode.com/2021/leaderboard/private/view/208847).
         You can join it with the code `208847-9f5fc5f3` and it will track the amount of stars everyone has.
 
         **Important:** The goal of this should not be to solve it as fast as possible.
         If you are new to programming, you might get stuck on some challenges.
         I encourage you to try every puzzle without help for at least 30 minutes. When I started doing these puzzles, some took me multiple hours to solve.
 
-        **If you want to prepare a bit** try to solve some [past challenges](https://adventofcode.com/2019/events)."""
+        **If you want to prepare a bit** try to solve some [past challenges](https://adventofcode.com/2020/events)."""
 
         embed = Embed(
             title='Advent of Code',
