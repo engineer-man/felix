@@ -29,7 +29,6 @@ from inspect import getsourcelines
 from datetime import datetime as dt
 from urllib.parse import quote_plus
 import discord
-
 from discord.ext import commands, tasks
 from discord import Embed, DMChannel, Member
 
@@ -488,7 +487,7 @@ class General(commands.Cog, name='General'):
             icon_url=ctx.author.avatar.url
         )
         message_count = data[0]['messages'] if data else 0
-        guild_time = (dt.utcnow() - member.joined_at).total_seconds() / 86400
+        guild_time = (dt.utcnow() - member.joined_at.replace(tzinfo=None)).total_seconds() / 86400
         # In this case a dict is used for readability, but this must be changed
         # if "inline" needs to be specified for individual fields
         fields = {
