@@ -28,6 +28,7 @@ import hashlib
 from inspect import getsourcelines
 from datetime import datetime as dt
 from urllib.parse import quote_plus
+from aiohttp import ContentTypeError
 import discord
 from discord.ext import commands, tasks
 from discord import Embed, DMChannel, Member
@@ -111,7 +112,11 @@ class General(commands.Cog, name='General'):
             + f'{query}'
         ) as response:
 
-            answer = await response.json(content_type="application/x-javascript")
+            try:
+                answer = await response.json(content_type="application/x-javascript")
+            except ContentTypeError:
+                await ctx.send('Invalid query')
+                return
 
             if (not answer) or (not answer['AbstractText']):
                 await ctx.send(
