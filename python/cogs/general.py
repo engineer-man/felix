@@ -101,6 +101,10 @@ class General(commands.Cog, name='General'):
         if query is None:
             return
 
+        if len(query) > 500:
+            await ctx.send('Query size is too long!')
+            return
+
         query = '+'.join(query.split())
 
         async with self.client.session.get(
