@@ -14,7 +14,7 @@ or by calling it with the path and the name of this python file
 import asyncio
 from datetime import datetime, timedelta
 from unicodedata import normalize
-from discord import Embed
+from discord import Embed, ChannelType
 from discord.ext import commands, tasks
 
 # pylint: disable=E1101
@@ -39,6 +39,7 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
     def __init__(self, client):
         self.client = client
         self.cookie = {'session': self.client.config['aoc_session']}
+        self.threads = {}
         self.members = {}
         self.aoc_task.start()
         self.last_msgs = []
@@ -84,12 +85,31 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
             for puzzle in sorted(current_stats):
                 if puzzle not in previous_stats:
                     day, pzl = puzzle.split('-')
+                    if day not in self.threads:
+                        for thread_id in self.client.main_guild._threads:
+                            thread = self.client.main_guild._threads[thread_id]
+                            if thread.name == f"Day {day}" and thread.owner_id == self.client.user.id:
+                                self.threads[day] = thread
+                    if day not in self.threads:
+                        thread = await channel.create_thread(
+                            name=f"Day {day}",
+                            type=ChannelType.public_thread,
+                            reason=f"Creating new thread for AoC challenge day {day}.",
+                        )
+                        self.threads[day] = thread
+                    thread = self.threads[day]
                     time = int(new_stats[day][pzl]['get_star_ts'])
                     msg.append(
                         f"#{data['name'].replace(' ', '_')} " +
                         f"solved: [{day} - {pzl}] " +
                         f"at [{datetime.fromtimestamp(time).strftime('%H:%M:%S')} UTC]"
                     )
+                    await thread.send('\n'.join([
+                        "```css",
+                        '\n'.join(msg),
+                        "```"
+                    ]))
+                    msg = []
         if msg:
             await channel.send(
                 '\n'.join([
