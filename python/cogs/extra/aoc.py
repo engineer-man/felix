@@ -34,7 +34,6 @@ KNOWN_USERS = {
     '962475': 'dv_man',
     '419680': 'RuskyHacker',
     }
-
 class AdventOfCode(commands.Cog, name='Advent of Code'):
     def __init__(self, client):
         self.client = client
@@ -64,10 +63,11 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
         msg = []
         for member_id, data in current_members.items():
             if member_id not in self.members:
-                msg.append(
+                msg.append((
+                    0,
                     f"#{data['name'].replace(' ','_')} " +
                     "has just joined the leaderboard."
-                )
+                ))
                 continue
             if data['stars'] == self.members[member_id]['stars']:
                 continue
@@ -85,16 +85,17 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
                 if puzzle not in previous_stats:
                     day, pzl = puzzle.split('-')
                     time = int(new_stats[day][pzl]['get_star_ts'])
-                    msg.append(
+                    msg.append((
+                        time,
                         f"#{data['name'].replace(' ', '_')} " +
                         f"solved: [{day} - {pzl}] " +
                         f"at [{datetime.fromtimestamp(time).strftime('%H:%M:%S')} UTC]"
-                    )
+                    ))
         if msg:
             await channel.send(
                 '\n'.join([
                     "```css",
-                    '\n'.join(msg),
+                    '\n'.join([txt for _, txt in sorted(msg)]),
                     "```"
                 ])
             )
