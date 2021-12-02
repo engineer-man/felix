@@ -29,10 +29,10 @@ KNOWN_USERS = {
     '676763': 'Tomzy',
     '995197': 'Ghostrunner0808',
     '959036': 'Bones',
-    '957883': 'Jason Terror',
     '996249': 'dev_null',
     '962475': 'dv_man',
     '419680': 'RuskyHacker',
+    '1155906': 'T2',
     }
 class AdventOfCode(commands.Cog, name='Advent of Code'):
     def __init__(self, client):
