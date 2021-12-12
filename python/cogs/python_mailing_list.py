@@ -98,7 +98,7 @@ class PythonMailingList(Cog):
             await self.post_maillist()
             return
 
-        for mail_hash, timestamp in mails_sent.items():
+        for mail_hash, timestamp in mails_sent.copy().items():
             if (datetime.now() - datetime.fromtimestamp(timestamp)) > timedelta(days=7):
                 del state_json[STATE_MSG_HASHES_KEY][mail_hash]
         with open(STATE_JSON, "w") as statefile:
