@@ -274,7 +274,7 @@ class General(commands.Cog, name='General'):
             e.set_image(url=gif_url)
             e.set_footer(
                 text=ctx.author.display_name,
-                icon_url=ctx.author.avatar.url
+                icon_url=ctx.author.display_avatar
             )
 
             await ctx.send(embed=e)
@@ -490,10 +490,10 @@ class General(commands.Cog, name='General'):
                 raise commands.BadArgument('Bad response from EMKC API')
             data = await r.json()
         embed = Embed(color=member.color)
-        embed.set_thumbnail(url=member.avatar.url)
+        embed.set_thumbnail(url=member.display_avatar)
         embed.set_footer(
             text=ctx.author.display_name,
-            icon_url=ctx.author.avatar.url
+            icon_url=ctx.author.display_avatar
         )
         message_count = data[0]['messages'] if data else 0
         guild_time = (dt.utcnow() - member.joined_at.replace(tzinfo=None)).total_seconds() / 86400
@@ -584,7 +584,7 @@ class General(commands.Cog, name='General'):
         )
         embed.set_footer(
             text=ctx.author.display_name,
-            icon_url=ctx.author.avatar.url
+            icon_url=ctx.author.display_avatar
         )
         await ctx.send(embed=embed)
     # ------------------------------------------------------------------------

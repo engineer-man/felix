@@ -527,7 +527,7 @@ class Management(commands.Cog, name='Management'):
             e = Embed(title='Full command that caused the error:',
                       description=orig_content)
             e.set_footer(text=error_source.author.display_name,
-                         icon_url=error_source.author.avatar.url)
+                         icon_url=error_source.author.display_avatar)
         await ctx.send(embed=e)
 
 
