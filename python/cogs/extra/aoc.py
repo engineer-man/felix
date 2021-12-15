@@ -220,7 +220,7 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
         )
         embed.set_footer(
             text=ctx.author.display_name,
-            icon_url=ctx.author.avatar.url
+            icon_url=ctx.author.display_avatar
         )
         await ctx.send(embed=embed)
 

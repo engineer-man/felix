@@ -25,7 +25,7 @@ class HangmanGame:
         self._channel = channel
         self.color = author.color or 0x2ECC71
         self.user_name = author.display_name
-        self.user_avatar = author.avatar.url
+        self.user_avatar = author.display_avatar
         self.tries = TRIES
         self.correct = []
         self.incorrect = []

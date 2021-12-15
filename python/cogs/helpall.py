@@ -31,7 +31,7 @@ class myHelpCommand(HelpCommand):
         if header:
             embed.set_author(
                 name=self.context.bot.description,
-                icon_url=self.context.bot.user.avatar.url
+                icon_url=self.context.bot.user.display_avatar
             )
         for category, entries in self.paginator:
             embed.add_field(
