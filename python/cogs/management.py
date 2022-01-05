@@ -19,7 +19,7 @@ import subprocess
 import json
 import traceback
 import typing
-from datetime import datetime
+from datetime import datetime, timezone
 from os import path, listdir
 from discord import Activity, Embed, Member
 from discord.ext import commands
@@ -393,7 +393,7 @@ class Management(commands.Cog, name='Management'):
             raise commands.BadArgument('Please specify at least 1 member')
         #await ctx.trigger_typing()
         result = []
-        now = datetime.utcnow()
+        now = datetime.now(tz=timezone.utc)
         for member in members:
             join = member.joined_at
             if not join:
