@@ -6,8 +6,9 @@ It also includes commands to handle server flooding.
 Commands:
     flood       print flood help message
     ├ list      print list of suspected flooders
-    ├ jailall   jail all suspected flooders
-    └ clear     clear the suspected flooder list
+    ├ clear     clear the suspected flooder list
+    └ simulate  simulate flood status - sets Verification Level to maximum
+
 
     jail        Jail a @user
     unjail      Release a @user from jail
@@ -102,7 +103,10 @@ class Jail(commands.Cog, name='Jail'):
             f'More than {FLOOD_JOIN_NUM} users joined within {FLOOD_JOIN_TIME} '
             'seconds.\n**I have disabled welcome messages and set the verification '
             f'level to "highest"**.\n'
-            'Options:\n • `felix flood list` to see the usernames\n'
+            'Assigning any of the joined users a role or jailing them will **bypass** '
+            'the verification level settings!\n'
+            '**Recommended course of action:**\n • Kick / Ban offenders and clear flood status\n'
+            'Commands:\n • `felix flood list` to see the usernames\n'
             '• `felix flood clear` to clear the list, enable welcome messages '
             'and reset the verification level to "medium".'
         )
@@ -399,7 +403,7 @@ class Jail(commands.Cog, name='Jail'):
         aliases=['clean']
     )
     async def flood_clear(self, ctx):
-        """Clears the reported member set"""
+        """Clear the list, enable welcome messages and reset the verification level to "medium"."""
         self.suspected_flooders.clear()
         await self.disable_flood_mode()
         await ctx.send('`Cleared`')
@@ -426,6 +430,7 @@ class Jail(commands.Cog, name='Jail'):
         name='simulate'
     )
     async def flood_simulate(self, cty):
+        """Simulate flood status - sets Verification Level to maximum"""
         await self.report_flood()
         await self.enable_flood_mode()
     # ------------------------------------------------------
@@ -487,7 +492,7 @@ class Jail(commands.Cog, name='Jail'):
         if results:
             await ctx.send('```\n'+'\n'.join(results)+'```')
 
-    
+
     @commands.command(
         name='spam',
         aliases=['spamadd'],
