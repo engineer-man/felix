@@ -74,7 +74,6 @@ class Purge(commands.Cog, name='Purge'):
         def check(msg):
             return msg.author.id == user.id
 
-        await ctx.message.delete()
         for channel in await ctx.guild.fetch_channels():
             if type(channel) is TextChannel:
                 try:
