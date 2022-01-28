@@ -81,7 +81,10 @@ class Jail(commands.Cog, name='Jail'):
         # initalise a spam list
         self._spam_list = None
         # Compile initial spam list for regex if list available
-        self.is_spam = re.compile('|'.join(x for x in self.load_perma_spam()), re.IGNORECASE)
+        #self.is_spam = re.compile('|'.join(x for x in self.load_perma_spam()), re.IGNORECASE)
+        # load spam rules into dict
+        #self.spam_dict = {rule:rule for rule in self.load_perma_spam()}
+        self.spam_dict = {rule:re.compile(rule) for rule in self.load_perma_spam()}
 
     @property
     def spam_list(self):
@@ -153,6 +156,12 @@ class Jail(commands.Cog, name='Jail'):
         with open("../state.json", "w") as statefile:
             return json.dump(state, statefile, indent=1)
 
+    def spam_test(self, msg):
+        for bad_link in self.spam_dict.items():
+            if bad_link[1].findall(msg.content):
+                return bad_link[0]
+        return False
+
     async def send_to_jail(self, member, reason=None, permanent=True):
         """Jail a user
 
@@ -214,12 +223,12 @@ class Jail(commands.Cog, name='Jail'):
         )
         return True
 
-    async def post_spam_report(self, msg):
+    async def post_spam_report(self, msg, broken_rule):
         """Post spam report of auto jailing to report channel"""
         target = self.client.get_channel(self.REPORT_CHANNEL_ID)
         embed = Embed(
             title='Phishing Link Detected!',
-            description=msg.content,
+            description=f'{msg.content}\nRule: `{broken_rule}`',
             color=0xFFFFFF
         )
         await target.send(
@@ -230,13 +239,13 @@ class Jail(commands.Cog, name='Jail'):
         return True
 
     async def send_to_spam(self, spam):
-        status = f'{spam} successfully added to spam list'
+        status = f'✅ {spam} successfully added to spam list'
         perma_spam = self.load_perma_spam()
         if spam not in perma_spam:
             # add new spam link item to regex list
             perma_spam.append(spam)
             self.spam_list.append(spam)
-            self.is_spam = re.compile('|'.join(x for x in perma_spam), re.IGNORECASE)
+            self.spam_dict = {rule:re.compile(rule) for rule in perma_spam}
             # save new spam item to state file
             self.save_perma_spam(perma_spam)
         else:
@@ -244,13 +253,13 @@ class Jail(commands.Cog, name='Jail'):
         return status
 
     async def remove_from_spam(self, spam):
-        status = f'{spam} successfully removed from spam list'
+        status = f'❌ {spam} successfully removed from spam list'
         perma_spam = self.load_perma_spam()
         if spam in perma_spam:
             # remove spam list item from regex list
             perma_spam.remove(spam)
             self.spam_list.remove(spam)
-            self.is_spam = re.compile('|'.join(x for x in perma_spam), re.IGNORECASE)
+            self.spam_dict = {rule:re.compile(rule) for rule in perma_spam}
             # remove old spam item and save state file
             self.save_perma_spam(perma_spam)
         else:
@@ -274,12 +283,13 @@ class Jail(commands.Cog, name='Jail'):
             # Dont jail friends on after adding a new spam link
             return
 
+        checker = self.spam_test(msg)
+
         if self.spam_list:
-            # Check we have a spam list available before using it
-            if self.is_spam.findall(msg.content) and msg.channel.id != self.JAIL_CHANNEL_ID:
+            if checker and msg.channel.id != self.JAIL_CHANNEL_ID:
                 # Ignore reporting if offender is already in jail for spam
                 await self.send_to_jail(member, reason='Sent illegal spam')
-                await self.post_spam_report(msg)
+                await self.post_spam_report(msg, checker)
                 # Clean up and remove message from channel after delay = seconds
                 await msg.delete(delay=3)
 
