@@ -9,13 +9,13 @@ Commands:
     ├ clear     clear the suspected flooder list
     └ simulate  simulate flood status - sets Verification Level to maximum
 
-
     jail        Jail a @user
     unjail      Release a @user from jail
 
-    spam        add known bad spam link to jail a user if posted
-    rmspam      remove incorrectly added spam link
-    spamlist    show list of all spam links in spam
+    spam        Commands to add/remove to spam list
+    ├ add       add spam link to automatically jails a user if posted
+    ├ remove    remove a spam link that automatically jails a user if posted
+    └ list      show list of all spam links
 
 Only users that have an admin role can use the commands.
 """
@@ -473,11 +473,10 @@ class Jail(commands.Cog, name='Jail'):
     )
     async def spam(self, ctx):
         "Commands to add/remove to spam list"
-        await self.post_perma_spam_list(ctx)
+        await ctx.send_help('spam')
 
     @spam.command(
         name='add',
-        hidden=True,
     )
     async def add_spam(self, ctx, *, link):
         """add spam link to automatically jails a user if posted"""
@@ -498,7 +497,6 @@ class Jail(commands.Cog, name='Jail'):
     @spam.command(
         name='rm',
         aliases=['remove'],
-        hidden=True,
     )
     async def remove_spam(self, ctx, *, link):
         """remove a spam link that automatically jails a user if posted"""
@@ -515,7 +513,6 @@ class Jail(commands.Cog, name='Jail'):
     @spam.command(
         name='list',
         aliases=['ls'],
-        hidden=True,
     )
     async def current_spam_list(self, ctx):
         """show list of all spam links"""
