@@ -79,7 +79,7 @@ class Jail(commands.Cog, name='Jail'):
         self.clear_naughty_list.start()
         self.acceptance_pending = dict()
         # load spam rules into dict
-        self.spam_dict = self.construct_spam_dict()
+        '''self.spam_dict = self.construct_spam_dict()'''
 
     async def cog_check(self, ctx):
         return self.client.user_is_admin(ctx.author)
@@ -132,7 +132,7 @@ class Jail(commands.Cog, name='Jail'):
         state['jailed'] = perma_jail
         with open("../state.json", "w") as statefile:
             return json.dump(state, statefile, indent=1)
-
+    '''
     def load_perma_spam(self):
         state = self.load_state()
         return state.get('spam', [])
@@ -145,7 +145,7 @@ class Jail(commands.Cog, name='Jail'):
 
     def construct_spam_dict(self):
         return {rule:re.compile(rule) for rule in self.load_perma_spam()}
-
+    '''
     async def send_to_jail(self, member, reason=None, permanent=True):
         """Jail a user
 
@@ -206,7 +206,7 @@ class Jail(commands.Cog, name='Jail'):
             f'User {msg.author.mention} spammed in {msg.channel.mention}'
         )
         return True
-
+    '''
     async def post_spam_report(self, msg, matched_line):
         """Post spam report of auto jailing to report channel"""
         target = self.client.get_channel(self.REPORT_CHANNEL_ID)
@@ -232,7 +232,7 @@ class Jail(commands.Cog, name='Jail'):
             NUM_SPAM += NUM_LEN
         for block in response:
             await ctx.send(f'```{"".join(block)}```') if len(block) > 0 else None
-
+    '''
     # ----------------------------------------------
     # Cog Event listeners
     # ----------------------------------------------
@@ -248,7 +248,7 @@ class Jail(commands.Cog, name='Jail'):
         if self.client.user_is_admin(member):
             # Dont jail friends on after adding a new spam link
             return
-
+        '''
         if self.spam_dict and msg.channel.id != self.JAIL_CHANNEL_ID:
             for regex_string, regex in self.spam_dict.items():
                 if regex.findall(msg.content):
@@ -256,7 +256,7 @@ class Jail(commands.Cog, name='Jail'):
                     await self.post_spam_report(msg, regex_string)
                     await msg.delete()
                     break
-
+        '''
         now = time.time()
         uid = str(member.id)
         user_history = self.history.get(uid, deque())
@@ -465,7 +465,7 @@ class Jail(commands.Cog, name='Jail'):
 
         if results:
             await ctx.send('```\n'+'\n'.join(results)+'```')
-
+    '''
     @commands.group(
         name='spam',
         hidden=True,
@@ -517,7 +517,7 @@ class Jail(commands.Cog, name='Jail'):
     async def current_spam_list(self, ctx):
         """show list of all spam links"""
         await self.post_perma_spam_list(ctx)
-
+    '''
     # ----------------------------------------------
     # Cog Tasks
     # ----------------------------------------------
