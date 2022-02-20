@@ -2,28 +2,26 @@
 It will provide commands to jail users for sending spam phishing links.
 
 Commands:
-    spam        Commands to add/remove to spam list
+    spam        Commands to add/update/remove to a spam list
     ├ add       add spam link to automatically jails a user if posted
     ├ create    create spam database
     ├ drop      drop spam database
+    ├ list      show list of all spam links
     ├ remove    remove a spam link that automatically jails a user if posted
-    ├ update    todo -> edit/update existing by rule id
-    ├ who       Show who created the rule
-    └ list      show list of all spam links
+    ├ update    update/edit existing spam rule by rule id
+    └ who       Show who created the rule
 
 Only users that have an admin role can use the commands.
 """
 
-import asyncio
 import re
 import json
 
 from db.config import engine, Base, async_session
-from db.models.dals import  SpamDAL, SpammerDAL
+from db.models.dals import SpamDAL, SpammerDAL
 
 from discord.ext import commands, tasks
 from discord import Member, DMChannel, Embed, NotFound
-
 
 
 class SpamBlocker(commands.Cog, name='Spam'):
@@ -34,10 +32,29 @@ class SpamBlocker(commands.Cog, name='Spam'):
         self.JAIL_CHANNEL_ID = self.client.config['jail_channel']
         self.REPORT_ROLE = self.client.config['report_role']
         self.TEAM_ROLE = self.client.config['team_role']
-        # Dict to load spam rules from db
-        self.loop_get = asyncio.get_event_loop()
-        self.spam_dict = self.loop_get.run_until_complete(self.construct_spam_dict())
-        
+        self.spam_dict = None
+        # initialise db and tables if first run and load spam rules
+        self.init_spam_database.start()
+        self.construct_spam_dict.start()
+
+    
+    @tasks.loop(count=1)
+    async def init_spam_database(self):
+        #create db tables if not exists
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+            await conn.close()
+
+    #@tasks.loop(count=1)
+    @tasks.loop(seconds=60)
+    #@tasks.loop(minutes=30)
+    async def construct_spam_dict(self):
+        async with async_session() as db:
+            async with db.begin():
+                scd = SpamDAL(db)
+                rows = await scd.get_all_spam()
+            self.spam_dict = {rule.regex:re.compile(rule.regex) for rule in rows}
+
 
     async def cog_check(self, ctx):
         return self.client.user_is_admin(ctx.author)
@@ -45,6 +62,11 @@ class SpamBlocker(commands.Cog, name='Spam'):
     # ----------------------------------------------
     # Helper Functions
     # ----------------------------------------------
+    def reload_spam_dict(self):
+        self.construct_spam_dict.stop()
+        #self.construct_spam_dict.cancel()
+        self.construct_spam_dict.start()
+        #self.construct_spam_dict.restart()
 
     def load_state(self):
         with open("../state.json", "r") as statefile:
@@ -59,12 +81,6 @@ class SpamBlocker(commands.Cog, name='Spam'):
         state['jailed'] = perma_jail
         with open("../state.json", "w") as statefile:
             return json.dump(state, statefile, indent=1)
-
-    async def construct_spam_dict(self):
-        async with async_session() as db:
-            async with db.begin():
-                scd = SpamDAL(db)
-            return {rule.regex:re.compile(rule.regex) for rule in await scd.get_all_spam()}
 
     async def send_to_jail(self, member, reason=None, permanent=True):
         """Jail a user
@@ -96,15 +112,6 @@ class SpamBlocker(commands.Cog, name='Spam'):
             else:
                 status = f'{member} is already jailed'
         return status
-
-    async def post_report(self, msg):
-        """Post report of auto jailing to report channel"""
-        target = self.client.get_channel(self.REPORT_CHANNEL_ID)
-        await target.send(
-            f'<@&{self.REPORT_ROLE}> I jailed a user\n'
-            f'User {msg.author.mention} spammed in {msg.channel.mention}'
-        )
-        return True
 
     async def post_spam_report(self, msg, matched_line):
         """Post spam report of auto jailing to report channel"""
@@ -160,64 +167,118 @@ class SpamBlocker(commands.Cog, name='Spam'):
         await ctx.send_help('spam')
 
     @spam.command(
-        name='create',
-        aliases=['initdb']
+        name='reset'
     )
-    async def create_spam_db(self, ctx):
-        """Initiate A Spam Database"""
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-        await ctx.send(f'✅ Spam Database Created!')
-
-    @spam.command(
-        name='drop',
-    )
-    async def drop_spam_db(self, ctx):
-        """Drop/Remove existing Spam Database"""
+    async def rebuild_spam_db(self, ctx):
+        """WARNING this will drop all tables and recreate them!"""
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.drop_all)
-        await ctx.send(f'✅ Spam Database Dropped!')
+            await conn.run_sync(Base.metadata.create_all)
+        await ctx.send(f'```✅ Spam Database reinitialized!```')
+
 
     @spam.command(
         name='add',
-        aliases=['a', 'new']
+        aliases=['new']
     )
-    async def add_spam(self, ctx, regex: str):
-        """Add spam link to automatically jail a user if posted"""
+    async def add_spam(self, ctx, *args):
+        regex = ' '.join((x for x in args))
+        """Add a spam link to automatically jail a user if posted"""
         member = ctx.message.author
         async with async_session() as db:
             async with db.begin():
                 scd = SpamDAL(db)
+                # check rule not already in collection before adding.
+                check_dupe = await scd.check_duplicate(regex)
+                if check_dupe:
+                    await ctx.send(f'```❌ Sorry {member.name}, {regex} is already in spam database!```')
+                    return
                 await scd.add_spam(member.id, regex)
-                user = await self.client.fetch_user(member.id)
-                # update self.spam_dict
-                self.spam_dict[regex] = re.compile(regex)
+                # reload spam dict on item addition
+                #self.reload_spam_dict()
+
+                embed = Embed(
+                    color=0x13DC51,
+                    title=f'New Phishing Rule Added',
+                    description=f'```✅ {regex}```',
+                )
+                embed.set_footer(
+                    text=member.name,
+                    icon_url=member.display_avatar
+                )
+                await ctx.send(embed=embed)
+
+
+    @spam.command(
+        name='remove',
+        aliases=['rm']
+    )
+    async def remove_spam_item(self, ctx, _id:int):
+        """Remove an item from spam list by its ID"""
+        member = ctx.message.author
+        async with async_session() as db:
+            async with db.begin():
+                scd = SpamDAL(db)
+                row = await scd.spam_by_id(_id)
+                if not row:
+                    await ctx.send(f'```❌ Sorry {member.name}, cannot remove Rule {_id} it does not exist!```')
+                    return
+                await scd.delete_spam(_id)
+                # reload spam dict on item removal
+                #self.reload_spam_dict()
 
             embed = Embed(
-                color=0x13DC51,
-                title=f'New Phishing Rule Added',
-                description=f'```✅ {regex}```',
+                color=0xA0F1B9,
+                title=f'Rule {row.id} | Removed By {member.name}',
+                description=f'```❌ {row.regex}```'
             )
-            embed.set_thumbnail(url=user.display_avatar)
             embed.set_footer(
                 text=member.name,
                 icon_url=member.display_avatar
             )
             await ctx.send(embed=embed)
 
+
+    @spam.command(
+        name='update',
+        aliases=['mv'],
+    )
+    async def update_regex_rule(self, ctx, _id, *args):
+        """Update an existing spam rule by rule ID"""
+        regex = ' '.join((x for x in args))
+        member = ctx.message.author
+        async with async_session() as db:
+            async with db.begin():
+                scd = SpamDAL(db)
+                await scd.update_spam_rule(_id, member.id, regex)
+                # reload spam dict on change
+                #self.reload_spam_dict()
+
+            embed = Embed(
+                color=0xA0F1B9,
+                title=f'Rule {_id} | Updated By {member.name}',
+                description=f'```✅ {regex}```'
+            )
+            embed.set_footer(
+                text=member.name,
+                icon_url=member.display_avatar
+            )
+            await ctx.send(embed=embed)
+
+
     @spam.command(
         name='list',
-        aliases=['ls', 'sl']
+        aliases=['ls']
     )
     async def current_spam_list(self, ctx):
-        """List of current items in spam list items"""
+        """Lists all current items in the spam database"""
         async with async_session() as db:
             async with db.begin():
                 scd = SpamDAL(db)
                 res = await scd.get_all_spam()
                 NUM_SPAM = 25
                 NUM_LEN = 25
-                all_spam = [f'{row.id} | {row.regex}' for row in res]
+                all_spam = [f'  {row.id} | {row.regex}' if row.id < 10 else f' {row.id} | {row.regex}' for row in res]
                 response = []
                 for _ in range(len(all_spam)):
                     response.append('\n'.join(all_spam[NUM_SPAM - NUM_LEN:NUM_SPAM]))
@@ -225,52 +286,28 @@ class SpamBlocker(commands.Cog, name='Spam'):
                 for block in response:
                     await ctx.send(f'```{"".join(block)}```') if len(block) > 0 else None
 
+
     @spam.command(
         name='who',
         aliases=['w']
     )
     async def spam_added_by(self, ctx, _id: str):
-        """Show who added spam link"""
+        """Show who added spam link to the database"""
+        member = ctx.message.author
         async with async_session() as db:
             async with db.begin():
                 scd = SpamDAL(db)
                 row = await scd.spam_by_id(_id)
-                user = await self.client.fetch_user(row.member)
+                if not row:
+                    await ctx.send(f'```❌ Sorry {member.name}, Rule: {_id} does not exist!```')
+                    return
 
+            user = await self.client.fetch_user(row.member)
             embed = Embed(
                 color=0x59E685,
-                title=f'Rule {row.id} | Added By {user.name}',
+                title=f'Rule {row.id} | Created By {user.name}',
                 description=f'```Rule: {row.regex}```',
             )
-            embed.set_thumbnail(url=user.display_avatar)
-            embed.set_footer(
-                text=user.name,
-                icon_url=user.display_avatar
-            )
-            await ctx.send(embed=embed)
-
-    @spam.command(
-        name='remove',
-        aliases=['rm']
-    )
-    async def remove_spam_item(self, ctx, _id:int):
-        """Remove item from spam list by ID"""
-        async with async_session() as db:
-            async with db.begin():
-                scd = SpamDAL(db)
-                row = await scd.spam_by_id(_id)
-                await scd.delete_spam(_id)
-                user = await self.client.fetch_user(row.member)
-                # update self.spam_dict
-                self.spam_dict.pop(row.regex)
-
-
-            embed = Embed(
-                color=0xA0F1B9,
-                title=f'Rule {row.id} | Deleted By {user.name}',
-                description=f'```❌ {row.regex}```',
-            )
-            embed.set_thumbnail(url=user.display_avatar)
             embed.set_footer(
                 text=user.name,
                 icon_url=user.display_avatar
@@ -280,28 +317,12 @@ class SpamBlocker(commands.Cog, name='Spam'):
 
     @spam.command(
         name='show',
-        aliases=['s']
+        aliases=['s'],
     )
-    async def show_dict(self, ctx):
-        """Show raw list for testing..."""
-        await ctx.send(f'```Check Coroutine Output...\n{self.spam_dict}```')                              
+    async def show_rules(self, ctx):
+        """Show rules in spam_dict for debug, will error if more then 2k chars"""
+        await ctx.send(self.spam_dict)
 
-
-    '''
-    @spam.command(
-        name='update',
-        aliases=['mv'],
-    )
-    async def update_regex_rule(self, ctx, *, _id:int, rule:str):
-        #await ctx.send(f'{_id}, {type(_id)} | {ctx.message.author.id}, {type(ctx.message.author.id)} | {rule}, {type(rule)}')
-        """Update spam rule, by id new_rule"""
-        async with async_session() as db:
-            async with db.begin():
-                scd = SpamDAL(db)
-                member = ctx.message.author.id
-                await scd.update_spam_rule(_id, member, rule)
-            await ctx.send(f'✅ {_id} | {rule} Updated!')
-    '''
 
     # ----------------------------------------------
     # Cog Tasks
