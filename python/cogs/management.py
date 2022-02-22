@@ -514,13 +514,13 @@ class Management(commands.Cog, name='Management'):
         response.append(f'```python\n')
         num_chars = sum(len(line) for line in response)
         for line in tb.split('\n'):
-            num_chars += len(line)
+            num_chars += len(line) + 1
             response.append(line)
             if num_chars > 1900:
                 response.append('```')
                 await ctx.send('\n'.join(response))
                 response = ['```python\n']
-                num_chars = 0
+                num_chars = sum(len(line) for line in response)
         response.append('```')
         await ctx.send('\n'.join(response))
         if error_source is not None:
