@@ -528,7 +528,7 @@ class Management(commands.Cog, name='Management'):
                       description=orig_content)
             e.set_footer(text=error_source.author.display_name,
                          icon_url=error_source.author.display_avatar)
-        await ctx.send(embed=e)
+            await ctx.send(embed=e)
 
 
 def setup(client):
