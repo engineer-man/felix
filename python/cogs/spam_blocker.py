@@ -11,6 +11,9 @@ Commands:
     ├ update    update/edit existing spam rule by rule id
     └ who       Show who created the rule
 
+    spammer
+    └ list      last 10 spam rule breakers in desc order
+
 Only users that have an admin role can use the commands.
 """
 
@@ -21,7 +24,7 @@ from db.config import engine, Base, async_session
 from db.models.dals import SpamDAL, SpammerDAL
 
 from discord.ext import commands, tasks
-from discord import Member, DMChannel, Embed, NotFound
+from discord import DMChannel, Embed, NotFound
 
 
 class SpamBlocker(commands.Cog, name='Spam'):
@@ -33,21 +36,18 @@ class SpamBlocker(commands.Cog, name='Spam'):
         self.REPORT_ROLE = self.client.config['report_role']
         self.TEAM_ROLE = self.client.config['team_role']
         self.spam_dict = None
-        # initialise db and tables if first run and load spam rules
-        self.init_spam_database.start()
+        # init database and tables
+        self.init_database.start()
         self.construct_spam_dict.start()
 
-    
+
     @tasks.loop(count=1)
-    async def init_spam_database(self):
-        #create db tables if not exists
+    async def init_database(self):
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-            await conn.close()
 
-    #@tasks.loop(count=1)
-    @tasks.loop(seconds=60)
-    #@tasks.loop(minutes=30)
+
+    @tasks.loop(count=1, reconnect=True)
     async def construct_spam_dict(self):
         async with async_session() as db:
             async with db.begin():
@@ -64,9 +64,7 @@ class SpamBlocker(commands.Cog, name='Spam'):
     # ----------------------------------------------
     def reload_spam_dict(self):
         self.construct_spam_dict.stop()
-        #self.construct_spam_dict.cancel()
         self.construct_spam_dict.start()
-        #self.construct_spam_dict.restart()
 
     def load_state(self):
         with open("../state.json", "r") as statefile:
@@ -149,12 +147,16 @@ class SpamBlocker(commands.Cog, name='Spam'):
                 if regex.findall(msg.content):
                     await self.send_to_jail(member, reason='Sent illegal spam')
                     await self.post_spam_report(msg, regex_string)
+                    async with async_session() as db:
+                        async with db.begin():
+                            scd = SpammerDAL(db)
+                            await scd.add_spammer(member=member.id, regex=regex_string)
                     await msg.delete()
                     break
 
 
     # ----------------------------------------------
-    # Cog Commands
+    # Spam Cog Commands
     # ----------------------------------------------
     @commands.group(
         pass_context=True,
@@ -170,10 +172,11 @@ class SpamBlocker(commands.Cog, name='Spam'):
         name='reset'
     )
     async def rebuild_spam_db(self, ctx):
-        """WARNING this will drop all tables and recreate them!"""
+        """WARNING!!! this will drop all tables and recreate them"""
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.drop_all)
             await conn.run_sync(Base.metadata.create_all)
+            self.spam_dict = None
         await ctx.send(f'```✅ Spam Database reinitialized!```')
 
 
@@ -182,20 +185,20 @@ class SpamBlocker(commands.Cog, name='Spam'):
         aliases=['new']
     )
     async def add_spam(self, ctx, *args):
-        regex = ' '.join((x for x in args))
         """Add a spam link to automatically jail a user if posted"""
+        regex = ' '.join((x for x in args))
         member = ctx.message.author
         async with async_session() as db:
             async with db.begin():
                 scd = SpamDAL(db)
-                # check rule not already in collection before adding.
+                # check rule not already in database before adding.
                 check_dupe = await scd.check_duplicate(regex)
                 if check_dupe:
                     await ctx.send(f'```❌ Sorry {member.name}, {regex} is already in spam database!```')
                     return
-                await scd.add_spam(member.id, regex)
-                # reload spam dict on item addition
-                #self.reload_spam_dict()
+                # commit new spam rule and return updated rule set
+                rows = await scd.add_spam(member.id, regex)
+                self.spam_dict = {rule.regex:re.compile(rule.regex) for rule in rows}
 
                 embed = Embed(
                     color=0x13DC51,
@@ -225,7 +228,7 @@ class SpamBlocker(commands.Cog, name='Spam'):
                     return
                 await scd.delete_spam(_id)
                 # reload spam dict on item removal
-                #self.reload_spam_dict()
+                self.reload_spam_dict()
 
             embed = Embed(
                 color=0xA0F1B9,
@@ -252,7 +255,7 @@ class SpamBlocker(commands.Cog, name='Spam'):
                 scd = SpamDAL(db)
                 await scd.update_spam_rule(_id, member.id, regex)
                 # reload spam dict on change
-                #self.reload_spam_dict()
+                self.reload_spam_dict()
 
             embed = Embed(
                 color=0xA0F1B9,
@@ -292,7 +295,7 @@ class SpamBlocker(commands.Cog, name='Spam'):
         aliases=['w']
     )
     async def spam_added_by(self, ctx, _id: str):
-        """Show who added spam link to the database"""
+        """Show who added spam link by ID"""
         member = ctx.message.author
         async with async_session() as db:
             async with db.begin():
@@ -315,13 +318,39 @@ class SpamBlocker(commands.Cog, name='Spam'):
             await ctx.send(embed=embed)
 
 
-    @spam.command(
-        name='show',
-        aliases=['s'],
+    # ----------------------------------------------
+    # Spammer Cog Commands
+    # ----------------------------------------------
+    @commands.group(
+        pass_context=True,
+        name='spammer',
+        hidden=True,
+        invoke_without_command=True,
     )
-    async def show_rules(self, ctx):
-        """Show rules in spam_dict for debug, will error if more then 2k chars"""
-        await ctx.send(self.spam_dict)
+    async def spammer(self, ctx):
+        "Commands to view spam rule breakers"
+        await ctx.send_help('spammer')
+
+
+    @spammer.command(
+        name='List',
+        aliases=['ls']
+    )
+    async def list_rule_breakers(self, ctx):
+        """Last 10 Rule Breakers and Rule Desc order"""
+        async with async_session() as db:
+            async with db.begin():
+                scd = SpammerDAL(db)
+                rows = await scd.get_all_spammers()
+                NUM_SPAM = 10
+                NUM_LEN = 10
+                all_spammers = [f' {row.id} | {await self.client.fetch_user(row.member)} | {row.regex}' for row in rows]
+                response = []
+                for _ in range(len(all_spammers)):
+                    response.append('\n'.join(all_spammers[NUM_SPAM - NUM_LEN:NUM_SPAM]))
+                    NUM_SPAM += NUM_LEN
+                for block in response:
+                    await ctx.send(f'```{"".join(block)}```') if len(block) > 0 else None
 
 
     # ----------------------------------------------
