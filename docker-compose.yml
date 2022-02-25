@@ -1,16 +1,9 @@
-version: '2'
+version: "3"
 services:
     python:
         container_name: felix_python
         build: .
         volumes:
-            - ./:/opt/src
+            - './:/opt/src/'
         command: bash -c 'cd /opt/src/python && python3 bot.py'
         restart: always
-    # node:
-    #     container_name: felix_node
-    #     image: node:8.15-jessie
-    #     volumes:
-    #         - ./:/opt/src
-    #     command: bash -c 'cd /opt/src/node && npm install && node bot.js'
-    #     restart: always
