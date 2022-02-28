@@ -53,7 +53,7 @@ class SpamBlocker(commands.Cog, name='Spam'):
             async with db.begin():
                 scd = SpamDAL(db)
                 rows = await scd.get_all_spam()
-            self.spam_dict = {rule.regex:re.compile(rule.regex) for rule in rows}
+            self.spam_dict = {rule.regex:re.compile(rule.regex, re.I) for rule in rows}
 
 
     async def cog_check(self, ctx):
@@ -198,7 +198,7 @@ class SpamBlocker(commands.Cog, name='Spam'):
                     return
                 # commit new spam rule and return updated rule set
                 rows = await scd.add_spam(member.id, regex)
-                self.spam_dict = {rule.regex:re.compile(rule.regex) for rule in rows}
+                self.spam_dict = {rule.regex:re.compile(rule.regex, re.I) for rule in rows}
 
                 embed = Embed(
                     color=0x13DC51,
