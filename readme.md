@@ -17,6 +17,9 @@ Duplicate `config.json.sample` and rename it `config.json` and update it with yo
 
 Duplicate `state.json.sample` and rename it `state.json`.
 
+`cd python`  
+Duplicate `felix.sqlite.sample` and rename it `felix.sqlite`.
+
 ### Running the bot
 Using python
 ```
