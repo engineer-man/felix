@@ -1100,6 +1100,20 @@
             "extra": "",
             "difficulty": "Easy",
             "category": "Emulation/Modelling"
+        },
+        {
+            "number": 146,
+            "description": "English to Morse Code Translator",
+            "extra": "Dictionaries will help",
+            "difficulty": "Easy",
+            "category": "Practical"
+        },
+        {
+            "number": 147,
+            "description": "A script to check your internet connection",
+            "extra": "",
+            "difficulty": "Easy",
+            "category": "Practical"   
         }
     ]
 }
