@@ -225,6 +225,12 @@ class General(commands.Cog, name='General'):
             msg.content
         ):
             await msg.channel.send('42')
+            
+        if re.search(
+            r'(?i)^vim is the best editor',
+            msg.content
+        ):
+            await msg.channel.send('no, emacs is the best')
 
         if match := self.re_converter.search(msg.content):
             unit_aliases = {
