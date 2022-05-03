@@ -10,13 +10,13 @@ class QRCode(commands.Cog, name='QRCode'):
     def __init__(self, client):
         self.client = client
 
-
-    @commands.command(
+    @commands.group(
         name='qr',
         aliases=['qrcode'],
+        invoke_without_command = True
     )
     async def qrcode(self, ctx, level:typing.Optional[int]=0, *, data):
-        """Print a QR Code
+        """Print a QR Code - Character-size: auto
 
         Error Correction levels:
         0 : L
@@ -27,10 +27,56 @@ class QRCode(commands.Cog, name='QRCode'):
         if level is None:
             level = 0
         big_str, small_str = generate_qr_code(data, level, output='all', verbose=False)
-        if len(big_str) > 1990 and len(small_str) > 1990:
-            raise commands.BadArgument('QR Code too big, use less data or lower error correction')
-        await ctx.send('```\n' + (big_str if len(big_str) <= 1990 else small_str) + '\n```')
+        res = (big_str if len(big_str) <= 1990 else small_str)
+        if len(res) > 1990:
+            raise commands.BadArgument(
+                'QR Code too big. Use less data, or lower error correction'
+            )
+        await ctx.send('```\n' + res + '\n```')
 
+    @qrcode.command(
+        name='big',
+        aliases=['b']
+    )
+    async def qrbig(self, ctx, level:typing.Optional[int]=0, *, data):
+        """Print a QR Code - Character-size: big
+
+        Error Correction levels:
+        0 : L
+        1 : M
+        2 : Q
+        3 : H
+        """
+        if level is None:
+            level = 0
+        res = generate_qr_code(data, level, output='full_str', verbose=False)
+        if len(res) > 1990:
+            raise commands.BadArgument(
+                'QR Code too big. Use less data, small output, or lower error correction'
+            )
+        await ctx.send('```\n' + res + '\n```')
+
+    @qrcode.command(
+        name='small',
+        aliases=['s'],
+    )
+    async def qrsmall(self, ctx, level:typing.Optional[int]=0, *, data):
+        """Print a QR Code - Character-size: small
+
+        Error Correction levels:
+        0 : L
+        1 : M
+        2 : Q
+        3 : H
+        """
+        if level is None:
+            level = 0
+        res = generate_qr_code(data, level, output='half_str', verbose=False)
+        if len(res) > 1990:
+            raise commands.BadArgument(
+                'QR Code too big. Use less data, or lower error correction'
+            )
+        await ctx.send('```\n' + res + '\n```')
 
 
 def setup(client):

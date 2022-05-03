@@ -17,14 +17,7 @@ from .qr_tables import CHAR_CAPACITY_TABLE, CHARCOUNT_INDICATOR_LENGTHS_TABLE
 from .qr_tables import ALPHANUM_ENCODING_TABLE, ECC_INFO_TABLE, ALIGNMENT_PATTERN_LOCATIONS_TABLE
 from .qr_tables import FORMAT_INFORMATION_STRINGS_TABLE, VERSION_INFORMATION_STRINGS_TABLE
 
-# Enter data
-data = 'https://emkc.org'
-
-# Chose Error Correction (0: L, 1: M, 2:Q, 3:H)
-ecl = 1
-
-
-def generate_qr_code(data, ecl, output='string', verbose=False):
+def generate_qr_code(data, ecl, output='half_str', verbose=False):
     assert len(data) > 0
     if verbose:
         print('DATA:   ', data, '\nLENGTH: ', len(data))
@@ -865,5 +858,11 @@ def generate_qr_code(data, ecl, output='string', verbose=False):
     # Implement PNG output here :)
 
 if __name__ == '__main__':
+    # Enter data
+    data = 'https://emkc.org'
+
+    # Chose Error Correction (0: L, 1: M, 2:Q, 3:H)
+    ecl = 1
+
     for res in generate_qr_code(data, ecl, output='all', verbose=True):
         print(res)
