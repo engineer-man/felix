@@ -333,7 +333,7 @@ class SpamBlocker(commands.Cog, name='Spam'):
 
 
     @spammer.command(
-        name='List',
+        name='list',
         aliases=['ls']
     )
     async def list_rule_breakers(self, ctx):
