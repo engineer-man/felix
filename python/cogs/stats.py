@@ -13,6 +13,7 @@ import json
 import time
 import typing
 from datetime import datetime, timedelta
+
 from discord.ext import commands
 from discord import Member
 
@@ -171,6 +172,12 @@ class Stats(commands.Cog, name='Stats'):
         ]
 
         await ctx.send('```css\n' + '\n'.join(formatted) + '```')
+
+    @stats.command()
+    async def uptime(self, ctx):
+        """Show felix uptime from timedelta"""
+        uptime = datetime.now() - self.client.felix_start 
+        await ctx.send(f'```{str(uptime)[:7]}```')
 
 
 def setup(client):
