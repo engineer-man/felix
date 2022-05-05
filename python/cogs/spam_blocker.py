@@ -352,6 +352,33 @@ class SpamBlocker(commands.Cog, name='Spam'):
                 for block in response:
                     await ctx.send(f'```{"".join(block)}```') if len(block) > 0 else None
 
+    @spammer.command(
+        name='remove',
+        aliases=['rm']
+    )
+    async def remove_spammer_item(self, ctx, _id:int):
+        """Remove an item from spam list by its ID"""
+        member = ctx.message.author
+        async with async_session() as db:
+            async with db.begin():
+                scd = SpammerDAL(db)
+                row = await scd.spammer_by_id(_id)
+                if not row:
+                    await ctx.send(f'```❌ Sorry {member.name}, cannot remove spammer {_id} it does not exist!```')
+                    return
+                await scd.delete_spammer(_id)
+
+            embed = Embed(
+                color=0xA0F1B9,
+                title=f'Spammer {row.id} | Removed By {member.name}',
+                description=f'```✅ {await self.client.fetch_user(row.member)} removed from list.```'
+            )
+            embed.set_footer(
+                text=member.name,
+                icon_url=member.display_avatar
+            )
+            await ctx.send(embed=embed)
+
 
     # ----------------------------------------------
     # Cog Tasks

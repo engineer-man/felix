@@ -69,3 +69,15 @@ class SpammerDAL():
             select(Spammer).order_by(Spammer.id.desc()).limit(10)
         )
         return query.scalars().all()
+
+    async def spammer_by_id(self, id: str):
+        """Return spammer by its ID"""
+        query = await self.db_session.execute(
+            select(Spammer).where(Spammer.id == id)
+        )
+        return query.scalars().first()
+
+    async def delete_spammer(self, id: str):
+        """Remove spammer item by its id"""
+        query = delete(Spammer).where(Spammer.id == id)
+        await self.db_session.execute(query)
