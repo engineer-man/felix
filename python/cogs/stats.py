@@ -176,8 +176,8 @@ class Stats(commands.Cog, name='Stats'):
     @stats.command()
     async def uptime(self, ctx):
         """Show felix uptime from timedelta"""
-        uptime = datetime.now() - self.client.felix_start 
-        await ctx.send(f'```{str(uptime)[:7]}```')
+        uptime = str(datetime.now() - self.client.felix_start)
+        await ctx.send(f'```{uptime[:-7]}```')
 
 
 def setup(client):
