@@ -34,6 +34,9 @@ class PythonMailingList(Cog):
 
         self.fetch_new_posts.start()
 
+    async def cog_check(self, ctx):
+        return self.client.user_is_admin(ctx.author)
+
     @staticmethod
     def write_mail_hash(message_id_hash):
         state_json = json.loads(STATE_JSON.read_text())
@@ -58,6 +61,7 @@ class PythonMailingList(Cog):
 
     @command()
     async def pythonmail(self, ctx, maillist: str):
+        """Subscribe to a python mailing list"""
         async with self.client.session.get(
             RECENT_THREADS_URL.format(name=maillist)
         ) as resp:
