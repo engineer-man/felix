@@ -180,6 +180,6 @@ class Stats(commands.Cog, name='Stats'):
         await ctx.send(f'```{uptime[:-7]}```')
 
 
-def setup(client):
+async def setup(client):
     """This is called when the cog is loaded via load_extension"""
-    client.add_cog(Stats(client))
+    await client.add_cog(Stats(client))

@@ -274,6 +274,6 @@ class Connect4(commands.Cog, name='Connect4'):
             await message.remove_reaction(reaction.emoji, user)
 
 
-def setup(client):
+async def setup(client):
     """This is called when the cog is loaded via load_extension"""
-    client.add_cog(Connect4(client))
+    await client.add_cog(Connect4(client))

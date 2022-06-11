@@ -228,5 +228,5 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
         self.aoc_task.cancel()
 
 
-def setup(client):
-    client.add_cog(AdventOfCode(client))
+async def setup(client):
+    await client.add_cog(AdventOfCode(client))

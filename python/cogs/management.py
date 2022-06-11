@@ -21,7 +21,7 @@ import traceback
 import typing
 from datetime import datetime, timezone
 from os import path, listdir
-from discord import Activity, Embed, Member
+from discord import Activity, Embed, Member, Status
 from discord.ext import commands
 
 
@@ -43,10 +43,10 @@ class Management(commands.Cog, name='Management'):
             activity_name = 'ERROR in cog'
             activity_type = 3
         else:
-            felix_version = self.get_version_info()[0][:7]
-            activity_name = f'on {felix_version}'
-            activity_type = 0
+            activity_name = f'boot sequence OK'
+            activity_type = 1
         await self.client.change_presence(
+            status=self.client.status,
             activity=Activity(name=activity_name, type=activity_type)
         )
 
@@ -109,10 +109,7 @@ class Management(commands.Cog, name='Management'):
         # In case of an unhandled error -> Save the error + current datetime + ctx + original text
         # so it can be accessed later with the error command
         await ctx.send('Sorry, something went wrong. The Error was saved - we will look into it.')
-        self.client.last_errors.append((error, datetime.utcnow(), ctx, ctx.message.content))
-        await self.client.change_presence(
-            activity=Activity(name='ERROR encountered', url=None, type=3)
-        )
+        await self.client.log_error(error, ctx)
 
         print(f'Ignoring exception in command {ctx.command}:', flush=True)
         traceback.print_exception(
@@ -123,44 +120,6 @@ class Management(commands.Cog, name='Management'):
     def reload_config(self):
         with open("../config.json") as conffile:
             self.client.config = json.load(conffile)
-
-    def get_version_info(self):
-        version = 'unknown'
-        date = 'unknown'
-        try:
-            gitlog = subprocess.check_output(
-                ['git', 'log', '-n', '1', '--date=iso']).decode()
-            for line in gitlog.split('\n'):
-                if line.startswith('commit'):
-                    version = line.split(' ')[1]
-                elif line.startswith('Date'):
-                    date = line[5:].strip()
-                    date = date.replace(' +', '+').replace(' ', 'T')
-                else:
-                    pass
-        except Exception as e:
-            self.client.last_errors.append((e, datetime.utcnow(), None))
-            raise e
-        return (version, date)
-
-    async def get_remote_commits(self):
-        last_commit = self.get_version_info()[0]
-        ext = f'?per_page=10&sha=master'
-        repo = 'engineer-man/felix'
-        nxt = f'https://api.github.com/repos/{repo}/commits{ext}'
-        repo_data = []
-        repo_shas = []
-        while last_commit not in repo_shas:
-            async with self.client.session.get(nxt) as response:
-                r = await response.json()
-            repo_data += r
-            repo_shas = [x['sha'] for x in repo_data]
-            try:
-                nxt = r.links['next']['url']
-            except:
-                nxt = ''
-        num_comm = repo_shas.index(last_commit)
-        return (num_comm, repo_data[0:(num_comm if num_comm > 10 else 10)])
 
     def crawl_cogs(self, directory='cogs'):
         cogs = []
@@ -179,35 +138,6 @@ class Management(commands.Cog, name='Management'):
         return cogs
 
     # ----------------------------------------------
-    # Function to disply the version
-    # ----------------------------------------------
-    @commands.command(
-        name='version',
-        brief='Show current version of felix',
-        description='Show current version and changelog of felix',
-        hidden=True,
-    )
-    async def version(self, ctx):
-        #await ctx.trigger_typing()
-        version, date = self.get_version_info()
-        num_commits, remote_data = await self.get_remote_commits()
-        status = "I am up to date with 'origin/master'"
-        changelog = 'Changelog:\n'
-        if num_commits:
-            status = f"I am [{num_commits}] commits behind 'origin/master'"\
-                f" [{remote_data[0]['commit']['author']['date']}]"
-        for i, commit in enumerate(remote_data):
-            commitmessage = commit['commit']['message']
-            if 'merge pull' in commitmessage.lower():
-                continue
-            changelog += ('+ ' if i < num_commits else '* ')  \
-                + commitmessage.split('\n')[0] + '\n'
-        await ctx.send(
-            f'```css\nCurrent Version: [{version[:7]}].from [{date}]' +
-            f'\n{status}``````diff\n{changelog}```'
-        )
-
-    # ----------------------------------------------
     # Function to load extensions
     # ----------------------------------------------
     @commands.command(
@@ -222,9 +152,9 @@ class Management(commands.Cog, name='Management'):
                 target_extension = cog_name
                 break
         try:
-            self.client.load_extension(target_extension)
+            await self.client.load_extension(target_extension)
         except Exception as e:
-            self.client.last_errors.append((e, datetime.utcnow(), ctx))
+            await self.client.log_error(e, ctx)
             await ctx.send(f'```py\n{type(e).__name__}: {str(e)}\n```')
             return
         await ctx.send(f'```css\nExtension [{target_extension}] loaded.```')
@@ -251,7 +181,7 @@ class Management(commands.Cog, name='Management'):
             return
         if self.client.extensions.get(target_extension) is None:
             return
-        self.client.unload_extension(target_extension)
+        await self.client.unload_extension(target_extension)
         await ctx.send(f'```css\nExtension [{target_extension}] unloaded.```')
 
     # ----------------------------------------------
@@ -279,10 +209,10 @@ class Management(commands.Cog, name='Management'):
         result = []
         for ext in target_extensions:
             try:
-                self.client.reload_extension(ext)
+                await self.client.reload_extension(ext)
                 result.append(f'Extension [{ext}] reloaded.')
             except Exception as e:
-                self.client.last_errors.append((e, datetime.utcnow(), ctx))
+                await self.client.log_error(e, ctx)
                 result.append(f'#ERROR loading [{ext}]')
                 continue
         result = '\n'.join(result)
@@ -308,7 +238,7 @@ class Management(commands.Cog, name='Management'):
         return True
 
     # ----------------------------------------------
-    # Function Group to clear channel of messages
+    # Function Group to list stuff
     # ----------------------------------------------
     @commands.group(
         invoke_without_command=True,
@@ -391,7 +321,6 @@ class Management(commands.Cog, name='Management'):
         """Print the date a member joined"""
         if not members:
             raise commands.BadArgument('Please specify at least 1 member')
-        #await ctx.trigger_typing()
         result = []
         now = datetime.now(tz=timezone.utc)
         for member in members:
@@ -456,14 +385,12 @@ class Management(commands.Cog, name='Management'):
         name='clear',
         aliases=['delete'],
     )
-    async def error_clear(self, ctx, n: int = None):
-        """Clear error with index [n]"""
-        if n is None:
-            self.client.last_errors = []
-            await ctx.send('Error log cleared')
-        else:
-            self.client.last_errors.pop(n)
-            await ctx.send(f'Deleted error #{n}')
+    async def error_clear(self, ctx):
+        self.client.last_errors = []
+        self.client.status = Status.online
+        activity = self.client.main_guild.me.activity if self.client.main_guild else None
+        await self.client.change_presence(status=self.client.status, activity=activity)
+        await ctx.send('Error log cleared')
 
     @error.command(
         name='traceback',
@@ -489,47 +416,60 @@ class Management(commands.Cog, name='Management'):
             await ctx.send('Error index does not exist')
             return
 
-        exc, date, error_source, orig_content = error_log[n]
-        delta = (datetime.utcnow() - date).total_seconds()
+        exc, date, error_source, orig_content, orig_attachment = error_log[n]
+        delta = (datetime.now(tz=timezone.utc) - date).total_seconds()
         hours = int(delta // 3600)
         seconds = int(delta - (hours * 3600))
         delta_str = f'{hours} hours and {seconds} seconds ago'
         tb = ''.join(
             traceback.format_exception(type(exc), exc, exc.__traceback__)
         )
-        response = [f'`Error occured {delta_str}`']
-        if error_source is not None:
-            response.append(
-                f'`Server:{error_source.guild.name} | Channel: {error_source.channel.name}`'
+        response_header = [f'`Error occured {delta_str}`']
+        response_error = []
+
+        if isinstance(error_source, commands.Context):
+            guild = error_source.guild
+            channel = error_source.channel
+            response_header.append(
+                f'`Server:{guild.name} | Channel: {channel.name}`' if guild else '`In DMChannel`'
             )
-            response.append(
+            response_header.append(
                 f'`User: {error_source.author.name}#{error_source.author.discriminator}`'
             )
-            if isinstance(error_source, commands.Context):
-                response.append(f'`Command: {error_source.invoked_with}`')
-                response.append(error_source.message.jump_url)
-            else:
-                response.append(f'`Command: No Command`')
-                response.append(error_source.jump_url)
-        response.append(f'```python\n')
-        num_chars = sum(len(line) for line in response)
-        for line in tb.split('\n'):
-            num_chars += len(line)
-            response.append(line)
-            if num_chars > 1900:
-                response.append('```')
-                await ctx.send('\n'.join(response))
-                response = ['```python\n']
-                num_chars = 0
-        response.append('```')
-        await ctx.send('\n'.join(response))
-        if error_source is not None:
+            response_header.append(f'`Command: {error_source.invoked_with}`')
+            response_header.append(error_source.message.jump_url)
             e = Embed(title='Full command that caused the error:',
                       description=orig_content)
-            e.set_footer(text=error_source.author.display_name,
-                         icon_url=error_source.author.display_avatar)
-        await ctx.send(embed=e)
+            avatar = error_source.author.avatar
+            if avatar:
+                e.set_footer(text=error_source.author.display_name, icon_url=avatar.url)
+            else:
+                e.set_footer(text=error_source.author.display_name)
+        else:
+            response_header.append(f'`Error caught in {error_source}`')
+            e = None
+
+        for line in tb.split('\n'):
+            while len(line) > 1800:
+                response_error.append(line[:1800])
+                line = line[1800:]
+            response_error.append(line)
+
+        to_send = '\n'.join(response_header) + '\n```python'
+
+        for line in response_error:
+            if len(to_send) + len(line) + 1 > 1800:
+                await ctx.send(to_send + '\n```')
+                to_send = '```python'
+            to_send += '\n' + line
+        await ctx.send(to_send + '\n```', embed=e)
+
+        if orig_attachment:
+            await ctx.send(
+                'Attached file:',
+                file=await orig_attachment.to_file()
+            )
 
 
-def setup(client):
-    client.add_cog(Management(client))
+async def setup(client):
+    await client.add_cog(Management(client))

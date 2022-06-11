@@ -900,5 +900,5 @@ class General(commands.Cog, name='General'):
         await ctx.send(self.result_fmt(url, language, result))
 
 
-def setup(client):
-    client.add_cog(General(client))
+async def setup(client):
+    await client.add_cog(General(client))

@@ -63,5 +63,5 @@ class ChatLog(commands.Cog, name='Chat Log'):
                 print(f'ERROR while sending chat log to EMKC. Response {response.status}')
 
 
-def setup(client):
-    client.add_cog(ChatLog(client))
+async def setup(client):
+    await client.add_cog(ChatLog(client))

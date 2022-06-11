@@ -384,6 +384,6 @@ class SpamBlocker(commands.Cog, name='Spam'):
     # Cog Tasks
     # ----------------------------------------------
 
-def setup(client):
+async def setup(client):
     """This is called when the cog is loaded via load_extension"""
-    client.add_cog(SpamBlocker(client))
+    await client.add_cog(SpamBlocker(client))

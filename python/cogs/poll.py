@@ -113,5 +113,5 @@ class Poll(commands.Cog, name='Poll'):
             await poll_msg.add_reaction(react_emoji)
 
 
-def setup(client):
-    client.add_cog(Poll(client))
+async def setup(client):
+    await client.add_cog(Poll(client))

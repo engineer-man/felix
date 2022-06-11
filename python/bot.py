@@ -13,19 +13,21 @@ This bot requires discord.py
 import json
 import traceback
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from os import path, listdir
-from discord.ext.commands import Bot, when_mentioned_or
-from discord import DMChannel, Message, Activity, Intents, AllowedMentions
+from discord.ext.commands import AutoShardedBot, when_mentioned_or, Context
+from discord import DMChannel, Intents, AllowedMentions, Status
 from aiohttp import ClientSession, ClientTimeout
 
 
-class Felix(Bot):
+class Felix(AutoShardedBot):
     def __init__(self, *args, **options):
         super().__init__(*args, **options)
+        self.main_guild = None
         self.session = None
         self.flood_mode = False
         self.felix_start = datetime.now()
+        self.status = Status.online
         with open('../config.json') as conffile:
             self.config = json.load(conffile)
         self.last_errors = []
@@ -37,6 +39,23 @@ class Felix(Bot):
     async def close(self):
         await self.session.close()
         await super().close()
+
+    async def setup_hook(self):
+        print('Loading Extensions:')
+        STARTUP_EXTENSIONS = []
+        for file in listdir(path.join(path.dirname(__file__), 'cogs/')):
+            filename, ext = path.splitext(file)
+            if '.py' in ext:
+                STARTUP_EXTENSIONS.append(f'cogs.{filename}')
+
+        for extension in reversed(STARTUP_EXTENSIONS):
+            try:
+                print('loading', extension)
+                await self.load_extension(f'{extension}')
+            except Exception as e:
+                await self.log_error(e, 'Cog INIT')
+                exc = f'{type(e).__name__}: {e}'
+                print(f'Failed to load extension {extension}\n{exc}')
 
     def user_is_admin(self, user):
         try:
@@ -50,6 +69,19 @@ class Felix(Bot):
         superusers = self.config['superusers']
         return user.id in superusers
 
+    async def log_error(self, error, error_source=None):
+        is_context = isinstance(error_source, Context)
+        has_attachment = bool(error_source.message.attachments) if is_context else False
+        self.last_errors.append((
+            error,
+            datetime.now(tz=timezone.utc),
+            error_source,
+            error_source.message.content if is_context else None,
+            error_source.message.attachments[0] if has_attachment else None,
+        ))
+        self.status = Status.dnd
+        activity = self.main_guild.me.activity if self.main_guild else None
+        await self.change_presence(status=self.status, activity=activity)
 
 client = Felix(
     command_prefix=when_mentioned_or('felix ', 'Felix '),
@@ -58,22 +90,6 @@ client = Felix(
     intents=Intents.all(),
     allowed_mentions=AllowedMentions(everyone=False, users=True, roles=True)
 )
-
-STARTUP_EXTENSIONS = []
-
-for file in listdir(path.join(path.dirname(__file__), 'cogs/')):
-    filename, ext = path.splitext(file)
-    if '.py' in ext:
-        STARTUP_EXTENSIONS.append(f'cogs.{filename}')
-
-for extension in reversed(STARTUP_EXTENSIONS):
-    try:
-        client.load_extension(f'{extension}')
-    except Exception as e:
-        client.last_errors.append((e, datetime.utcnow(), None, None))
-        exc = f'{type(e).__name__}: {e}'
-        print(f'Failed to load extension {extension}\n{exc}')
-
 
 @client.event
 async def on_ready():
@@ -99,14 +115,7 @@ async def on_error(event_method, *args, **kwargs):
     print('Default Handler: Ignoring exception in {}'.format(event_method), file=sys.stderr)
     traceback.print_exc()
     # --------------- custom code below -------------------------------
-    # Saving the error if it resulted from a message edit
-    if len(args) > 1:
-        a1, a2, *_ = args
-        if isinstance(a1, Message) and isinstance(a2, Message):
-            client.last_errors.append((sys.exc_info()[1], datetime.utcnow(), a2, a2.content))
-        await client.change_presence(
-            activity=Activity(name='ERROR encountered', url=None, type=3)
-        )
+    await client.log_error(sys.exc_info()[1], 'DEFAULT HANDLER:' + event_method)
 
 
 @client.event

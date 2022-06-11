@@ -149,5 +149,5 @@ class Help(commands.Cog):
         self.client.help_command = myHelpCommand()
 
 
-def setup(client):
-    client.add_cog(Help(client))
+async def setup(client):
+    await client.add_cog(Help(client))

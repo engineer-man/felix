@@ -195,5 +195,5 @@ class LinkBlocker(commands.Cog, name='Link Blocker'):
         self.allowed_once.append(member.id)
 
 
-def setup(client):
-    client.add_cog(LinkBlocker(client))
+async def setup(client):
+    await client.add_cog(LinkBlocker(client))

@@ -82,5 +82,5 @@ class Purge(commands.Cog, name='Purge'):
                     continue
 
 
-def setup(client):
-    client.add_cog(Purge(client))
+async def setup(client):
+    await client.add_cog(Purge(client))

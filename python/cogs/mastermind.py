@@ -211,6 +211,6 @@ class Mastermind(commands.Cog, name='Mastermind'):
         await ctx.send('Game Cancelled')
 
 
-def setup(client):
+async def setup(client):
     """This is called when the cog is loaded via load_extension"""
-    client.add_cog(Mastermind(client))
+    await client.add_cog(Mastermind(client))

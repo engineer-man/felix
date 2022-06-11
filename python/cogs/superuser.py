@@ -111,5 +111,5 @@ class Superuser(commands.Cog, name='Superuser'):
         await self.client.close()
 
 
-def setup(client):
-    client.add_cog(Superuser(client))
+async def setup(client):
+    await client.add_cog(Superuser(client))

@@ -200,6 +200,6 @@ class Challenges(commands.Cog, name='Challenges'):
                   color=0x2ECC71)
         await ctx.send(embed=e)
 
-def setup(client):
+async def setup(client):
     """This is called when the cog is loaded via load_extension"""
-    client.add_cog(Challenges(client))
+    await client.add_cog(Challenges(client))

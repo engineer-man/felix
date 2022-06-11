@@ -195,5 +195,5 @@ class PythonMailingList(Cog):
         self.fetch_new_posts.cancel()
 
 
-def setup(client) -> None:
-    client.add_cog(PythonMailingList(client))
+async def setup(client) -> None:
+    await client.add_cog(PythonMailingList(client))

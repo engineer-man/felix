@@ -375,5 +375,5 @@ class Stream(commands.Cog, name='Stream'):
         self.read_chat_task.cancel()
 
 
-def setup(client):
-    client.add_cog(Stream(client))
+async def setup(client):
+    await client.add_cog(Stream(client))

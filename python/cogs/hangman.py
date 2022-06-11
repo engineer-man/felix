@@ -217,6 +217,6 @@ class Hangman(commands.Cog):
         new_game.last_bot_message = await ctx.send(embed=embed)
 
 
-def setup(client):
+async def setup(client):
     """This is called when the cog is loaded via load_extension"""
-    client.add_cog(Hangman(client))
+    await client.add_cog(Hangman(client))

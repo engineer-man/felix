@@ -95,6 +95,6 @@ class RemoteControl(commands.Cog, command_attrs=dict(hidden=True)):
         await ctx.send(f'Remote Control Stopped!')
 
 
-def setup(client):
+async def setup(client):
     """This is called when the cog is loaded via load_extension"""
-    client.add_cog(RemoteControl(client))
+    await client.add_cog(RemoteControl(client))

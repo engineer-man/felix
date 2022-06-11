@@ -62,12 +62,16 @@ class ActivityMgmt(commands.Cog, name='Activity Management'):
     async def set_activity(self, *args, text=None, activity=None):
         if activity:
             await self.client.change_presence(
+                status=self.client.status,
                 activity=activity
             )
             return
 
         if text == '':
-            await self.client.change_presence(activity=None)
+            await self.client.change_presence(
+                status=self.client.status,
+                activity=None
+            )
             return
 
         activities = ('playing', 'streaming', 'listening', 'watching')
@@ -84,6 +88,7 @@ class ActivityMgmt(commands.Cog, name='Activity Management'):
             _url = None
         _name = ' '.join(text_split)
         await self.client.change_presence(
+            status=self.client.status,
             activity=Activity(name=_name, url=_url, type=_type)
         )
         return True
@@ -135,5 +140,5 @@ class ActivityMgmt(commands.Cog, name='Activity Management'):
         self.holidays_task.cancel()
 
 
-def setup(client):
-    client.add_cog(ActivityMgmt(client))
+async def setup(client):
+    await client.add_cog(ActivityMgmt(client))

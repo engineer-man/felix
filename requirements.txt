@@ -1,4 +1,4 @@
-discord.py @ https://github.com/Rapptz/discord.py/archive/master.zip
+git+https://github.com/Rapptz/discord.py@b0cb458f9f76072db3d9e40a33b70ce5349b0235
 matplotlib
 google-api-python-client
 google-auth-oauthlib

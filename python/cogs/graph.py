@@ -233,6 +233,6 @@ class Graph(commands.Cog,
         await ctx.send(file=file_to_send)
 
 
-def setup(client):
+async def setup(client):
     """This is called when the cog is loaded via load_extension"""
-    client.add_cog(Graph(client))
+    await client.add_cog(Graph(client))

@@ -436,6 +436,6 @@ class Jail(commands.Cog, name='Jail'):
         self.clear_naughty_list.cancel()
 
 
-def setup(client):
+async def setup(client):
     """This is called when the cog is loaded via load_extension"""
-    client.add_cog(Jail(client))
+    await client.add_cog(Jail(client))
