@@ -59,7 +59,7 @@ class PythonMailingList(Cog):
         else:
             return False
 
-    @command()
+    @command(hidden=True)
     async def pythonmail(self, ctx, maillist: str):
         """Subscribe to a python mailing list"""
         async with self.client.session.get(
