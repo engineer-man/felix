@@ -17,7 +17,6 @@ Commands:
     inspect         print source code of a command
     statuscat       Commands that gives the requested HTTP statuses described and visualized by cats."
     statusdog       Commands that gives the requested HTTP statuses described and visualized by dogs."
-    chucknorris     Shows a random chuck norris fun fact
     nasa            NASA's Astronomy Picture of the Day
 """
 
@@ -41,8 +40,7 @@ class General(commands.Cog, name='General'):
         self.client = client
         self.load_cat_http_codes.start()
         self.load_dog_http_codes.start()
-        self.load_chuck_http_codes.start()
-        self.re_converter = re.compile(r'(?i)(?P<num>-?[0-9]+(?:\.[0-9]*)?)\s?(?P<unit>[a-zA-Z°]+)')
+        self.re_convert = re.compile(r'(?i)(?P<num>-?[0-9]+(?:\.[0-9]*)?)\s?(?P<unit>[a-zA-Z°²]+)')
 
     @tasks.loop(count=1)
     async def load_cat_http_codes(self):
@@ -58,12 +56,6 @@ class General(commands.Cog, name='General'):
             text = await response.text()
             http_codes_dog = re.findall(r'<a href=\"(\d{3})-[^\"]*\"', text)
             self.http_codes_dog = [int(x) for x in http_codes_dog]
-
-    @tasks.loop(count=1)
-    async def load_chuck_http_codes(self):
-        async with self.client.session.get('https://api.chucknorris.io/jokes/categories') as response:
-            categories = await response.json()
-            self.chuck_categories = [x for x in categories if x != 'explicit']
 
     # ----------------------------------------------
     # Helper Functions
@@ -226,7 +218,7 @@ class General(commands.Cog, name='General'):
         ):
             await msg.channel.send('42')
 
-        if match := self.re_converter.search(msg.content):
+        if match := self.re_convert.search(msg.content):
             unit_aliases = {
                 'mile': 'miles',
                 'kilometer': 'km',
@@ -237,6 +229,17 @@ class General(commands.Cog, name='General'):
                 '°fahrenheit': '°f',
                 'celsius': '°c',
                 '°celsius': '°c',
+                'feet': 'ft',
+                'ounce': 'ounces',
+                'inch': 'inches',
+                'centimeters': 'cm',
+                'centimetres': 'cm',
+                'squaremeter': 'm²',
+                'squaremetre': 'm²',
+                'sqm': 'm²',
+                'squarefoot': 'ft²',
+                'squarefeet': 'ft²',
+                'sqft': 'ft²',
             }
             conversions = {
                 'miles': (lambda x: x*1.609344, 'km'),
@@ -245,6 +248,13 @@ class General(commands.Cog, name='General'):
                 '°c': (lambda x: x*1.8+32, '°F'),
                 'lb': (lambda x: x*0.4535924, 'kg'),
                 'kg': (lambda x: x*2.204623, 'lb'),
+                'ft': (lambda x: x*0.3048, 'm'),
+                'yards': (lambda x: x*0.3048*3, 'm'),
+                'ounces': (lambda x: x*28.35, 'g'),
+                'inches': (lambda x: x*2.54, 'cm'),
+                'cm': (lambda x: x*0.3937, 'inches'),
+                'm²': (lambda x: x*10.764, 'ft²'),
+                'ft²': (lambda x: x*0.09290304, 'm²'),
             }
             n, unit = match.groups()
             if unit.lower() not in unit_aliases | conversions:
@@ -264,7 +274,7 @@ class General(commands.Cog, name='General'):
     async def gif_embed(self, ctx, *, gif_name):
         """Post a gif
         Displays a random gif for the specified search term"""
-        #await ctx.trigger_typing()
+        await ctx.typing()
         gif_url = await self.gif_url(gif_name)
         if gif_url is None:
             await ctx.send(f'Sorry {ctx.author.mention}, no gif found 😔')
@@ -286,7 +296,7 @@ class General(commands.Cog, name='General'):
     )
     async def search(self, ctx, *, search_text):
         """Post a duckduckgo search link"""
-        #await ctx.trigger_typing()
+        await ctx.typing()
         await ctx.send(
             f'here you go! <https://duckduckgo.com/?q={quote_plus(search_text)}>'
         )
@@ -298,7 +308,7 @@ class General(commands.Cog, name='General'):
     )
     async def stackoverflow(self, ctx, *, search_text):
         """Post a stackoverflow search link"""
-        #await ctx.trigger_typing()
+        await ctx.typing()
         await ctx.send(
             f'here you go! <https://stackoverflow.com/search?q={quote_plus(search_text)}>'
         )
@@ -541,7 +551,7 @@ class General(commands.Cog, name='General'):
     )
     async def question(self, ctx, *, question):
         """Ask Felix a question"""
-        #await ctx.trigger_typing()
+        await ctx.typing()
         url = 'https://api.wolframalpha.com/v1/result?i=' + \
             f'{quote_plus(question)}&appid={self.client.config["wolfram_key"]}'
         async with self.client.session.get(url) as response:
@@ -780,44 +790,6 @@ class General(commands.Cog, name='General'):
         embed.set_footer(text=f'Provided by: https://httpstatusdogs.com/')
         await ctx.send(embed=embed)
 
-    @commands.command(
-        name='chucknorris',
-        aliases=['chuck', 'cn']
-    )
-    async def chucknorris(self, ctx, category: str = None):
-        """ Collects a random chuck norris joke, or collect a random joke
-            by specifying a specific category of joke. """
-        if not hasattr(self, 'chuck_categories'):
-            raise commands.BadArgument('Hold up partner, still locating Chuck!')
-
-        if category is None:
-            category = random.choice(self.chuck_categories)
-        else:
-            if category not in self.chuck_categories:
-                raise commands.BadArgument(
-                    f'Invalid category - please pick from:\n{", ".join(self.chuck_categories)}'
-                )
-
-        try:
-            async with self.client.session.get(
-                f'https://api.chucknorris.io/jokes/random?category={category}'
-            ) as response:
-                chuck = await response.json()
-                chuck = chuck['value']
-
-                embed = Embed(
-                    description=chuck,
-                    color=random.randint(0, 0xFFFFFF))
-                embed.set_author(
-                    name='Chuck Norris fun fact...',
-                    icon_url=f'https://assets.chucknorris.host/img/avatar/chuck-norris.png'
-                )
-                embed.set_footer(text=f'Category: {category} - https://api.chucknorris.io')
-                await ctx.send(embed=embed)
-
-        except:
-            raise commands.BadArgument('Chuck not found, currently evading GPS in Texas!')
-
     # ------------------------------------------------------------------------
 
     @commands.command(
@@ -859,45 +831,6 @@ class General(commands.Cog, name='General'):
                     + 'Provided By: https://api.nasa.gov/')
 
             await ctx.send(embed=embed)
-
-    # ------------------------------------------------------------------------
-
-    @staticmethod
-    def result_fmt(url: str, language: str, body_text: str) -> str:
-        """Format Result."""
-        body_space = min(1992 - len(language) - len(url), 1000)
-
-        if len(body_text) > body_space:
-            description = (
-                f'**Result Of cht.sh**\n```{language}\n{body_text[:body_space - 20]}'
-                + f'\n... (truncated - too many lines)```\nFull results: {url} '
-            )
-            return description
-
-        description = f'**Result Of cht.sh**\n```{language}\n{body_text}```\n{url}'
-        return description
-
-    @ commands.command(
-        name='cheat',
-        aliases=('cht.sh', 'cheatsheet', 'cheat-sheet', 'cht'),
-    )
-    async def cheat_sheet(
-            self, ctx, language: str, *search_terms: str
-    ) -> None:
-        """Search cheat.sh."""
-        url = f'https://cheat.sh/{quote_plus(language)}'
-        if search_terms:
-            url += f'/{quote_plus(" ".join(search_terms))}'
-        escape_tt = str.maketrans({'`': '\\`'})
-        ansi_re = re.compile(r'\x1b\[.*?m')
-
-        async with self.client.session.get(
-                url,
-                headers={'User-Agent': 'curl/7.68.0'}
-        ) as response:
-            result = ansi_re.sub('', await response.text()).translate(escape_tt)
-
-        await ctx.send(self.result_fmt(url, language, result))
 
 
 async def setup(client):

@@ -35,7 +35,7 @@ class Chase(commands.Cog, name='Chase'):
         self.load_chase_pics.cancel()
 
     async def post_chase_pic(self, ctx, num=0, random=False):
-        #await ctx.trigger_typing()
+        await ctx.typing()
         if len(self.all_pictures) == 0:
             raise commands.BadArgument(f"No Chase pics available")
         if random:

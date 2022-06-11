@@ -53,7 +53,7 @@ class RemoteControl(commands.Cog, command_attrs=dict(hidden=True)):
             return
         if not user == self.rc_user:
             return
-        await self.rc_target_channel.trigger_typing()
+        await self.rc_target_channel.typing()
 
     # ----------------------------------------------
     # Cog Commands
