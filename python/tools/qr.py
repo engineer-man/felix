@@ -251,6 +251,8 @@ def generate_qr_code(data, ecl, output='half_str', png_pixel_size=10, verbose=Fa
                 message_poly = message_poly.discard_leading_zeroes()
             # When we have iterated enough times the message_poly we are left with is the
             # error polynomial which can be stored for later use.
+            while len(message_poly) < num_error_correction_codewords:
+                message_poly = [0] + message_poly
             ecc_polys[g].append(message_poly)
             # Then we move on to the rest of the Blocks
 
@@ -863,7 +865,7 @@ if __name__ == '__main__':
     data = 'https://emkc.org'
 
     # Chose Error Correction (0: L, 1: M, 2:Q, 3:H)
-    ecl = 1
+    ecl = 0
 
     res = generate_qr_code(data, ecl, output='text', png_pixel_size=10, verbose=True)
     if isinstance(res, BytesIO):
