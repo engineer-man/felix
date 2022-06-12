@@ -1,3 +1,7 @@
+from PIL import Image
+from io import BytesIO
+
+
 def GF2_create_tables(order, irreducible_polynomial):
     # Return the antilog (exponent) table and log table of a Galios Field (GF)
     # with an order that is a power of 2
@@ -134,6 +138,8 @@ class Polynomial_GF256_base(list):
 
 # These 2 Classes implement the integer and exponent form of polynomials and can be used to pretty
 # print them and to convert between them
+
+
 class Polynomial_GF256_exp(Polynomial_GF256_base):
     def to_int(self):
         return Polynomial_GF256_int([ALOG[x] if x is not None else 0 for x in self])
@@ -147,7 +153,8 @@ class Polynomial_GF256_exp(Polynomial_GF256_base):
         return Polynomial_GF256_exp(self + [None] * n)
 
     def multiply_by(self, factor):
-        return Polynomial_GF256_exp([(x+factor)%255 if x is not None else None for x in self])
+        return Polynomial_GF256_exp([(x+factor) % 255 if x is not None else None for x in self])
+
 
 class Polynomial_GF256_int(Polynomial_GF256_base):
     def to_exp(self):
@@ -160,49 +167,92 @@ class Polynomial_GF256_int(Polynomial_GF256_base):
         return Polynomial_GF256_int(self + [0] * n)
 
     def __xor__(self, other):
-        return Polynomial_GF256_int([x^y for x,y in zip(self, other)])
+        return Polynomial_GF256_int([x ^ y for x, y in zip(self, other)])
 
     def discard_leading_zeroes(self):
         while self[0] == 0:
             self = self[1:]
         return Polynomial_GF256_int(self)
 
+
 def get_matrix_str_full_size(matrix):
     border = '██'
-    colors = ['██','  ','▒▒', '░░']
-    max_x = max([x for x,y in matrix.keys()])
-    min_x = min([x for x,y in matrix.keys()])
-    max_y = max([y for x,y in matrix.keys()])
-    min_y = min([y for x,y in matrix.keys()])
+    colors = ['██', '  ', '▒▒', '░░']
+    max_x = max([x for x, y in matrix.keys()])
+    min_x = min([x for x, y in matrix.keys()])
+    max_y = max([y for x, y in matrix.keys()])
+    min_y = min([y for x, y in matrix.keys()])
     res = ''
     res += border*(max_x+3) + '\n'
     for y in range(min_y, max_y+1):
         res += border
         for x in range(min_x, max_x+1):
-            res += colors[matrix.get((x,y), -1)]
+            res += colors[matrix.get((x, y), -1)]
         res += border + '\n'
     res += border*(max_x+3) + '\n'
     return res
 
+
 def get_matrix_str_half_size(matrix):
     top = '▀'
-    bottom ='▄'
+    bottom = '▄'
     full = '█'
     empty = ' '
-    colors = [[full,top],[bottom,empty]]
-    max_x = max([x for x,y in matrix.keys()])
-    min_x = min([x for x,y in matrix.keys()])
-    max_y = max([y for x,y in matrix.keys()])
-    min_y = min([y for x,y in matrix.keys()])
+    colors = [[full, top], [bottom, empty]]
+    max_x = max([x for x, y in matrix.keys()])
+    min_x = min([x for x, y in matrix.keys()])
+    max_y = max([y for x, y in matrix.keys()])
+    min_y = min([y for x, y in matrix.keys()])
     res = ''
     res += bottom*(max_x+3) + '\n'
-    for y in range(min_y, max_y+1,2):
+    for y in range(min_y, max_y+1, 2):
         res += full
         for x in range(min_x, max_x+1):
-            res += colors[matrix.get((x,y), 0)][matrix.get((x,y+1), 0)]
+            res += colors[matrix.get((x, y), 0)][matrix.get((x, y+1), 0)]
         res += full + '\n'
     # res += *(max_x+3) + '\n'
     return res
+
+
+def get_matrix_png(matrix, module_width_px=10):
+    max_x = max([x for x, y in matrix.keys()])
+    min_x = min([x for x, y in matrix.keys()])
+    max_y = max([y for x, y in matrix.keys()])
+    min_y = min([y for x, y in matrix.keys()])
+
+    img = Image.new('RGB', (module_width_px * (max_x-min_x+3), module_width_px * (max_y-min_y+3)))
+    for x in range(min_x, max_x+3):
+        posx = x * module_width_px
+        for dx in range(module_width_px):
+            for dy in range(module_width_px):
+                img.putpixel((posx+dx, 0+dy), (255, 255, 255))
+
+    for y in range(min_y, max_y+1):
+        posy = (y+1)*module_width_px
+        for dx in range(module_width_px):
+            for dy in range(module_width_px):
+                img.putpixel((0+dx, posy+dy), (255, 255, 255))
+        for x in range(min_x, max_x+1):
+            posx = (x+1)*module_width_px
+            color = (255, 255, 255) if matrix.get((x, y), -1) == 0 else (0, 0, 0)
+            for dx in range(module_width_px):
+                for dy in range(module_width_px):
+                    img.putpixel((posx+dx, posy+dy), color)
+        for dx in range(module_width_px):
+            for dy in range(module_width_px):
+                img.putpixel(((max_x+2)*module_width_px+dx, posy+dy), (255, 255, 255))
+
+    for x in range(min_x, max_x+3):
+        posx = x * module_width_px
+        for dx in range(module_width_px):
+            for dy in range(module_width_px):
+                img.putpixel((posx+dx, (max_y+2)*module_width_px+dy), (255, 255, 255))
+
+    image_bytes = BytesIO()
+    img.save(image_bytes, 'png')
+
+    return image_bytes
+
 
 if __name__ == '__main__':
     l, al = GF2_create_tables(256, 285)

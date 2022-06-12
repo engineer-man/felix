@@ -20,6 +20,7 @@ Commands:
     nasa            NASA's Astronomy Picture of the Day
 """
 
+from io import BytesIO
 import re
 import random
 import typing
@@ -30,7 +31,7 @@ from urllib.parse import quote_plus
 from aiohttp import ContentTypeError
 import discord
 from discord.ext import commands, tasks
-from discord import Embed, DMChannel, Member
+from discord import Embed, DMChannel, Member, File
 from tools.qr import generate_qr_code
 # pylint: disable=E1101
 
@@ -835,10 +836,17 @@ class General(commands.Cog, name='General'):
     @commands.group(
         name='qrcode',
         aliases=['qr'],
-        invoke_without_command = True
+        invoke_without_command=True
     )
-    async def qrcode(self, ctx, level:typing.Optional[int]=0, *, data):
-        """Print a QR Code - Character-size: auto
+    async def qrcode(
+        self,
+        ctx,
+        pixel_size: typing.Optional[int] = 10,
+        level: typing.Optional[int] = 0,
+        *,
+        data
+    ):
+        """Print a QR Code PNG with specified pixel size
 
         Error Correction levels:
         0 : L
@@ -848,7 +856,27 @@ class General(commands.Cog, name='General'):
         """
         if level is None:
             level = 0
-        big_str, small_str = generate_qr_code(data, level, output='all', verbose=False)
+        pic_bytes = generate_qr_code(data, level, output='png',
+                                     png_pixel_size=pixel_size, verbose=False)
+        pic_bytes.seek(0)
+        await ctx.send(file=File(pic_bytes, filename='qr.png'))
+
+    @qrcode.command(
+        name='text',
+        aliases=['txt']
+    )
+    async def qrtext(self, ctx, level: typing.Optional[int] = 0, *, data):
+        """Print a text QR Code - Character-size: auto
+
+        Error Correction levels:
+        0 : L
+        1 : M
+        2 : Q
+        3 : H
+        """
+        if level is None:
+            level = 0
+        big_str, small_str = generate_qr_code(data, level, output='text', verbose=False)
         res = (big_str if len(big_str) <= 1990 else small_str)
         if len(res) > 1990:
             raise commands.BadArgument(
@@ -860,8 +888,8 @@ class General(commands.Cog, name='General'):
         name='big',
         aliases=['b']
     )
-    async def qrbig(self, ctx, level:typing.Optional[int]=0, *, data):
-        """Print a QR Code - Character-size: big
+    async def qrbig(self, ctx, level: typing.Optional[int] = 0, *, data):
+        """Print a text QR Code - Character-size: big
 
         Error Correction levels:
         0 : L
@@ -882,8 +910,8 @@ class General(commands.Cog, name='General'):
         name='small',
         aliases=['s'],
     )
-    async def qrsmall(self, ctx, level:typing.Optional[int]=0, *, data):
-        """Print a QR Code - Character-size: small
+    async def qrsmall(self, ctx, level: typing.Optional[int] = 0, *, data):
+        """Print a text QR Code - Character-size: small
 
         Error Correction levels:
         0 : L
@@ -899,6 +927,7 @@ class General(commands.Cog, name='General'):
                 'QR Code too big. Use less data, or lower error correction'
             )
         await ctx.send('```\n' + res + '\n```')
+
 
 async def setup(client):
     await client.add_cog(General(client))

@@ -7,17 +7,18 @@
 # └────────────────────────────────────────────────────────────────────────────┘
 
 from functools import reduce
+from io import BytesIO
 from operator import add
 from itertools import zip_longest
 from itertools import product
 from .qr_tools import GF2_create_tables, Polynomial_GF256_exp as polynomial_exp
 from .qr_tools import Polynomial_GF256_int as polynomial_int
-from .qr_tools import get_matrix_str_full_size, get_matrix_str_half_size
+from .qr_tools import get_matrix_str_full_size, get_matrix_str_half_size, get_matrix_png
 from .qr_tables import CHAR_CAPACITY_TABLE, CHARCOUNT_INDICATOR_LENGTHS_TABLE
 from .qr_tables import ALPHANUM_ENCODING_TABLE, ECC_INFO_TABLE, ALIGNMENT_PATTERN_LOCATIONS_TABLE
 from .qr_tables import FORMAT_INFORMATION_STRINGS_TABLE, VERSION_INFORMATION_STRINGS_TABLE
 
-def generate_qr_code(data, ecl, output='half_str', verbose=False):
+def generate_qr_code(data, ecl, output='half_str', png_pixel_size=10, verbose=False):
     assert len(data) > 0
     if verbose:
         print('DATA:   ', data, '\nLENGTH: ', len(data))
@@ -844,18 +845,18 @@ def generate_qr_code(data, ecl, output='half_str', verbose=False):
         if total < best_matrix_score:
             best_matrix_score = total
             best_matrix = masked_matrix
-
     # Output the best matrix as a string (or other format)
     if output == 'full_str':
         return get_matrix_str_full_size(best_matrix)
     elif output == 'half_str':
         return get_matrix_str_half_size(best_matrix)
-    elif output == 'all':
+    elif output == 'png':
+        return get_matrix_png(best_matrix, png_pixel_size)
+    elif output == 'text':
         return (
             get_matrix_str_full_size(best_matrix),
-            get_matrix_str_half_size(best_matrix)
+            get_matrix_str_half_size(best_matrix),
         )
-    # Implement PNG output here :)
 
 if __name__ == '__main__':
     # Enter data
@@ -864,5 +865,12 @@ if __name__ == '__main__':
     # Chose Error Correction (0: L, 1: M, 2:Q, 3:H)
     ecl = 1
 
-    for res in generate_qr_code(data, ecl, output='all', verbose=True):
+    res = generate_qr_code(data, ecl, output='text', png_pixel_size=10, verbose=True)
+    if isinstance(res, BytesIO):
+        with open('res.png', 'wb') as f:
+            f.write(res.getbuffer())
+    elif isinstance(res, tuple):
+        for r in res:
+            print(r)
+    else:
         print(res)
