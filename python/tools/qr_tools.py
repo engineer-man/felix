@@ -221,32 +221,64 @@ def get_matrix_png(matrix, module_width_px=10):
     min_y = min([y for x, y in matrix.keys()])
 
     img = Image.new('RGB', (module_width_px * (max_x-min_x+3), module_width_px * (max_y-min_y+3)))
-    for x in range(min_x, max_x+3):
-        posx = x * module_width_px
-        for dx in range(module_width_px):
-            for dy in range(module_width_px):
-                img.putpixel((posx+dx, 0+dy), (255, 255, 255))
+    # Top Border
+    img.paste(
+        'white',
+        (
+            0,
+            0,
+            module_width_px * (max_x-min_x+3),
+            module_width_px
+        )
+    )
 
     for y in range(min_y, max_y+1):
         posy = (y+1)*module_width_px
-        for dx in range(module_width_px):
-            for dy in range(module_width_px):
-                img.putpixel((0+dx, posy+dy), (255, 255, 255))
+        # Left border (current line)
+        img.paste(
+            'white',
+            (
+                0,
+                posy,
+                module_width_px,
+                posy + module_width_px
+            )
+        )
+        # Data (current line)
         for x in range(min_x, max_x+1):
             posx = (x+1)*module_width_px
-            color = (255, 255, 255) if matrix.get((x, y), -1) == 0 else (0, 0, 0)
-            for dx in range(module_width_px):
-                for dy in range(module_width_px):
-                    img.putpixel((posx+dx, posy+dy), color)
-        for dx in range(module_width_px):
-            for dy in range(module_width_px):
-                img.putpixel(((max_x+2)*module_width_px+dx, posy+dy), (255, 255, 255))
+            color = 'white' if matrix.get((x, y), -1) == 0 else 'black'
+            img.paste(
+                color,
+                (
+                    posx,
+                    posy,
+                    posx + module_width_px,
+                    posy + module_width_px
+                )
+            )
 
-    for x in range(min_x, max_x+3):
-        posx = x * module_width_px
-        for dx in range(module_width_px):
-            for dy in range(module_width_px):
-                img.putpixel((posx+dx, (max_y+2)*module_width_px+dy), (255, 255, 255))
+        # Right border (current line)
+        img.paste(
+            'white',
+            (
+                (max_x + 2) * module_width_px,
+                posy,
+                (max_x + 3) * module_width_px,
+                posy + module_width_px
+            )
+        )
+
+    # Bottom Border
+    img.paste(
+        'white',
+        (
+            0,
+            module_width_px * (max_y-min_y+2),
+            module_width_px * (max_x-min_x+3),
+            module_width_px * (max_y-min_y+3)
+        )
+    )
 
     image_bytes = BytesIO()
     img.save(image_bytes, 'png')

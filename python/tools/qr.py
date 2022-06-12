@@ -47,6 +47,11 @@ def generate_qr_code(data, ecl, output='half_str', png_pixel_size=10, verbose=Fa
     version = 1
     while CHAR_CAPACITY_TABLE[version][ecl][mode] < len(data):
         version += 1
+        if version > 40:
+            raise ValueError(
+                f'Too much data ({len(data)}/{CHAR_CAPACITY_TABLE[40][ecl][mode]}). '
+                f'Use less data, lower error correction or different mode'
+            )
     assert 1 <= version <= 40
     if verbose:
         print('VERSION:', version)

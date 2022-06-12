@@ -856,8 +856,14 @@ class General(commands.Cog, name='General'):
         """
         if level is None:
             level = 0
-        pic_bytes = generate_qr_code(data, level, output='png',
+        # Clamp value
+        pixel_size = max(1, min(pixel_size, 50))
+        await ctx.typing()
+        try:
+            pic_bytes = generate_qr_code(data, level, output='png',
                                      png_pixel_size=pixel_size, verbose=False)
+        except ValueError as e:
+            raise commands.BadArgument(str(e))
         pic_bytes.seek(0)
         await ctx.send(file=File(pic_bytes, filename='qr.png'))
 
@@ -876,11 +882,15 @@ class General(commands.Cog, name='General'):
         """
         if level is None:
             level = 0
-        big_str, small_str = generate_qr_code(data, level, output='text', verbose=False)
+        try:
+            big_str, small_str = generate_qr_code(data, level, output='text', verbose=False)
+        except ValueError as e:
+            raise commands.BadArgument(str(e))
         res = (big_str if len(big_str) <= 1990 else small_str)
         if len(res) > 1990:
             raise commands.BadArgument(
-                'QR Code too big. Use less data, or lower error correction'
+                'Text-QR Code too big for discord. '
+                'Use png mode, less data or lower error correction'
             )
         await ctx.send('```\n' + res + '\n```')
 
@@ -899,10 +909,14 @@ class General(commands.Cog, name='General'):
         """
         if level is None:
             level = 0
-        res = generate_qr_code(data, level, output='full_str', verbose=False)
+        try:
+            res = generate_qr_code(data, level, output='full_str', verbose=False)
+        except ValueError as e:
+            raise commands.BadArgument(str(e))
         if len(res) > 1990:
             raise commands.BadArgument(
-                'QR Code too big. Use less data, small output, or lower error correction'
+                'Text-QR Code too big for discord. Use png mode, '
+                'small mode, less data or lower error correction'
             )
         await ctx.send('```\n' + res + '\n```')
 
@@ -921,10 +935,14 @@ class General(commands.Cog, name='General'):
         """
         if level is None:
             level = 0
-        res = generate_qr_code(data, level, output='half_str', verbose=False)
+        try:
+            res = generate_qr_code(data, level, output='half_str', verbose=False)
+        except ValueError as e:
+            raise commands.BadArgument(str(e))
         if len(res) > 1990:
             raise commands.BadArgument(
-                'QR Code too big. Use less data, or lower error correction'
+                'Text-QR Code too big for discord. '
+                'Use png mode, less data or lower error correction'
             )
         await ctx.send('```\n' + res + '\n```')
 
