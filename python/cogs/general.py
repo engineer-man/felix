@@ -341,7 +341,7 @@ class General(commands.Cog, name='General'):
             "*\\`\\`\\`python\nprint('Hello world!')\n\\`\\`\\`*\n\n"
             "**This will result in the following:**\n"
             "```python\nprint('Hello world!')\n```\n"
-            "**NOTE:** Codeblocks are also used to run code via `/run`."
+            "**NOTE:** Codeblocks are also used to run code via `/run` or `./run`."
         )
         link = (
             'https://support.discordapp.com/hc/en-us/articles/'
@@ -735,7 +735,7 @@ class General(commands.Cog, name='General'):
         name='run'
     )
     async def run_message(self, ctx):
-        await ctx.send('Please use `/run` to run code.')
+        await ctx.send('Please use `/run` or `./run` to run code.')
 
     # ------------------------------------------------------------------------
 
@@ -810,8 +810,8 @@ class General(commands.Cog, name='General'):
             apod_data = await response.json()
             if apod_data.get('code', 200) != 200:
                 raise commands.BadArgument(apod_data.get('msg', 'Error'))
-            embed = Embed(description=apod_data['explanation'],
-                          color=random.randint(0, 0xFFFFFF))
+            embed = Embed(description=f'```{apod_data["explanation"]}```',
+                          color=0xD92906)
 
             if apod_data['media_type'] == 'image':
                 embed.set_image(url=apod_data['hdurl'])
