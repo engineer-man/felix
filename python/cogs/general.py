@@ -341,7 +341,7 @@ class General(commands.Cog, name='General'):
             "*\\`\\`\\`python\nprint('Hello world!')\n\\`\\`\\`*\n\n"
             "**This will result in the following:**\n"
             "```python\nprint('Hello world!')\n```\n"
-            "**NOTE:** Codeblocks are also used to run code via `/run` or `./run`."
+            "**NOTE:** Codeblocks are also used to run code via `/run`."
         )
         link = (
             'https://support.discordapp.com/hc/en-us/articles/'
@@ -735,7 +735,7 @@ class General(commands.Cog, name='General'):
         name='run'
     )
     async def run_message(self, ctx):
-        await ctx.send('Please use `/run` or `./run` to run code.')
+        await ctx.send('Please use `/run` to run code.')
 
     # ------------------------------------------------------------------------
 
@@ -810,8 +810,8 @@ class General(commands.Cog, name='General'):
             apod_data = await response.json()
             if apod_data.get('code', 200) != 200:
                 raise commands.BadArgument(apod_data.get('msg', 'Error'))
-            embed = Embed(description=f'```{apod_data["explanation"]}```',
-                          color=0xD92906)
+            embed = Embed(description=apod_data['explanation'],
+                          color=random.randint(0, 0xFFFFFF))
 
             if apod_data['media_type'] == 'image':
                 embed.set_image(url=apod_data['hdurl'])
@@ -856,8 +856,9 @@ class General(commands.Cog, name='General'):
         """
         if level is None:
             level = 0
-        # Clamp value
+        # Clamp values
         pixel_size = max(1, min(pixel_size, 50))
+        level = max(0, min(level, 3))
         await ctx.typing()
         try:
             pic_bytes = generate_qr_code(data, level, output='png',
@@ -882,6 +883,8 @@ class General(commands.Cog, name='General'):
         """
         if level is None:
             level = 0
+        # Clamp values
+        level = max(0, min(level, 3))
         try:
             big_str, small_str = generate_qr_code(data, level, output='text', verbose=False)
         except ValueError as e:
@@ -909,6 +912,8 @@ class General(commands.Cog, name='General'):
         """
         if level is None:
             level = 0
+        # Clamp values
+        level = max(0, min(level, 3))
         try:
             res = generate_qr_code(data, level, output='full_str', verbose=False)
         except ValueError as e:
@@ -935,6 +940,8 @@ class General(commands.Cog, name='General'):
         """
         if level is None:
             level = 0
+        # Clamp values
+        level = max(0, min(level, 3))
         try:
             res = generate_qr_code(data, level, output='half_str', verbose=False)
         except ValueError as e:
