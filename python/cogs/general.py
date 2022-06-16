@@ -20,7 +20,6 @@ Commands:
     nasa            NASA's Astronomy Picture of the Day
 """
 
-from io import BytesIO
 import re
 import random
 import typing

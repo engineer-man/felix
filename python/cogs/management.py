@@ -15,7 +15,6 @@ Commands:
 
 Only users that have an admin role can use the commands.
 """
-import subprocess
 import json
 import traceback
 import typing
