@@ -231,7 +231,7 @@ class Jail(commands.Cog, name='Jail'):
                     self.naughty[uid] = now
                     # "Reset" his history so he doesn't get jailed immediately
                     # on the 11th message
-                    user_history = []
+                    user_history = deque()
         # Save the users history again (the oldest message was popped)
         self.history[uid] = user_history
 
