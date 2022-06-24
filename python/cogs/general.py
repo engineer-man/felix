@@ -559,7 +559,8 @@ class General(commands.Cog, name='General'):
         if 'did not understand' in answer or 'No short answer' in answer:
             await self.duck_call(ctx, question)
             return
-
+        if len(answer) > 1990:
+            answer = answer[:1990] + ' ...'
         await ctx.send(answer)
     # ------------------------------------------------------------------------
 
