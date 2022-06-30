@@ -11,6 +11,8 @@ python/cogs/*.settings
 python/cogs/*.history
 python/questions.txt
 last_graph.png
+token_graph.png
+tokens_graph.png
 donation.json
 id_mapping.json
 api_secrets_file
