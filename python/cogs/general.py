@@ -40,7 +40,7 @@ class General(commands.Cog, name='General'):
         self.client = client
         self.load_cat_http_codes.start()
         self.load_dog_http_codes.start()
-        self.re_convert = re.compile(r'(?i)(?P<num>-?[0-9]+(?:\.[0-9]*)?)\s?(?P<unit>[a-zA-Z°²]+)')
+        self.re_convert = re.compile(r'^\s*(?i)(?P<num>-?[0-9]+(?:\.[0-9]*)?)\s?(?P<unit>[a-zA-Z°²]+)')
 
     @tasks.loop(count=1)
     async def load_cat_http_codes(self):
