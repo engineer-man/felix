@@ -25,7 +25,7 @@ import random
 import typing
 import hashlib
 from inspect import getsourcelines
-from datetime import datetime as dt
+from datetime import datetime as dt, timedelta as td
 from urllib.parse import quote_plus
 from aiohttp import ContentTypeError
 import discord
@@ -804,6 +804,14 @@ class General(commands.Cog, name='General'):
             Show today's picture if no date is provided"""
         if '-' not in date and date.isnumeric() and len(date) == 8:
             date = '-'.join((date[:4], date[4:6], date[6:8]))
+
+        elif date == 'r' or date == 'random':
+            start_date = dt.strptime('1995-06-16', '%Y-%m-%d')
+            end_date = dt.now()
+            date = str(start_date + td(
+                seconds=random.randint(0, int((end_date - start_date).total_seconds()))
+            ))[:10]
+
         async with self.client.session.get(
             'https://api.nasa.gov/planetary/apod'
             + f'?api_key={self.client.config["nasa_key"]}&date={date}'
