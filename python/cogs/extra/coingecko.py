@@ -32,7 +32,7 @@ class Coingecko(commands.Cog, name='Coin'):
         self.cg_icon = cg_icon
         self.currencies = []
         self.tokens = []
-        self.base_url = 'https://coingecko.com/'
+        self.base_url = 'https://www.coingecko.com/'
 
         self.supported_currencies.start()  # pylint: disable=E1101
         self.supported_tokens.start()  # pylint: disable=E1101
@@ -62,7 +62,7 @@ class Coingecko(commands.Cog, name='Coin'):
 
     async def create_tokens_graph(self, num_days: int, vs_currency: str, *tokens):
         """create a plot graph from a bunch of given tokens over a number of days"""
-        labels = {'family': 'serif', 'color': 'red', 'size': 15}
+        labels = {'family': 'serif', 'color': 'black', 'size': 15}
         headings = {'family': 'serif', 'color': 'darkred', 'size': 20}
 
         if len(tokens) == 1:
@@ -249,7 +249,7 @@ class Coingecko(commands.Cog, name='Coin'):
             embed = Embed(
                 color=0xFFFF00,
                 title=f'{token.title()} Price',
-                url=f'https://www.coingecko.com/en/coins/{token}'
+                url=f'{self.base_url}/en/coins/{token}'
             )
             embed.set_thumbnail(
                 url=self.cg_icon
@@ -313,7 +313,6 @@ class Coingecko(commands.Cog, name='Coin'):
             await ctx.send(file=file_to_send)
         else:
             await ctx.send('Nothing found')
-
 
     # ----------------------------------------------
     # Cog Tasks
