@@ -342,7 +342,6 @@ class Coingecko(commands.Cog, name='Coin'):
             return data
         msg = 'Unable to process response from CoinGecko API' \
             f'\n{response.status} - {response.reason}'
-        if
         # do we have context so we can inform the user?
         if ctx:
             await ctx.send(embed=self.get_embed(
@@ -353,7 +352,7 @@ class Coingecko(commands.Cog, name='Coin'):
         else:
             # let's just log it so the local admin can see what's happening
             print(
-                f'{msg}, {response = }')   # pylint: disable=W0212
+                f'{msg}, details: {response = }')   # pylint: disable=W0212
 
     # ----------------------------------------------
     # Cog Tasks
