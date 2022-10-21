@@ -281,7 +281,7 @@ class SpamBlocker(commands.Cog, name='Spam'):
                 res = await scd.get_all_spam()
                 NUM_SPAM = 25
                 NUM_LEN = 25
-                all_spam = [f'  {row.id} | {row.regex}' if row.id < 10 else f' {row.id} | {row.regex}' for row in res]
+                all_spam = [f'{row.id:0>3} | {row.regex}' for row in res]
                 response = []
                 for _ in range(len(all_spam)):
                     response.append('\n'.join(all_spam[NUM_SPAM - NUM_LEN:NUM_SPAM]))
