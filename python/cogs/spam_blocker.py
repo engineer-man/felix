@@ -273,7 +273,7 @@ class SpamBlocker(commands.Cog, name='Spam'):
         name='list',
         aliases=['ls']
     )
-    async def current_spam_list(self, ctx):
+    async def current_spam_list(self, ctx, page="all"):
         """Lists all current items in the spam database"""
         async with async_session() as db:
             async with db.begin():
@@ -281,7 +281,11 @@ class SpamBlocker(commands.Cog, name='Spam'):
                 res = await scd.get_all_spam()
                 NUM_SPAM = 25
                 NUM_LEN = 25
-                all_spam = [f'{row.id:0>3} | {row.regex}' for row in res]
+                res_to_show = res
+                if page != "all":
+                    start = int(page) * NUM_SPAM
+                    res_to_show = res[start:start+25]
+                all_spam = [f'{row.id:0>3} | {row.regex}' for row in res_to_show]
                 response = []
                 for _ in range(len(all_spam)):
                     response.append('\n'.join(all_spam[NUM_SPAM - NUM_LEN:NUM_SPAM]))
