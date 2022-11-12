@@ -227,8 +227,8 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
         await ctx.send(embed=embed)
 
     @app_commands.command()
-    async def slashtest(self, interaction: Interaction, fruit: str):
-        await interaction.response.send_message(f'Slashtest: {fruit}')
+    async def slashtest(self, interaction: Interaction, thing: str):
+        await interaction.response.send_message(f'Slashtest: {thing}')
 
     @aoc.command(
         name='sync',
@@ -237,6 +237,15 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
     async def sync_ac(self, ctx):
         r = await self.client.tree.sync()
         await ctx.send(r)
+
+    @aoc.command(
+        name='desync',
+        hidden=True
+    )
+    async def desync_ac(self, ctx):
+        self.client.tree.remove_command('slashtest')
+        r = await self.client.tree.sync()
+        await ctx.send(r or 'NONE')
 
     def cog_unload(self):
         self.aoc_task.cancel()
