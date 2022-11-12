@@ -34,7 +34,7 @@ class Felix(AutoShardedBot):
 
     async def start(self, *args, **kwargs):
         self.session = ClientSession(timeout=ClientTimeout(total=30))
-        await super().start(self.config["bot_key"], *args, **kwargs)
+        await super().start(*args, **kwargs)
 
     async def close(self):
         await self.session.close()
@@ -126,5 +126,5 @@ async def on_message(msg):
     await client.process_commands(msg)
 
 
-client.run()
+client.run(client.config['bot_key'])
 print('Felix-Python has exited')

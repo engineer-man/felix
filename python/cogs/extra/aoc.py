@@ -14,7 +14,7 @@ or by calling it with the path and the name of this python file
 import asyncio
 from datetime import datetime, timedelta
 from unicodedata import normalize
-from discord import Embed
+from discord import Embed, app_commands, Interaction
 from discord.ext import commands, tasks
 
 # pylint: disable=E1101
@@ -33,7 +33,9 @@ KNOWN_USERS = {
     '962475': 'dv_man',
     '419680': 'RuskyHacker',
     '1155906': 'T2',
-    }
+}
+
+
 class AdventOfCode(commands.Cog, name='Advent of Code'):
     def __init__(self, client):
         self.client = client
@@ -124,7 +126,7 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
 
         # Delete previous message
         for msg in self.last_msgs:
-                await msg.delete()
+            await msg.delete()
 
         self.last_msgs = []
 
@@ -223,6 +225,18 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
             icon_url=ctx.author.display_avatar
         )
         await ctx.send(embed=embed)
+
+    @app_commands.command()
+    async def slashtest(self, interaction: Interaction, fruit: str):
+        await interaction.response.send_message(f'Slashtest: {fruit}')
+
+    @aoc.command(
+        name='sync',
+        hidden=True
+    )
+    async def sync_ac(self, ctx):
+        r = await self.client.tree.sync()
+        await ctx.send(r)
 
     def cog_unload(self):
         self.aoc_task.cancel()
