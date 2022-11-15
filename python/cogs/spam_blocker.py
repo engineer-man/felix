@@ -42,9 +42,8 @@ class SpamBlocker(commands.Cog, name='Spam'):
 
 
     def make_spam_list(num_spam: int, amount: int, spam: list):
-        spam_list = []
-        spam_list.append('\n'.join(spam[num_spam - amount:num_spam]))
-        return spam_list
+        spam_list_text = '\n'.join(spam[num_spam - amount:num_spam])
+        return spam_list_text
 
 
     @tasks.loop(count=1)
