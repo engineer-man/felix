@@ -293,7 +293,7 @@ class SpamBlocker(commands.Cog, name='Spam'):
                 all_spam = [f'{row.id:3} | {row.regex}' for row in res_to_show]
                 response = []
                 for _ in range(len(all_spam)):
-                    response.append('\n'.join(all_spam[NUM_SPAM - NUM_LEN:NUM_SPAM]))
+                    response.append(self.make_spam_list(NUM_SPAM, NUM_LEN, all_spam))
                     NUM_SPAM += NUM_LEN
                 for block in response:
                     await ctx.send(f'```{"".join(block)}```') if len(block) > 0 else None
