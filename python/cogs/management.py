@@ -20,9 +20,10 @@ import traceback
 import typing
 from datetime import datetime, timezone
 from os import path, listdir
-from discord import Activity, Embed, Member, Status
+from os.path import getsize
+from discord import Activity, Embed, Member, Status, File
 from discord.ext import commands
-
+from db.config import DATABASE_FILENAME
 
 class Management(commands.Cog, name='Management'):
     def __init__(self, client):
@@ -235,6 +236,29 @@ class Management(commands.Cog, name='Management'):
             ['\n  ' + x for x in unloaded]
         await ctx.send(f'```css{"".join(response)}```')
         return True
+
+    # ----------------------------------------------
+    # Download entire database
+    # ----------------------------------------------
+    @commands.command(
+        name='dumpdb',
+        brief='Download the Felix database',
+        description='Download the Felix database',
+        aliases=['dump','dbdownload','dbdump'],
+        hidden=True
+    )
+    async def dump_db(self, ctx):
+        # Maximum size of MiB
+        DB_MAX_SIZE = 10485760
+        db_size = getsize(DATABASE_FILENAME)
+
+        if db_size > DB_MAX_SIZE:
+            # The database is too big.
+            await ctx.send(content=f"Could not send database. Database size is {db_size/1024} KiB of maximum {DB_MAX_SIZE/1024} KiB")
+            return
+
+        db = File(DATABASE_FILENAME)
+        await ctx.send(file=db, content=f"Here is your database dump")
 
     # ----------------------------------------------
     # Function Group to list stuff
