@@ -41,7 +41,7 @@ class SpamBlocker(commands.Cog, name='Spam'):
         self.construct_spam_dict.start()
 
 
-    def make_spam_list(num_spam: int, amount: int, spam: list):
+    def make_spam_list(self, num_spam: int, amount: int, spam: list):
         spam_list_text = '\n'.join(spam[num_spam - amount:num_spam])
         return spam_list_text
 
