@@ -284,7 +284,6 @@ class SpamBlocker(commands.Cog, name='Spam'):
                 res_to_show = res
                 if page != "all":
                     start = (int(page) - 1) * NUM_LEN
-                    print(start)
                     res_to_show = res[start:start+NUM_SPAM]
                 all_spam = [f'{row.id:0>3} | {row.regex}' for row in res_to_show]
                 response = []
