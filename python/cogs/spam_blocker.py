@@ -285,7 +285,7 @@ class SpamBlocker(commands.Cog, name='Spam'):
                 if page != "all":
                     start = (int(page) - 1) * NUM_LEN
                     res_to_show = res[start:start+NUM_SPAM]
-                all_spam = [f'{row.id:0>3} | {row.regex}' for row in res_to_show]
+                all_spam = [f'{row.id:3} | {row.regex}' for row in res_to_show]
                 response = []
                 for _ in range(len(all_spam)):
                     response.append('\n'.join(all_spam[NUM_SPAM - NUM_LEN:NUM_SPAM]))
