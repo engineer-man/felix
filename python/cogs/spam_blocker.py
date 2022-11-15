@@ -41,6 +41,12 @@ class SpamBlocker(commands.Cog, name='Spam'):
         self.construct_spam_dict.start()
 
 
+    def make_spam_list(num_spam: int, amount: int, spam: list):
+        spam_list = []
+        spam_list.append('\n'.join(spam[num_spam - amount:num_spam]))
+        return spam_list
+
+
     @tasks.loop(count=1)
     async def init_database(self):
         async with engine.begin() as conn:
