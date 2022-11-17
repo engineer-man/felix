@@ -282,8 +282,9 @@ class SpamBlocker(commands.Cog, name='Spam'):
                 res = await scd.get_all_spam()
 
         await ctx.send(
-            file=File(BytesIO('\n'.join(f'{n:3} | {s}'
-                      for n,s in enumerate([row.regex for row in res], 1)).encode()),
+            file=File(BytesIO('\n'.join(f'{spam_item[0]:3} | {spam_item[1]}'
+                      for spam_item in zip([row.id for row in res],
+                                           [row.regex for row in res])).encode()),
                       filename="spam-ls.txt"),
             content="Here is the spam list"
         )
