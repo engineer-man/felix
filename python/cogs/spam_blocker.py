@@ -19,12 +19,13 @@ Only users that have an admin role can use the commands.
 
 import re
 import json
+from io import BytesIO
 
 from db.config import engine, Base, async_session
 from db.models.dals import SpamDAL, SpammerDAL
 
 from discord.ext import commands, tasks
-from discord import DMChannel, Embed, NotFound
+from discord import DMChannel, Embed, NotFound, File
 
 
 class SpamBlocker(commands.Cog, name='Spam'):
@@ -279,15 +280,13 @@ class SpamBlocker(commands.Cog, name='Spam'):
             async with db.begin():
                 scd = SpamDAL(db)
                 res = await scd.get_all_spam()
-                NUM_SPAM = 25
-                NUM_LEN = 25
-                all_spam = [f'  {row.id} | {row.regex}' if row.id < 10 else f' {row.id} | {row.regex}' for row in res]
-                response = []
-                for _ in range(len(all_spam)):
-                    response.append('\n'.join(all_spam[NUM_SPAM - NUM_LEN:NUM_SPAM]))
-                    NUM_SPAM += NUM_LEN
-                for block in response:
-                    await ctx.send(f'```{"".join(block)}```') if len(block) > 0 else None
+
+        await ctx.send(
+            file=File(BytesIO('\n'.join(f'{n:3} | {s}'
+                      for n,s in enumerate([row.regex for row in res], 1)).encode()),
+                      filename="spam-ls.txt"),
+            content="Here is the spam list"
+        )
 
 
     @spam.command(
