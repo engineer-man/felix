@@ -6,7 +6,8 @@ Commands:
     ├ add       add spam link to automatically jails a user if posted
     ├ create    create spam database
     ├ drop      drop spam database
-    ├ list      show list of all spam links
+    ├ list      show list of all spam links as text dump
+    ├ list 1    show list of spam links as paginated embed
     ├ remove    remove a spam link that automatically jails a user if posted
     ├ update    update/edit existing spam rule by rule id
     └ who       Show who created the rule
@@ -274,20 +275,31 @@ class SpamBlocker(commands.Cog, name='Spam'):
         name='list',
         aliases=['ls']
     )
-    async def current_spam_list(self, ctx):
+    async def current_spam_list(self, ctx, _paginate=False):
         """Lists all current items in the spam database"""
         async with async_session() as db:
             async with db.begin():
                 scd = SpamDAL(db)
                 res = await scd.get_all_spam()
 
-        await ctx.send(
-            file=File(BytesIO('\n'.join(f'{spam_item[0]:3} | {spam_item[1]}'
-                      for spam_item in zip([row.id for row in res],
-                                           [row.regex for row in res])).encode()),
-                      filename="spam-ls.txt"),
-            content="Here is the spam list"
-        )
+            all_spam = '\n'.join(f'{row.id:4} | {row.regex}' for row in res)
+
+        if not _paginate:
+            return await ctx.send(
+                file=File(BytesIO(all_spam.encode()), filename='spam-ls.txt'),
+                content=f'Hey {ctx.message.author.name}, Here is the current spam list...'
+            )
+
+        paginator = commands.Paginator(prefix='```', suffix='```', linesep='\n', max_size=2000)
+        for line in all_spam.split('\n'):
+            paginator.add_line(line)
+        message = None
+
+        for page in paginator.pages:
+            await ctx.send(page)
+
+        paginator.clear()
+        return message
 
 
     @spam.command(
