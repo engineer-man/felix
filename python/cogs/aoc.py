@@ -90,7 +90,7 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
                     msg.append((
                         time,
                         f"#{data['name'].replace(' ', '_')} " +
-                        f"solved: [{day} - {pzl}] " +
+                        f"solved [{day} - {pzl}] " +
                         f"at [{datetime.fromtimestamp(time).strftime('%H:%M:%S')} UTC]"
                     ))
         if msg:
