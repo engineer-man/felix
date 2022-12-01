@@ -33,6 +33,7 @@ KNOWN_USERS = {
     '962475': 'dv_man',
     '419680': 'RuskyHacker',
     '1155906': 'T2',
+    '2464982': 'hegehog',
 }
 
 
