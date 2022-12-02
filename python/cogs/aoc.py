@@ -34,7 +34,8 @@ KNOWN_USERS = {
     '419680': 'RuskyHacker',
     '1155906': 'T2',
     '2464982': 'hegehog',
-    '2537005': 'mizatorian'
+    '2100497': 'Aetheridon',
+    '2537005': 'mizatorian',
 }
 
 
