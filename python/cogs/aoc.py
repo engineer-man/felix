@@ -88,11 +88,13 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
                 if puzzle not in previous_stats:
                     day, pzl = puzzle.split('-')
                     time = int(new_stats[day][pzl]['get_star_ts'])
+                    day1_time = int(new_stats[day]['1']['get_star_ts']) if pzl == '2' else 0
                     msg.append((
                         time,
                         f"#{data['name'].replace(' ', '_')} " +
                         f"solved [{day} - {pzl}] " +
-                        f"at [{datetime.fromtimestamp(time).strftime('%H:%M:%S')} UTC]"
+                        f"at [{datetime.fromtimestamp(time).strftime('%H:%M:%S')} UTC] " +
+                        (f"[Δ {timedelta(seconds=time - day1_time)}]" if pzl == '2' else "")
                     ))
         if msg:
             await channel.send(
