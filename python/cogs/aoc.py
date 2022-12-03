@@ -35,6 +35,7 @@ KNOWN_USERS = {
     '1155906': 'T2',
     '2464982': 'hegehog',
     '2100497': 'Aetheridon',
+    '2537005': 'mizatorian',
 }
 
 
