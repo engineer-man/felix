@@ -330,6 +330,31 @@ class SpamBlocker(commands.Cog, name='Spam'):
             await ctx.send(embed=embed)
 
 
+    @spam.command(name="test", aliases=["t", "teststring"])
+    async def spam_test(self, ctx, test_string: str):
+        """Test a string and see what rules it matches"""
+        matches = []
+        spam_id = None
+        async with async_session() as db:
+            async with db.begin():
+                scd = SpamDAL(db)
+                all_spam = await scd.get_all_spam()
+        for regex_string, regex in self.spam_dict.items():
+            if regex.findall(test_string):
+                for spam in all_spam:
+                    if spam.regex == regex_string:
+                        spam_id = spam.id
+                matches.append({'str': regex_string, 'id': spam_id})
+            spam_id = None
+        if len(matches) == 0:
+            await ctx.send("No matches")
+            return
+        msg = f"""```\nMatches {len(matches)} rule{'s' if len(matches) > 1 else ''}: """
+        for match in matches[:10]:
+            msg += f"\n {match.get('id'):4} | {match.get('str')}"
+        msg += "\n```"
+        await ctx.send(msg)
+
     # ----------------------------------------------
     # Spammer Cog Commands
     # ----------------------------------------------
