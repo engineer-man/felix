@@ -9,6 +9,7 @@ Commands:
     ├ list      show list of all spam links as text dump
     ├ list 1    show list of spam links as paginated embed
     ├ remove    remove a spam link that automatically jails a user if posted
+    ├ test      test if string matches an existing rule
     ├ update    update/edit existing spam rule by rule id
     └ who       Show who created the rule
 
@@ -55,7 +56,7 @@ class SpamBlocker(commands.Cog, name='Spam'):
             async with db.begin():
                 scd = SpamDAL(db)
                 rows = await scd.get_all_spam()
-            self.spam_dict = {rule.regex:re.compile(rule.regex, re.I) for rule in rows}
+            self.spam_dict = {rule.regex: re.compile(rule.regex, re.I) for rule in rows}
 
 
     async def cog_check(self, ctx):
@@ -330,15 +331,21 @@ class SpamBlocker(commands.Cog, name='Spam'):
             await ctx.send(embed=embed)
 
 
-    @spam.command(name="test", aliases=["t", "teststring"])
-    async def spam_test(self, ctx, test_string: str):
+    @spam.command(
+        name="test",
+        aliases=["t", "teststring"]
+    )
+    async def spam_test(self, ctx, *args):
         """Test a string and see what rules it matches"""
+        member = ctx.message.author
+        test_string = ' '.join((x for x in args))
         matches = []
         spam_id = None
         async with async_session() as db:
             async with db.begin():
                 scd = SpamDAL(db)
                 all_spam = await scd.get_all_spam()
+
         for regex_string, regex in self.spam_dict.items():
             if regex.findall(test_string):
                 for spam in all_spam:
@@ -346,9 +353,11 @@ class SpamBlocker(commands.Cog, name='Spam'):
                         spam_id = spam.id
                 matches.append({'str': regex_string, 'id': spam_id})
             spam_id = None
+
         if len(matches) == 0:
-            await ctx.send("No matches")
+            await ctx.send(f"Hey {member.name}, No rule matches for: `{test_string}`")
             return
+
         msg = f"""```\nMatches {len(matches)} rule{'s' if len(matches) > 1 else ''}: """
         for match in matches[:10]:
             msg += f"\n {match.get('id'):4} | {match.get('str')}"
@@ -367,6 +376,26 @@ class SpamBlocker(commands.Cog, name='Spam'):
     async def spammer(self, ctx):
         "Commands to view spam rule breakers"
         await ctx.send_help('spammer')
+
+
+    @spammer.command(
+        name='count',
+        aliases=['c', 'number']
+    )
+    async def rule_breaker_count(self, ctx):
+        """Show a count of rule breakers"""
+        async with async_session() as db:
+            async with db.begin():
+                scd = SpammerDAL(db)
+                count = await scd.get_spammer_count()
+
+        embed = Embed(
+            title='Total Scammers',
+            description=f'```I have yeeted {count} sammers so far. you\'re welcome!```',
+            color=0xFFFFFF
+        )
+        await ctx.send(embed=embed)
+
 
 
     @spammer.command(
