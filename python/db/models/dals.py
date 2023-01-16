@@ -70,6 +70,13 @@ class SpammerDAL():
         )
         return query.scalars().all()
 
+    async def get_spammer_count(self):
+        """Return count of rule breakers"""
+        query = await self.db_session.execute(
+            'SELECT count(id) from Spammer'
+        )
+        return query.scalar()
+
     async def spammer_by_id(self, id: str):
         """Return spammer by its ID"""
         query = await self.db_session.execute(
