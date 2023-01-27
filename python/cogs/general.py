@@ -112,7 +112,7 @@ class General(commands.Cog, name='General'):
 
             if (not answer) or (not answer['AbstractText']):
                 await ctx.send(
-                    'Couldn\'t find anything, here\'s duckduckgo link '
+                    'No quick answer, '
                     + f'<https://duckduckgo.com/?q={quote_plus(query)}>'
                 )
                 return
@@ -123,16 +123,16 @@ class General(commands.Cog, name='General'):
             )
 
             if answer['Image']:
-                embed.set_image(url=f'https://api.duckduckgo.com{answer["Image"]}')
+                embed.set_image(url=f'https://duckduckgo.com{answer["Image"]}')
 
             embed.set_author(
                 name=answer['Heading'],
-                icon_url='https://api.duckduckgo.com/favicon.ico'
+                icon_url='https://duckduckgo.com/favicon.png'
             )
 
             embed.set_footer(
                 text=f'Info from {answer["AbstractSource"]}\n'
-                + f'at {answer["AbstractURL"]}\n'
+                + f'{answer["AbstractURL"]}\n'
                 + 'Provided By: https://api.duckduckgo.com'
             )
             await ctx.send(embed=embed)
