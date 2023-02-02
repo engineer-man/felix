@@ -88,3 +88,10 @@ class SpammerDAL():
         """Remove spammer item by its id"""
         query = delete(Spammer).where(Spammer.id == id)
         await self.db_session.execute(query)
+
+    async def search_spammer(self, member_id: str):
+        """Search if member snowflake id is in the rule breakers db"""
+        query = await self.db_session.execute(
+            select(Spammer).where(Spammer.member == member_id)
+        )
+        return query.scalars().all()
