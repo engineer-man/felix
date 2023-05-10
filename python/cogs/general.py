@@ -40,7 +40,6 @@ class General(commands.Cog, name='General'):
         self.client = client
         self.load_cat_http_codes.start()
         self.load_dog_http_codes.start()
-        self.load_goat_http_codes.start()
         self.re_convert = re.compile(r'(?i)(?: |^)(?P<num>-?[0-9]+(?:\.[0-9]*)?)\s?(?P<unit>[a-zA-Z°²]+)')
 
     @tasks.loop(count=1)
@@ -53,17 +52,10 @@ class General(commands.Cog, name='General'):
 
     @tasks.loop(count=1)
     async def load_dog_http_codes(self):
-        async with self.client.session.get('https://http.dog/') as response:
+        async with self.client.session.get('https://httpstatusdogs.com/') as response:
             text = await response.text()
-            http_codes_dog = re.findall(r'<a href=\"https://http.dog/(\d{3})\"', text)
+            http_codes_dog = re.findall(r'<a href=\"(\d{3})-[^\"]*\"', text)
             self.http_codes_dog = [int(x) for x in http_codes_dog]
-
-    @tasks.loop(count=1)
-    async def load_goat_http_codes(self):
-        async with self.client.session.get('https://httpgoats.com/') as response:
-            text = await response.text()
-            http_codes_goat = re.findall(r'<a href=\"https://httpgoats.com/(\d{3})"', text)
-            self.http_codes_goat = [int(x) for x in http_codes_goat]
 
     # ----------------------------------------------
     # Helper Functions
@@ -797,29 +789,8 @@ class General(commands.Cog, name='General'):
                 raise commands.BadArgument(f'Invalid status code: **{code}**')
 
         embed = Embed()
-        embed.set_image(url=f'https://http.dog/{code}.jpg')
-        embed.set_footer(text=f'Provided by: https://http.dog/')
-        await ctx.send(embed=embed)
-
-    @commands.command(
-        name='statusgoat',
-        aliases=['goat']
-    )
-    async def statusgoat(self, ctx, code: int = None):
-        """Sends an embed with an image of a goat, portraying the status code.
-           If no status code is given it will return a random status goat."""
-        if not hasattr(self, 'http_codes_goat'):
-            raise commands.BadArgument('HTTP goats codes not loaded yet')
-
-        if code is None:
-            code = random.choice(self.http_codes_goat)
-        else:
-            if code not in self.http_codes_goat:
-                raise commands.BadArgument(f'Invalid status code: **{code}**')
-
-        embed = Embed()
-        embed.set_image(url=f'https://httpgoats.com/{code}.jpg')
-        embed.set_footer(text=f'Provided by: https://httpgoats.com/')
+        embed.set_image(url=f'https://httpstatusdogs.com/img/{code}.jpg')
+        embed.set_footer(text=f'Provided by: https://httpstatusdogs.com/')
         await ctx.send(embed=embed)
 
     # ------------------------------------------------------------------------
