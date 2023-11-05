@@ -398,6 +398,15 @@ class HangmanGame:
             description=f"The word was: ||{self._word.title()}||",
             color=self.color
         )
+        embed.add_field(
+            name=f"You had {len(self.incorrect)} incorrect guesses:",
+            value=", ".join(self.incorrect),
+            inline=False
+        )
+        embed.set_footer(
+            text=self.user_name,
+            icon_url=self.user_avatar
+        )
         return embed
 
 
