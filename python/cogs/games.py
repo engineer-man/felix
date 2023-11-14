@@ -513,7 +513,7 @@ Short Commands:
 
 class MMGame():
     PEGS = ('_', '🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '⚫', '🟤', '⚪', '⭕')
-    COLORS = '_roygbplowh'
+    COLORS = '_roygbplnwh'
     REFEREE_PEGS = ('🔴', '⚪')
 
     def __init__(self, player: Member, difficulty=4, num_colors=6):
@@ -670,7 +670,7 @@ class Mastermind(commands.Cog, name='Mastermind'):
             "```\nBase Colors (1-6):\n"
             "r : 🔴 | o : 🟠 | y : 🟡 | g : 🟢 | b : 🔵 | p : 🟣\n"
             "For Harder difficulties (7-10):\n"
-            "l : ⚫ | o : 🟤 | l : ⚪ | h : ⭕```\n\n"
+            "l : ⚫ | n : 🟤 | w : ⚪ | h : ⭕```\n\n"
 
 
             "You can cancel the game with:\n**felix mastermind quit**\n\n"
