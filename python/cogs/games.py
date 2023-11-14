@@ -512,19 +512,22 @@ Short Commands:
 """
 
 class MMGame():
-    PEGS = ('_', '💖', '🧡', '💛', '💚', '💙', '💜', '🖤')
-    COLORS = '_roygbpl'
+    PEGS = ('_', '🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '⚫', '🟤', '⚪', '⭕')
+    COLORS = '_roygbplowh'
     REFEREE_PEGS = ('🔴', '⚪')
 
-    def __init__(self, player: Member, difficulty=4):
+    def __init__(self, player: Member, difficulty=4, num_colors=6):
         self.player = player
-        if difficulty not in (4, 5):
+        if difficulty not in (4, 5, 6):
+            raise commands.CommandError('Invalid difficulty')
+        if num_colors not in (6, 7, 8, 9, 10):
             raise commands.CommandError('Invalid difficulty')
         self.difficulty = difficulty
+        self.num_colors = num_colors
         self.game = []
         self.referee = []
         self.solution = [
-            choice(range(1, 7 if self.difficulty == 4 else 8))
+            choice(range(1, self.num_colors + 1))
             for _ in range(self.difficulty)
         ]
         self.last_guess_message = None
@@ -535,8 +538,8 @@ class MMGame():
         if not len(guess) == self.difficulty:
             raise commands.CommandError(
                 f'Please provide {self.difficulty} colors')
-        if any(x.lower() not in MMGame.COLORS for x in guess):
-            raise commands.CommandError('Please provide valid colors')
+        if any(x.lower() not in MMGame.COLORS[1:self.num_colors+1] for x in guess):
+            raise commands.CommandError('Please provide valid colors for your current game')
         self.game.append([MMGame.COLORS.index(x) for x in guess.lower()])
         return True
 
@@ -614,24 +617,46 @@ class Mastermind(commands.Cog, name='Mastermind'):
         aliases=['mm'],
         invoke_without_command=True,
     )
-    async def mastermind(self, ctx, difficulty='easy'):
-        """Start a game of mastermind [easy/hard]"""
+    async def mastermind(self, ctx, *, difficulty = 'easy'):
+        """Start a game of mastermind [easy/hard/[difficulty] [num_colors]]"""
         current_game = None
         for game in self.active_games:
             if game.player == ctx.author:
                 current_game = game
                 break
+
         if current_game:
             await current_game.print_to_ctx(
                 ctx,
                 'You already have an active game - here it is:'
             )
             return False
-        if difficulty.lower() not in ('easy', 'hard'):
-            await ctx.send('Valid difficulties: easy, hard')
-            return False
 
-        game = MMGame(ctx.author, 4 if difficulty.lower() == 'easy' else 5)
+        if difficulty.lower() in ('easy', 'hard'):
+            game_difficulty = 4 if difficulty.lower() == 'easy' else 5
+            num_colors = 6 if difficulty.lower() == 'easy' else 7
+        else:
+            s = difficulty.lower().split()
+            if len(s) != 2 or not all (x.isdigit() for x in s):
+                await ctx.send('Valid difficulties: easy, hard')
+                return False
+
+            manual_difficulty = int(s[0])
+            manual_num_colors = int(s[1])
+            if not 4 <= manual_difficulty <= 6:
+                await ctx.send('Invalid difficulty')
+                return False
+            if not 6 <= manual_num_colors <= 10:
+                await ctx.send('Invalid number of colors')
+                return False
+            game_difficulty = manual_difficulty
+            num_colors = manual_num_colors
+
+        game = MMGame(
+            ctx.author,
+            difficulty = game_difficulty,
+            num_colors = num_colors,
+        )
         self.active_games.append(game)
         instructions = (
             "**Welcome to Felix Mastermind** "
@@ -642,13 +667,11 @@ class Mastermind(commands.Cog, name='Mastermind'):
             "You can guess a color combination by typing \n**felix mastermind "
             "guess xxx** \nwhere xxx should be replaced by a combination of "
             f"{game.difficulty} color letters. Available colors:\n"
-            "r : RED\n"
-            "o : ORANGE\n"
-            "y : YELLOW\n"
-            "g : GREEN\n"
-            "b : BLUE\n"
-            "p : PURPLE\n"
-            "l : BLACK (only for hard difficulty)\n\n"
+            "```\nBase Colors (1-6):\n"
+            "r : 🔴 | o : 🟠 | y : 🟡 | g : 🟢 | b : 🔵 | p : 🟣\n"
+            "For Harder difficulties (7-10):\n"
+            "l : ⚫ | o : 🟤 | l : ⚪ | h : ⭕```\n\n"
+
 
             "You can cancel the game with:\n**felix mastermind quit**\n\n"
             "Shortcuts:\nfelix mastermind - **felix mm**\n"
