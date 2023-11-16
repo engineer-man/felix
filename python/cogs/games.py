@@ -499,6 +499,7 @@ class Hangman(commands.Cog):
         )
         new_game.last_bot_message = await ctx.send(embed=embed)
 
+
 """This is a cog for a discord.py bot.
 It will provide a mastermind type game for everyone to play.
 
@@ -511,12 +512,13 @@ Short Commands:
     mastermind guess -> mm g
 """
 
+
 class MMGame():
     PEGS = ('_', '🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '⚫', '🟤', '⚪', '⭕')
     COLORS = '_roygbplnwh'
     REFEREE_PEGS = ('🔴', '⚪')
 
-    def __init__(self, player: Member, difficulty=4, num_colors=6):
+    def __init__(self, player: Member, channel, difficulty=4, num_colors=6):
         self.player = player
         if difficulty not in (4, 5, 6):
             raise commands.CommandError('Invalid difficulty')
@@ -532,6 +534,7 @@ class MMGame():
         ]
         self.last_guess_message = None
         self.last_game_message = None
+        self.channel = channel
 
     def add_guess(self, guess):
         guess = guess.replace(' ', '')
@@ -617,7 +620,7 @@ class Mastermind(commands.Cog, name='Mastermind'):
         aliases=['mm'],
         invoke_without_command=True,
     )
-    async def mastermind(self, ctx, *, difficulty = 'easy'):
+    async def mastermind(self, ctx, *, difficulty='easy'):
         """Start a game of mastermind [easy/hard/[difficulty] [num_colors]]"""
         current_game = None
         for game in self.active_games:
@@ -637,7 +640,7 @@ class Mastermind(commands.Cog, name='Mastermind'):
             num_colors = 6 if difficulty.lower() == 'easy' else 7
         else:
             s = difficulty.lower().split()
-            if len(s) != 2 or not all (x.isdigit() for x in s):
+            if len(s) != 2 or not all(x.isdigit() for x in s):
                 await ctx.send('Valid difficulties: easy, hard')
                 return False
 
@@ -654,8 +657,9 @@ class Mastermind(commands.Cog, name='Mastermind'):
 
         game = MMGame(
             ctx.author,
-            difficulty = game_difficulty,
-            num_colors = num_colors,
+            ctx.channel,
+            difficulty=game_difficulty,
+            num_colors=num_colors,
         )
         self.active_games.append(game)
         instructions = (
@@ -664,18 +668,14 @@ class Mastermind(commands.Cog, name='Mastermind'):
             "colors. After every guess you will be told how many colors are "
             "correct AND in the right position (red marker) and how many "
             "colors are correct but NOT in the right position (white marker)."
-            "You can guess a color combination by typing \n**felix mastermind "
-            "guess xxx** \nwhere xxx should be replaced by a combination of "
+            "You can guess a color combination by typing your guess in this channel.\nA Guess is a combination of "
             f"{game.difficulty} color letters. Available colors:\n"
             "```\nBase Colors (1-6):\n"
             "r : 🔴 | o : 🟠 | y : 🟡 | g : 🟢 | b : 🔵 | p : 🟣\n"
             "For Harder difficulties (7-10):\n"
             "l : ⚫ | n : 🟤 | w : ⚪ | h : ⭕```\n\n"
 
-
-            "You can cancel the game with:\n**felix mastermind quit**\n\n"
-            "Shortcuts:\nfelix mastermind - **felix mm**\n"
-            "felix mastermind guess - **felix mm g**"
+            "You can cancel the game by typing:**q or quit**\n\n"
         )
 
         embed = Embed(title='Felix Mastermind',
@@ -683,25 +683,31 @@ class Mastermind(commands.Cog, name='Mastermind'):
                       )
         await ctx.send(embed=embed)
 
-    @mastermind.command(
-        name='guess',
-        aliases=['g'],
-    )
-    async def guess(self, ctx, *, guess):
+    @commands.Cog.listener()
+    async def on_message(self, message):
         """Make a guess for your running mastermind game"""
+        # A hacky way to detect if user is typing a command
+        if ' ' in message.content:
+            return
         current_game = None
         for game in self.active_games:
-            if game.player == ctx.author:
+            if game.player == message.author and game.channel == message.channel:
                 current_game = game
                 break
+        ctx = await self.client.get_context(message)
         if not current_game:
-            await ctx.send('Cannot find active game')
             return False
-        try:
-            loser, winner = await current_game.process_game(ctx)
-        except commands.CommandError as e:
-            await ctx.send(e)
-            return False
+        guess = message.content
+        if guess in ('q', 'quit'):
+            loser = True
+            winner = False
+        else:
+            try:
+                ctx.kwargs['guess'] = guess
+                loser, winner = await current_game.process_game(ctx)
+            except commands.CommandError as e:
+                await ctx.send(e)
+                return False
         if winner or loser:
             to_send = 'The Game is Over - '
             to_send += 'you win' if winner else (
@@ -709,23 +715,6 @@ class Mastermind(commands.Cog, name='Mastermind'):
             )
             self.active_games.remove(current_game)
             await ctx.send(to_send)
-
-    @mastermind.command(
-        name='quit',
-        aliases=['q'],
-    )
-    async def quit(self, ctx):
-        """Quit your running mastermind game"""
-        current_game = None
-        for game in self.active_games:
-            if game.player == ctx.author:
-                current_game = game
-                break
-        if not current_game:
-            await ctx.send('Cannot find active game')
-            return False
-        self.active_games.remove(current_game)
-        await ctx.send('Game Cancelled')
 
 
 async def setup(client):
