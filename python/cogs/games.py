@@ -662,20 +662,17 @@ class Mastermind(commands.Cog, name='Mastermind'):
             num_colors=num_colors,
         )
         self.active_games.append(game)
+        available_colors = '\n'.join(f'{game.COLORS[i]} : {game.PEGS[i]}' for i in range(1,game.num_colors+1))
         instructions = (
             "**Welcome to Felix Mastermind** "
-            f"Your goal is to guess the right combination of {game.difficulty} "
+            f"Your goal is to guess the right combination of **{game.difficulty}** "
             "colors. After every guess you will be told how many colors are "
             "correct AND in the right position (red marker) and how many "
             "colors are correct but NOT in the right position (white marker)."
-            "You can guess a color combination by typing your guess in this channel.\nA Guess is a combination of "
-            f"{game.difficulty} color letters. Available colors:\n"
-            "```\nBase Colors (1-6):\n"
-            "r : 🔴 | o : 🟠 | y : 🟡 | g : 🟢 | b : 🔵 | p : 🟣\n"
-            "For Harder difficulties (7-10):\n"
-            "l : ⚫ | n : 🟤 | w : ⚪ | h : ⭕```\n\n"
-
-            "You can cancel the game by typing:**q or quit**\n\n"
+            "You can guess a color combination by typing your guess in this channel.\n"
+            f"A guess is a combination of **{game.difficulty}** letters without spaces. "
+            f"Available colors for your game:```\n{available_colors} ```"
+            "You can cancel the game by typing:**q or quit**"
         )
 
         embed = Embed(title='Felix Mastermind',
