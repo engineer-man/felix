@@ -1,4 +1,4 @@
-from random import choice, seed, sample
+from random import choice, seed, sample, shuffle
 from time import time
 from discord.ext import commands
 from discord import Member, Embed, Message
@@ -535,15 +535,20 @@ class MMGame():
         self.last_guess_message = None
         self.last_game_message = None
         self.channel = channel
+        temp = [*range(len(MMGame.PEGS)-1)]
+        shuffle(temp)
+        self.PEGS = ['_'] + [MMGame.PEGS[1:][x] for x in temp]
+        self.COLORS = '_' + ''.join([MMGame.COLORS[1:][x] for x in temp])
+
 
     def add_guess(self, guess):
         guess = guess.replace(' ', '')
         if not len(guess) == self.difficulty:
             raise commands.CommandError(
                 f'Please provide {self.difficulty} colors')
-        if any(x.lower() not in MMGame.COLORS[1:self.num_colors+1] for x in guess):
+        if any(x.lower() not in self.COLORS[1:self.num_colors+1] for x in guess):
             raise commands.CommandError('Please provide valid colors for your current game')
-        self.game.append([MMGame.COLORS.index(x) for x in guess.lower()])
+        self.game.append([self.COLORS.index(x) for x in guess.lower()])
         return True
 
     def update_referee(self):
@@ -583,10 +588,10 @@ class MMGame():
         for row, referee in zip(self.game, self.referee):
             row_str = ''
             for peg in row:
-                row_str += MMGame.PEGS[peg]
+                row_str += self.PEGS[peg]
             row_str += '|'
-            row_str += MMGame.REFEREE_PEGS[0] * referee[0]
-            row_str += MMGame.REFEREE_PEGS[1] * referee[1]
+            row_str += self.REFEREE_PEGS[0] * referee[0]
+            row_str += self.REFEREE_PEGS[1] * referee[1]
             game_to_print.append(row_str)
         to_send = []
         for n, line in enumerate(game_to_print, start=1):
@@ -603,7 +608,7 @@ class MMGame():
     def get_solution(self):
         solution_str = ''
         for peg in self.solution:
-            solution_str += MMGame.PEGS[peg]
+            solution_str += self.PEGS[peg]
         return solution_str
 
 
@@ -666,12 +671,13 @@ class Mastermind(commands.Cog, name='Mastermind'):
         instructions = (
             "**Welcome to Felix Mastermind** "
             f"Your goal is to guess the right combination of **{game.difficulty}** "
-            "colors. After every guess you will be told how many colors are "
+            f"colors from a pool of **{game.num_colors}**. "
+            "After every guess you will be told how many colors are "
             "correct AND in the right position (red marker) and how many "
             "colors are correct but NOT in the right position (white marker)."
             "You can guess a color combination by typing your guess in this channel.\n"
-            f"A guess is a combination of **{game.difficulty}** letters without spaces. "
-            f"Available colors for your game:```\n{available_colors} ```"
+            f"A guess is a combination of **{game.difficulty}** letters without spaces\n "
+            f"Color pool for your game:```\n{available_colors} ```"
             "You can cancel the game by typing:**q or quit**"
         )
 
