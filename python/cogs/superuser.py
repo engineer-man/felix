@@ -91,7 +91,10 @@ class Superuser(commands.Cog, name='Superuser'):
         with open("../config.json") as conffile:
             self.client.config = json.load(conffile)
 
-        self.client.config[setting_name] = literal_eval(setting_value)
+        try:
+            self.client.config[setting_name] = literal_eval(setting_value)
+        except ValueError:
+            await ctx.send('Failed to parse input with literal_eval (try to put it in quotes)')
 
         with open("../config.json", 'w') as conffile:
             json.dump(self.client.config, conffile, indent=1)
