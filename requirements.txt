@@ -6,3 +6,4 @@ beautifulsoup4
 lxml
 aiosqlite
 SQLAlchemy==1.4.3
+pandas
