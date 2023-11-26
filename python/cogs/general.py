@@ -46,16 +46,18 @@ class General(commands.Cog, name='General'):
     async def load_cat_http_codes(self):
         async with self.client.session.get('https://http.cat/') as response:
             text = await response.text()
-            http_codes = re.findall(r'<a href="/(\d{3})">', text)
+            http_codes = re.findall(r'images/(\d{3}).jpg', text)
+            http_codes = [int(x) for x in http_codes]
             http_codes.append(0)
-            self.http_codes = [int(x) for x in http_codes]
+            self.http_codes = http_codes
+
 
     @tasks.loop(count=1)
     async def load_dog_http_codes(self):
         async with self.client.session.get('https://http.dog/') as response:
             text = await response.text()
-            http_codes_dog = re.findall(r'dog/\d{3}.jpg', text)
-            self.http_codes_dog = [int(x[4:-4]) for x in http_codes_dog]
+            http_codes_dog = re.findall(r'dog/(\d{3}).jpg', text)
+            self.http_codes_dog = [int(x) for x in http_codes_dog]
 
     # ----------------------------------------------
     # Helper Functions
