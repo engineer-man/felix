@@ -56,6 +56,7 @@ class AdventOfCode(commands.Cog, name='Advent of Code'):
             if data['name'] is None:
                 data['name'] = f'Anon_{member_id}'
             data['name'] = data['name'].replace('@', '')
+            data['name'] = data['name'].replace("'", '') # ' breaks the syntax highlighting
             data['name'] = normalize(
                 'NFKD', data['name']
             ).encode('ascii', 'ignore').decode('utf-8')
