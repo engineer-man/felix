@@ -197,7 +197,7 @@ class SpamBlocker(commands.Cog, name='Spam'):
                 # check rule not already in database before adding.
                 check_dupe = await scd.check_duplicate(regex)
                 if check_dupe:
-                    await ctx.send(f'```❌ Sorry {member.name}, {regex} is already in spam database!```')
+                    await ctx.send(f'❌ `{regex}` already exists with ID {check_dupe}')
                     return
                 # commit new spam rule and return updated rule set
                 rows = await scd.add_spam(member.id, regex)

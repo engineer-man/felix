@@ -20,11 +20,13 @@ class SpamDAL():
         return query.scalars().all()
 
     async def check_duplicate(self, regex: str):
-        """Check for duplicate spam rule, return Bool"""
+        """Check for duplicate spam rule, return ID of existing entry if found"""
         query = await self.db_session.execute(
-            select(Spam).filter(Spam.regex == regex)
+            select(Spam.id).filter(Spam.regex == regex)
         )
-        return len(query.scalars().all()) > 0
+        
+        duplicate_entry = query.scalar()
+        return duplicate_entry
 
     async def delete_spam(self, id: str):
         """Remove spam item by its id"""
