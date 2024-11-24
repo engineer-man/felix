@@ -19,7 +19,7 @@ from discord.ext import commands, tasks
 
 # pylint: disable=E1101
 
-API_URL = 'https://adventofcode.com/2023/leaderboard/private/view/208847.json'
+API_URL = 'https://adventofcode.com/2024/leaderboard/private/view/208847.json'
 AOC_CHANNEL = 778324114213175323
 INTERVAL = 120
 
