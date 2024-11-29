@@ -27,7 +27,7 @@ from db.config import engine, Base, async_session
 from db.models.dals import SpamDAL, SpammerDAL
 
 from discord.ext import commands, tasks
-from discord import DMChannel, Embed, NotFound, File
+from discord import DMChannel, Member, Embed, NotFound, File
 
 
 class SpamBlocker(commands.Cog, name='Spam'):
@@ -391,11 +391,10 @@ class SpamBlocker(commands.Cog, name='Spam'):
 
         embed = Embed(
             title='Total Scammers',
-            description=f'```I have yeeted {count} sammers so far. you\'re welcome!```',
+            description=f'```I have yeeted {count} scammers so far. you\'re welcome!```',
             color=0xFFFFFF
         )
         await ctx.send(embed=embed)
-
 
 
     @spammer.command(
@@ -417,6 +416,7 @@ class SpamBlocker(commands.Cog, name='Spam'):
                     NUM_SPAM += NUM_LEN
                 for block in response:
                     await ctx.send(f'```{"".join(block)}```') if len(block) > 0 else None
+
 
     @spammer.command(
         name='remove',
@@ -444,6 +444,38 @@ class SpamBlocker(commands.Cog, name='Spam'):
                 icon_url=member.display_avatar
             )
             await ctx.send(embed=embed)
+
+
+    @spammer.command(
+        name='search',
+        aliases=['user', 'history']
+    )
+    async def spammer_search(self, ctx, member: Member = None):
+        """Search member name to see if they have been caught phishing before."""
+        member_id = member.id
+        async with async_session() as db:
+            async with db.begin():
+                scd = SpammerDAL(db)
+                res = await scd.search_spammer(member_id)
+                if not res:
+                    embed = Embed(
+                        color=0x13DC51,
+                        title='Criminal History Check',
+                        description=f'```{await self.client.fetch_user(member_id)} is clean.```'
+                    )
+                    return await ctx.send(embed=embed)
+
+        rules_broken = '\n'.join([
+            f'{row.id} | ' +
+            f'{await self.client.fetch_user(row.member)} | ' +
+            f'{row.regex}' for row in res
+        ])
+        embed = Embed(
+            color=0x13DC51,
+            title='Criminal History Check',
+            description=f'```{rules_broken}```'
+        )
+        return await ctx.send(embed=embed)
 
 
     # ----------------------------------------------
